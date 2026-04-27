@@ -1,0 +1,75 @@
+<div class="min-h-screen">
+  <!--
+    <app-header></app-header>
+  -->
+
+  <main class="mx-auto flex max-w-md flex-col items-center px-4 py-10">
+
+    <div class="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-primary shadow-glow">
+      <!-- ícono opcional -->
+      🏆
+    </div>
+
+    <h1 class="mb-2 text-3xl font-black uppercase tracking-tight">
+      Bienvenido
+    </h1>
+
+    <p class="mb-8 text-sm text-muted-foreground">
+      Ingresa para hacer tus pronósticos
+    </p>
+
+    <form
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      class="w-full space-y-4 rounded-2xl border border-border bg-card p-6 shadow-card"
+    >
+
+      <!-- Usuario -->
+      <div class="space-y-2">
+        <label class="text-sm font-medium">Usuario</label>
+        <input
+          type="text"
+          formControlName="username"
+          class="input-lovable"
+        />
+      </div>
+
+      <!-- Password -->
+      <div class="space-y-2">
+        <label class="text-sm font-medium">Contraseña</label>
+        <input
+          type="password"
+          formControlName="password"
+          class="input-lovable"
+        />
+      </div>
+
+      <!-- Error -->
+      <div *ngIf="error"
+        class="rounded-md border border-red-400 bg-red-100 px-3 py-2 text-sm text-red-600">
+        {{ error }}
+      </div>
+
+      <!-- Botón -->
+      <button
+        type="submit"
+        class="btn-primary"
+      >
+        Ingresar
+      </button>
+
+      <!-- Registro -->
+      <p class="text-center text-sm text-muted-foreground">
+        ¿No tienes cuenta?
+        <a routerLink="/register" class="font-semibold text-primary hover:underline">
+          Regístrate
+        </a>
+      </p>
+
+      <p class="text-center text-xs text-muted-foreground">
+        Demo: <code>admin</code> / <code>admin</code>
+      </p>
+
+    </form>
+  </main>
+</div>
