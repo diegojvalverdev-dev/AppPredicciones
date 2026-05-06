@@ -1,0 +1,86 @@
+<app-navbar></app-navbar>
+<app-alert></app-alert>
+
+<div class="page">
+  <div class="flex-row mb-xl">
+    <div class="icon-box">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      </svg>
+    </div>
+    <div>
+      <h1 class="title-page mb-0">CREAR GRUPO</h1>
+      <p class="subtitle">Invita a tus amigos por número de teléfono</p>
+    </div>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="card" style="padding:var(--pad-card);">
+
+      <!-- Nombre -->
+      <div class="mb-lg">
+        <label class="label-section mb-sm" style="display:block;">Nombre del grupo</label>
+        <input formControlName="nombre" class="inp" placeholder="Los Tricolores" />
+        <p *ngIf="form.get('nombre')?.invalid && form.get('nombre')?.touched" class="text-danger">Nombre requerido</p>
+      </div>
+
+      <!-- Alias -->
+      <div class="mb-sm">
+        <label class="label-section mb-sm" style="display:block;">Tu alias dentro del grupo</label>
+        <input formControlName="alias" class="inp" placeholder="Ej. ElCapi" />
+      </div>
+      <p class="text-muted mb-lg">Así te verán los demás miembros en este grupo.</p>
+
+      <!-- Evento — cargado desde API -->
+      <div class="mb-lg">
+        <label class="label-section mb-sm" style="display:block;">Evento</label>
+        <div *ngIf="cargandoEventos" class="flex-row gap-sm">
+          <div style="width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--primary);
+                      border-radius:50%;animation:spin .7s linear infinite;"></div>
+          <span class="text-muted" style="font-size:13px;">Cargando eventos...</span>
+        </div>
+        <div *ngIf="!cargandoEventos" class="inp-group">
+          <select formControlName="idEvento" class="inp inp--select">
+            <option *ngFor="let e of eventos" [value]="getIdEvento(e)">
+              {{ getNombreEvento(e) }}
+            </option>
+          </select>
+          <span class="inp-group__icon">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </span>
+        </div>
+        <p *ngIf="!cargandoEventos && eventos.length === 0" class="text-danger mt-sm">
+          No hay eventos disponibles.
+        </p>
+      </div>
+
+      <!-- Miembros -->
+      <div class="mb-xl">
+        <label class="label-section mb-md" style="display:block;">Miembros (teléfonos Ecuador)</label>
+        <div formArrayName="telefonos" class="flex-col gap-sm">
+          <div *ngFor="let tel of telefonos.controls; let i = index" [formGroupName]="i" class="flex-row gap-sm">
+            <div class="inp-phone" style="flex:1;">
+              <div class="inp-phone__prefix"><span class="inp-phone__label">EC</span> +593</div>
+              <input type="tel" formControlName="numero" class="inp-phone__field" placeholder="991234567" />
+            </div>
+            <button *ngIf="i === telefonos.length - 1" type="button" (click)="agregar()" class="btn-icon">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+            <button *ngIf="i < telefonos.length - 1" type="button" (click)="quitar(i)"
+              class="btn-dark btn-dark--icon" style="color:var(--danger);border-color:rgba(239,68,68,.3);">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+        </div>
+        <p class="text-muted mt-sm" style="font-size:11px;">Los números se enviarán con prefijo 593 al servidor.</p>
+      </div>
+
+      <button type="submit" class="btn-green btn-green--full"
+        [attr.disabled]="(form.invalid || loading || cargandoEventos) ? true : null">
+        {{ loading ? 'CREANDO...' : 'CREAR GRUPO' }}
+      </button>
+    </div>
+  </form>
+</div>
+<style>@keyframes spin { to { transform: rotate(360deg); } }</style>

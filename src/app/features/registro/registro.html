@@ -1,0 +1,56 @@
+<app-alert></app-alert>
+
+<div class="page-centered">
+  <div class="flex-center mb-xl" style="flex-direction:column;gap:10px;">
+    <div class="icon-box" style="width:64px;height:64px;border-radius:16px;">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+        <line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/>
+      </svg>
+    </div>
+    <h1 class="title-hero" style="text-align:center;">REGÍSTRATE</h1>
+    <p class="subtitle">Crea tu cuenta para jugar</p>
+  </div>
+
+  <div class="card page-centered__card" style="padding:clamp(20px,5vw,32px);">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex-col gap-lg">
+
+      <div>
+        <label class="label-section mb-sm" style="display:block;">Login (usuario)</label>
+        <input type="text" formControlName="login" class="inp" autocomplete="username" placeholder="Ej. juanp2026" />
+        <p *ngIf="form.get('login')?.invalid && form.get('login')?.touched" class="text-danger">Mínimo 3 caracteres</p>
+      </div>
+
+      <div>
+        <label class="label-section mb-sm" style="display:block;">Contraseña</label>
+        <input type="password" formControlName="password" class="inp" autocomplete="new-password" />
+        <p *ngIf="form.get('password')?.invalid && form.get('password')?.touched" class="text-danger">Mínimo 6 caracteres</p>
+      </div>
+
+      <div>
+        <label class="label-section mb-sm" style="display:block;">Nombre completo</label>
+        <input type="text" formControlName="nombre" class="inp" autocomplete="name" placeholder="Ej. Juan P." />
+        <p *ngIf="form.get('nombre')?.invalid && form.get('nombre')?.touched" class="text-danger">Nombre requerido</p>
+      </div>
+
+      <div>
+        <label class="label-section mb-sm" style="display:block;">Teléfono (Ecuador)</label>
+        <div class="inp-phone">
+          <div class="inp-phone__prefix"><span class="inp-phone__label">EC</span> +593</div>
+          <input type="tel" formControlName="telefono" class="inp-phone__field" placeholder="991234567" />
+        </div>
+        <p class="text-muted mt-sm">Se enviará como 593XXXXXXXXX al servidor.</p>
+        <p *ngIf="form.get('telefono')?.invalid && form.get('telefono')?.touched" class="text-danger">Ingresa 9 dígitos (ej: 991234567)</p>
+      </div>
+
+      <button type="submit" class="btn-green btn-green--full" [disabled]="form.invalid || loading">
+        {{ loading ? 'CREANDO...' : 'CREAR CUENTA' }}
+      </button>
+    </form>
+
+    <p class="text-muted mt-md" style="text-align:center;">
+      ¿Ya tienes cuenta?
+      <a routerLink="/login" class="text-primary" style="text-decoration:none;font-weight:700;">Inicia sesión</a>
+    </p>
+  </div>
+</div>

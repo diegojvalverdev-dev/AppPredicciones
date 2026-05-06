@@ -1,0 +1,9 @@
+{
+  "/backend": {
+    "target": "https://192.168.111.23/pronosticos",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "pathRewrite": { "^/backend": "" }
+  }
+}

@@ -1,0 +1,170 @@
+<app-navbar></app-navbar>
+<app-alert></app-alert>
+
+<div class="page">
+
+  <!-- ── CARGANDO ── -->
+  <div *ngIf="cargando" style="text-align:center;padding-top:clamp(60px,10vw,100px);">
+    <div style="width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--primary);
+                border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 14px;"></div>
+    <p class="subtitle">Verificando configuración del grupo...</p>
+  </div>
+
+  <!-- ── NO HABILITADO ── -->
+  <ng-container *ngIf="!cargando && !habilitado">
+    <div style="text-align:center;padding-top:clamp(60px,10vw,100px);">
+
+      <!-- Ícono candado -->
+      <div style="width:72px;height:72px;background:var(--card2);border:1px solid var(--border);
+                  border-radius:50%;display:flex;align-items:center;justify-content:center;
+                  margin:0 auto 20px;">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--muted)"
+          stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      </div>
+
+      <h2 style="font-size:clamp(18px,4vw,22px);font-weight:700;margin:0 0 14px;">
+        Final 4 no está habilitado
+      </h2>
+      <p class="subtitle" style="max-width:400px;margin:0 auto 28px;line-height:1.7;padding:0 16px;">
+        Ningún grupo donde participas tiene activada la regla
+        <strong style="color:var(--text);">"Habilitar juego Final 4"</strong>.
+        El dueño del grupo puede activarla en la sección de Reglas.
+      </p>
+      <a routerLink="/inicio" class="btn-dark" style="text-decoration:none;padding:11px 28px;">
+        Volver al inicio
+      </a>
+    </div>
+  </ng-container>
+
+  <!-- ── HABILITADO ── -->
+  <ng-container *ngIf="!cargando && habilitado">
+    <div *ngIf="error" class="alert-danger mb-md">{{ error }}</div>
+
+    <!-- Header -->
+    <div class="card card--hero mb-xl">
+      <p class="label-green mb-sm">{{ grupo }} · {{ torneo }}</p>
+      <h1 class="title-hero mb-sm">FINAL 4</h1>
+      <p class="subtitle mb-0">Pronostica el podio, MVP y goleador del torneo.</p>
+    </div>
+
+    <!-- Grid podio 2×2 -->
+    <div class="podio-grid">
+
+      <!-- CAMPEÓN -->
+      <div class="card podio-card">
+        <p class="podio-card__label podio-card__label--gold">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 4l3 12h14l3-12-6 4-4-7-4 7-6-4z"/>
+            <line x1="12" y1="20" x2="12" y2="16"/>
+          </svg>
+          🏆 CAMPEÓN
+        </p>
+        <div class="inp-group">
+          <select [(ngModel)]="campeon" class="inp inp--select">
+            <option value="">Selecciona un equipo</option>
+            <option *ngFor="let e of opcionesDisponibles([subcampeon,tercero,cuarto])" [value]="e">{{ e }}</option>
+          </select>
+          <span class="inp-group__icon">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </span>
+        </div>
+      </div>
+
+      <!-- SUBCAMPEÓN -->
+      <div class="card podio-card">
+        <p class="podio-card__label podio-card__label--silver">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+          🥈 SUBCAMPEÓN
+        </p>
+        <div class="inp-group">
+          <select [(ngModel)]="subcampeon" class="inp inp--select">
+            <option value="">Selecciona un equipo</option>
+            <option *ngFor="let e of opcionesDisponibles([campeon,tercero,cuarto])" [value]="e">{{ e }}</option>
+          </select>
+          <span class="inp-group__icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </div>
+      </div>
+
+      <!-- 3ER PUESTO -->
+      <div class="card podio-card">
+        <p class="podio-card__label podio-card__label--silver">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+          🥉 3ER PUESTO
+        </p>
+        <div class="inp-group">
+          <select [(ngModel)]="tercero" class="inp inp--select">
+            <option value="">Selecciona un equipo</option>
+            <option *ngFor="let e of opcionesDisponibles([campeon,subcampeon,cuarto])" [value]="e">{{ e }}</option>
+          </select>
+          <span class="inp-group__icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </div>
+      </div>
+
+      <!-- 4TO PUESTO -->
+      <div class="card podio-card">
+        <p class="podio-card__label podio-card__label--silver">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+          4TO PUESTO
+        </p>
+        <div class="inp-group">
+          <select [(ngModel)]="cuarto" class="inp inp--select">
+            <option value="">Selecciona un equipo</option>
+            <option *ngFor="let e of opcionesDisponibles([campeon,subcampeon,tercero])" [value]="e">{{ e }}</option>
+          </select>
+          <span class="inp-group__icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- MVP -->
+    <div class="card mb-sm" style="padding:18px 16px;">
+      <p class="label-green mb-md">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+        MVP DEL TORNEO
+      </p>
+      <input type="text" [(ngModel)]="mvp" class="inp" placeholder="Nombre del jugador" />
+    </div>
+
+    <!-- GOLEADOR -->
+    <div class="card mb-lg" style="padding:18px 16px;">
+      <p class="label-green mb-md">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 2a14.5 14.5 0 0 0 0 20A14.5 14.5 0 0 0 12 2"/>
+          <path d="M2 12h20"/>
+        </svg>
+        GOLEADOR DEL TORNEO
+      </p>
+      <div class="flex-row gap-sm">
+        <input type="text" [(ngModel)]="goleador" class="inp" placeholder="Nombre del goleador" style="flex:1;" />
+        <div class="flex-center gap-sm" style="flex-shrink:0;">
+          <input type="number" [(ngModel)]="golesGoleador" min="0"
+            class="partido-score__inp" placeholder="0" style="width:52px;" />
+          <span class="text-muted" style="font-size:13px;font-weight:600;white-space:nowrap;">Goles</span>
+        </div>
+      </div>
+    </div>
+
+    <button (click)="guardar()" class="btn-green btn-green--full">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+        <polyline points="17 21 17 13 7 13 7 21"/>
+        <polyline points="7 3 7 8 15 8"/>
+      </svg>
+      GUARDAR FINAL 4
+    </button>
+
+  </ng-container>
+</div>
+
+<style>@keyframes spin { to { transform: rotate(360deg); } }</style>

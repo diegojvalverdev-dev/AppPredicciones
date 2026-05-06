@@ -1,0 +1,41 @@
+<app-navbar></app-navbar>
+<div class="page">
+  <div class="card card--hero mb-lg">
+    <p class="label-green mb-sm">
+      <span style="width:7px;height:7px;border-radius:50%;background:var(--primary);display:inline-block;"></span>
+      EN VIVO · TABLA DE POSICIONES
+    </p>
+    <h1 class="title-hero mb-0">STANDINGS</h1>
+    <p class="subtitle mb-lg">{{ grupoSeleccionado?.gru_nombre ?? 'Selecciona un grupo' }}</p>
+    <div class="flex-row gap-sm">
+      <div class="inp-group" style="flex:0 0 240px;">
+        <select class="inp inp--select"
+          [value]="grupoSeleccionado?.gru_id"
+          (change)="onCambiarGrupo($any($event.target).value)">
+          <option *ngFor="let g of grupos" [value]="g.gru_id">{{ g.gru_nombre }}</option>
+        </select>
+        <span class="inp-group__icon">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="overflow:hidden;">
+    <div class="table-header">
+      <span class="label-section">POS · JUGADOR</span>
+      <span class="label-section">ACIERTOS · PTS</span>
+    </div>
+    <div *ngIf="tabla.length===0" style="padding:48px 16px;text-align:center;">
+      <p class="subtitle mb-0">Aún no hay posiciones para mostrar.</p>
+    </div>
+    <div *ngFor="let m of tabla" class="table-row">
+      <span class="table-row__pos">{{ m.pos }}</span>
+      <span class="table-row__name">{{ m.nombre }}</span>
+      <span class="table-row__sec">{{ m.aciertos }}</span>
+      <span class="table-row__pts">{{ m.pts }}</span>
+    </div>
+  </div>
+</div>

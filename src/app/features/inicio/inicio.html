@@ -1,0 +1,85 @@
+<app-navbar></app-navbar>
+<div class="page">
+
+  <!-- Hero -->
+  <div class="card card--hero mb-lg">
+    <p class="label-green mb-sm">{{ saludo | uppercase }}, {{ nombreMostrar | uppercase }}</p>
+    <h1 class="title-hero mb-lg">¿LISTO PARA<br>PRONOSTICAR?</h1>
+    <div *ngIf="usuario" class="mb-lg" style="display:flex;align-items:center;gap:12px;">
+      <div style="width:44px;height:44px;min-width:44px;border-radius:50%;
+                  background:rgba(74,222,128,.15);border:2px solid var(--primary);
+                  display:flex;align-items:center;justify-content:center;
+                  font-size:18px;font-weight:900;color:var(--primary);">
+        {{ nombreMostrar.charAt(0).toUpperCase() }}
+      </div>
+      <div>
+        <p style="font-size:14px;font-weight:700;margin:0 0 2px;">{{ nombreMostrar }}</p>
+        <p class="text-muted" style="font-size:12px;margin:0;">{{ usuario['login'] }}</p>
+      </div>
+    </div>
+    <a routerLink="/pronosticar" class="btn-green btn-green--sm" style="text-decoration:none;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+        <path d="M4 22h16"/>
+        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+      </svg>
+      IR A PRONOSTICAR
+    </a>
+  </div>
+
+  <!-- Mis grupos -->
+  <div class="flex-between mb-md">
+    <h2 class="title-page">MIS GRUPOS</h2>
+    <a routerLink="/grupos" class="btn-dark btn-dark--sm" style="text-decoration:none;">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      Crear
+    </a>
+  </div>
+
+  <!-- Spinner -->
+  <div *ngIf="cargando" style="text-align:center;padding:32px 0;">
+    <div style="width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--primary);
+                border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px;"></div>
+    <p class="subtitle">Cargando grupos...</p>
+  </div>
+
+  <!-- Sin grupos -->
+  <div *ngIf="!cargando && grupos.length === 0"
+    class="card" style="padding:32px;text-align:center;">
+    <p class="subtitle mb-md">No perteneces a ningún grupo todavía.</p>
+    <a routerLink="/grupos" class="btn-green btn-green--sm" style="text-decoration:none;">
+      Crear primer grupo
+    </a>
+  </div>
+
+  <!-- Lista de grupos -->
+  <div class="flex-col--gap">
+    <a *ngFor="let g of grupos"
+      [routerLink]="['/grupo', g.gru_id]"
+      class="card card--clickable"
+      style="text-decoration:none;color:inherit;">
+      <div style="flex:1;min-width:0;">
+        <p style="font-size:15px;font-weight:700;margin:0 0 3px;
+                  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+          {{ g.gru_nombre }}
+        </p>
+        <p class="text-muted" style="font-size:12px;margin:0;">
+          Alias: {{ g.gusr_alias }}
+        </p>
+      </div>
+      <div class="flex-row gap-sm" style="flex-shrink:0;">
+        <span *ngIf="esOwner(g)" class="badge-muted">OWNER</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+          stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </div>
+    </a>
+  </div>
+
+</div>
+<style>@keyframes spin { to { transform: rotate(360deg); } }</style>

@@ -1,12 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, ReactiveFormsModule],
-  template: `<router-outlet></router-outlet>`
+  imports: [RouterOutlet],
+  templateUrl: './app.html',
 })
-export class App {
-  protected readonly title = signal('AppPredicciones');
-}
+export class App {}

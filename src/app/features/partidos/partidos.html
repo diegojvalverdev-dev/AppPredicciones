@@ -1,0 +1,150 @@
+<app-navbar></app-navbar>
+<div class="page">
+
+  <div class="flex-row mb-xl">
+    <div class="icon-box">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2"/>
+        <line x1="16" y1="2" x2="16" y2="6"/>
+        <line x1="8"  y1="2" x2="8"  y2="6"/>
+        <line x1="3"  y1="10" x2="21" y2="10"/>
+      </svg>
+    </div>
+    <div>
+      <h1 class="title-page mb-0">PRÓXIMOS PARTIDOS</h1>
+      <p class="subtitle">Filtra por evento y rango de fechas</p>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="card filter-card mb-xl">
+    <p class="label-section mb-md" style="display:flex;align-items:center;gap:5px;">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+      </svg>
+      FILTROS
+    </p>
+
+    <!-- Evento -->
+    <div class="mb-md">
+      <label class="label-section mb-sm" style="display:block;">Evento</label>
+      <div class="inp-group">
+        <select class="inp inp--select"
+          [value]="eventoId"
+          (change)="onCambiarEvento($any($event.target).value)">
+          <option *ngIf="eventos.length===0" value="">Cargando eventos...</option>
+          <option *ngFor="let e of eventos" [value]="e.eve_id ?? e.id">
+            {{ e.eve_descripcion ?? e.eve_description ?? 'Evento' }}
+          </option>
+        </select>
+        <span class="inp-group__icon">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </span>
+      </div>
+    </div>
+
+    <!-- Fechas -->
+    <div class="filter-grid mb-md">
+      <div>
+        <label class="label-section mb-sm" style="display:block;">Desde</label>
+        <input type="date" [(ngModel)]="desde" class="inp" (change)="buscarPartidos()" />
+      </div>
+      <div>
+        <label class="label-section mb-sm" style="display:block;">Hasta</label>
+        <input type="date" [(ngModel)]="hasta" class="inp" (change)="buscarPartidos()" />
+      </div>
+    </div>
+
+    <!-- Rangos rápidos -->
+    <div class="filter-chips">
+      <button *ngFor="let r of rangos" (click)="aplicarRango(r)" class="btn-dark btn-dark--sm"
+        [style.borderColor]="rangoActivo===r ? 'var(--primary)' : ''"
+        [style.color]="rangoActivo===r ? 'var(--primary)' : ''">{{ r }}</button>
+    </div>
+  </div>
+
+  <!-- Cargando -->
+  <div *ngIf="cargando" style="text-align:center;padding:40px 0;">
+    <div style="width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--primary);
+                border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px;"></div>
+    <p class="subtitle">Cargando partidos...</p>
+  </div>
+
+  <!-- Sin resultados -->
+  <div *ngIf="!cargando && fechas.length===0" class="card" style="padding:40px;text-align:center;">
+    <p class="subtitle mb-0">
+      {{ eventos.length===0 ? 'Cargando eventos...' : 'No hay partidos en este rango de fechas.' }}
+    </p>
+  </div>
+
+  <!-- Partidos agrupados por fecha -->
+  <div *ngFor="let f of fechas" class="mb-xl">
+    <p class="fecha-label">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="4" width="18" height="18" rx="2"/>
+        <line x1="16" y1="2" x2="16" y2="6"/>
+        <line x1="8"  y1="2" x2="8"  y2="6"/>
+        <line x1="3"  y1="10" x2="21" y2="10"/>
+      </svg>
+      {{ f.label }}
+    </p>
+
+    <div class="flex-col--gap">
+      <div *ngFor="let p of f.partidos" class="card" style="padding:14px 18px;">
+
+        <!-- Fila superior: nº partido + grupo + estado -->
+        <div class="flex-between mb-sm">
+          <div class="flex-row gap-sm">
+            <span class="badge-muted" style="font-size:10px;">Partido #{{ p.numero_partido }}</span>
+            <span class="badge-green" style="font-size:10px;">{{ p.grupo }}</span>
+            <span style="font-size:10px;font-weight:700;border-radius:6px;padding:3px 8px;"
+              [style.background]="p.estado==='FIN' ? 'rgba(74,222,128,.15)' : 'rgba(251,191,36,.15)'"
+              [style.color]="estadoColor(p.estado)">
+              {{ estadoLabel(p.estado) }}
+            </span>
+          </div>
+          <div class="flex-row gap-sm">
+            <span class="text-muted" style="font-size:11px;">Fase {{ p.fase }}</span>
+            <span class="text-muted" style="font-size:11px;">{{ formatHora(p.fecha) }}</span>
+          </div>
+        </div>
+
+        <!-- Equipos y resultado -->
+        <div style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;">
+
+          <!-- País 1 -->
+          <span style="font-size:15px;font-weight:700;flex:1;text-align:right;
+                       overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+            {{ p.pais1 }}
+          </span>
+
+          <!-- Marcador o separador -->
+          <div *ngIf="p.estado==='FIN'; else sinMarcador"
+            style="background:var(--primary);color:#000;font-weight:900;font-size:16px;
+                   border-radius:8px;padding:5px 14px;white-space:nowrap;min-width:64px;text-align:center;">
+            {{ p.goles1 }} - {{ p.goles2 }}
+          </div>
+          <ng-template #sinMarcador>
+            <div style="background:var(--card2);border:1px solid var(--border);color:var(--muted);
+                        font-size:13px;border-radius:8px;padding:5px 14px;white-space:nowrap;
+                        min-width:64px;text-align:center;">
+              {{ formatHora(p.fecha) }}
+            </div>
+          </ng-template>
+
+          <!-- País 2 -->
+          <span style="font-size:15px;font-weight:700;flex:1;
+                       overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+            {{ p.pais2 }}
+          </span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+<style>@keyframes spin { to { transform: rotate(360deg); } }</style>
