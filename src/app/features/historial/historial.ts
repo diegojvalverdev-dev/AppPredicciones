@@ -3,7 +3,6 @@ import { CommonModule }      from '@angular/common';
 import { FormsModule }       from '@angular/forms';
 import { RouterLink }        from '@angular/router';
 import { NavbarComponent }   from '../../shared/components/nav/bottom-nav';
-import { AlertComponent }    from '../../shared/components/alert/alert';
 import { AlertService }      from '../../shared/services/alert.service';
 import { ApiService, GrupoUsuario } from '../../core/services/api.service';
 import { extractErrorMessage } from '../../core/utils/error.utils';
@@ -14,13 +13,13 @@ export interface PronosticoPartido {
   marcadorReal1: number | null; marcadorReal2: number | null;
   marcador: number | null; resultado: number | null;
   clasificado: number | null; total: number | null;
-  pendiente: boolean; estado: string;
+  pendiente: boolean; estado: string; equipoClasifica: string | null;
 }
 
 @Component({
   selector: 'app-historial',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, NavbarComponent, AlertComponent],
+  imports: [CommonModule, FormsModule, RouterLink, NavbarComponent],
   templateUrl: './historial.html',
 })
 export class HistorialComponent implements OnInit {
@@ -30,11 +29,13 @@ export class HistorialComponent implements OnInit {
   cargando        = false;
   sinDatos        = false;
   partidos: PronosticoPartido[] = [];
+  vistaHistorial: 'tarjetas' | 'tabla' = 'tarjetas';
 
   constructor(
     private apiService:   ApiService,
     private alertService: AlertService,
     private cdr:          ChangeDetectorRef,
+    
   ) {}
 
   ngOnInit() { this.cargarGrupos(); }
@@ -88,7 +89,7 @@ export class HistorialComponent implements OnInit {
                         { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }).toUpperCase() : '—',
       grupo:          p['Fase'] != null ? `FASE ${p['Fase']}` : '—',
       local:          p['PaisLocal']           ?? '—',
-      visitante:      p['PaisVisitante']        ?? '—',
+      visitante:      p['PaisVisitante']       ?? '—',
       golesLocal:     p['Goles1']              ?? 0,
       golesVisitante: p['Goles2']              ?? 0,
       marcadorReal1:  p['MarcadorFinalGoles1'] ?? null,
@@ -96,9 +97,10 @@ export class HistorialComponent implements OnInit {
       marcador:       p['Marcador']            ?? null,
       resultado:      p['Resultado']           ?? null,
       clasificado:    p['Clasificado']         ?? null,
-      total:          p['Puntos']              ?? null,
+      equipoClasifica:p['MarcadorFinalPaisClasifica']         ?? null,
       pendiente:      p['Estado'] === 'PEN' || p['PuntajeProcesado'] === false,
       estado:         p['Estado']              ?? '—',
+      total:          p['Puntos'] == null ? 0 : p['Puntos'],
     };
   }
 

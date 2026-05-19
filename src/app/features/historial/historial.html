@@ -1,11 +1,23 @@
 <app-navbar></app-navbar>
 
-<app-alert></app-alert>
 
 <div class="page">
 
   <!-- Título + selector -->
   <div class="flex-between mb-xl">
+    <!-- Toggle de vista -->
+    <div class="tab-toggle mb-lg">
+      <button class="tab-toggle__btn"
+        [class.tab-toggle__btn--active]="vistaHistorial==='tarjetas'"
+        (click)="vistaHistorial='tarjetas'">
+        📋 Tarjetas
+      </button>
+      <button class="tab-toggle__btn"
+        [class.tab-toggle__btn--active]="vistaHistorial==='tabla'"
+        (click)="vistaHistorial='tabla'">
+        📊 Tabla
+      </button>
+    </div>
     <div>
       <h1 class="title-page mb-0">MI HISTORIAL</h1>
       <p class="subtitle">Pronósticos guardados del grupo seleccionado.</p>
@@ -40,9 +52,8 @@
   </div>
 
   <!-- CONTENIDO -->
-  <ng-container *ngIf="!cargando && !sinDatos && grupoSeleccionado">
+  <ng-container *ngIf="!cargando && !sinDatos && grupoSeleccionado && vistaHistorial==='tarjetas'">    
     <div class="card mb-lg" style="overflow:hidden;">
-
       <div class="section-header">
         <p class="label-green mb-sm">{{ grupoSeleccionado.gru_nombre | uppercase }}</p>
         <div class="flex-row mt-sm gap-lg" style="flex-wrap:wrap;">
@@ -67,10 +78,10 @@
               {{ p.estado==='PEN' ? 'PENDIENTE' : p.estado }}
             </span>
           </div>
-
+          <div style="text-align:center;"><p style="font-size:15px;font-weight:700;margin:0;">Partido:   {{ p.local }} - {{ p.visitante }}</p></div>
+          <br>
           <!-- Equipos + marcadores -->
-          <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-bottom:10px;">
-            <div style="text-align:right;"><p style="font-size:15px;font-weight:700;margin:0;">{{ p.local }}</p></div>
+          <div style="grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-bottom:10px;place-items: center;">            
             <div style="display:flex;gap:10px;align-items:center;">
               <div style="text-align:center;">
                 <p class="label-section mb-sm" style="color:var(--primary);white-space:nowrap;">MI PRONÓSTICO</p>
@@ -79,7 +90,7 @@
                 </div>
               </div>
               <div style="text-align:center;">
-                <p class="label-section mb-sm" style="white-space:nowrap;">RESULTADO REAL</p>
+                <p class="label-section mb-sm" style="white-space:nowrap;">MARCADOR</p>
                 <div *ngIf="p.marcadorReal1 !== null && p.marcadorReal2 !== null; else sinRes"
                   style="background:var(--card2);border:1px solid var(--border);color:#fff;font-weight:900;font-size:16px;border-radius:8px;padding:5px 14px;white-space:nowrap;">
                   {{ p.marcadorReal1 }} - {{ p.marcadorReal2 }}
@@ -88,22 +99,40 @@
                   <div style="background:var(--card2);border:1px solid var(--border);color:var(--muted);font-weight:700;font-size:14px;border-radius:8px;padding:5px 14px;white-space:nowrap;">- - -</div>
                 </ng-template>
               </div>
+              <div style="text-align:center;">
+                <p class="label-section mb-sm" style="white-space:nowrap;">EQUIPO CLASIFICADO</p>
+                <div *ngIf="p.marcadorReal1 !== null && p.marcadorReal2 !== null; else sinRes"
+                  style="background:var(--card2);border:1px solid var(--border);color:#fff;font-weight:900;font-size:16px;border-radius:8px;padding:5px 14px;white-space:nowrap;">
+                  {{ p.equipoClasifica }}
+                </div>
+                <ng-template #sinRes>
+                  <div style="background:var(--card2);border:1px solid var(--border);color:var(--muted);font-weight:700;font-size:14px;border-radius:8px;padding:5px 14px;white-space:nowrap;">- - -</div>
+                </ng-template>
+              </div>
             </div>
-            <div><p style="font-size:15px;font-weight:700;margin:0;">{{ p.visitante }}</p></div>
+            
           </div>
 
           <!-- Grid puntos -->
           <div class="score-grid-wrap">
             <div class="score-grid">
-              <div class="score-grid__cell"><p class="score-grid__label">MARCADOR</p><span class="score-grid__val" style="font-size:14px;font-weight:900;">{{ p.golesLocal }} - {{ p.golesVisitante }}</span></div>
-              <div class="score-grid__cell"><p class="score-grid__label">RESULTADO</p>
+              <div class="score-grid__cell"><p class="score-grid__label">MARCADOR</p>
                 <span class="score-grid__val" style="font-size:14px;font-weight:900;">
-                  <ng-container *ngIf="p.marcadorReal1 !== null && p.marcadorReal2 !== null">{{ p.marcadorReal1 }} - {{ p.marcadorReal2 }}</ng-container>
-                  <ng-container *ngIf="p.marcadorReal1 === null || p.marcadorReal2 === null">•</ng-container>
+                  {{ p.marcador !== null ? p.marcador : '0' }}
                 </span>
               </div>
-              <div class="score-grid__cell"><p class="score-grid__label">CLASIFICADO</p><span class="score-grid__val" style="color:var(--muted);">{{ p.clasificado !== null ? p.clasificado : '—' }}</span></div>
-              <div class="score-grid__cell"><p class="score-grid__label">TOTAL</p><span class="score-grid__val" style="font-size:18px;font-weight:900;">{{ p.total !== null ? p.total : '•' }}</span></div>
+              <div class="score-grid__cell"><p class="score-grid__label">RESULTADO</p>
+                <span class="score-grid__val" style="font-size:14px;font-weight:900;">
+                  <ng-container>{{ p.resultado !== null ? p.resultado : '0' }}</ng-container>
+                </span>
+              </div>
+              <div class="score-grid__cell">
+                <p class="score-grid__label">CLASIFICADO</p>
+                <span class="score-grid__val" style="font-size:14px;font-weight:900;">{{ p.clasificado !== null ? p.clasificado : '0' }}</span></div>
+              <div class="score-grid__cell">
+                <p class="score-grid__label">TOTAL</p>
+                <span class="score-grid__val" style="font-size:18px;font-weight:900;">{{ p.total !== null ? p.total : '•' }}</span>
+              </div>
             </div>
           </div>
 
@@ -114,6 +143,116 @@
       </div>
     </div>
   </ng-container>
+  <!-- ── VISTA TABLA ── -->
+<ng-container *ngIf="!cargando && !sinDatos && vistaHistorial==='tabla'">
+  <div class="card" style="overflow:hidden;">
+
+    <!-- Wrapper con scroll horizontal -->
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+      <table style="width:100%;border-collapse:collapse;min-width:700px;">
+
+        <!-- Header -->
+        <thead>
+          <tr style="border-bottom:1px solid var(--border);">
+            <th class="label-section" style="padding:12px 14px;text-align:left;white-space:nowrap;font-weight:600;">FECHA</th>
+            <th class="label-section" style="padding:12px 14px;text-align:left;white-space:nowrap;font-weight:600;">PARTIDO</th>
+            <th class="label-section" style="padding:12px 14px;text-align:center;white-space:nowrap;font-weight:600;">90 MIN</th>
+            <th class="label-section" style="padding:12px 14px;text-align:center;white-space:nowrap;font-weight:600;">FINAL</th>
+            <th class="label-section" style="padding:12px 14px;text-align:center;white-space:nowrap;font-weight:600;">MARCADOR</th>
+            <th class="label-section" style="padding:12px 14px;text-align:center;white-space:nowrap;font-weight:600;">RESULTADO</th>
+            <th class="label-section" style="padding:12px 14px;text-align:center;white-space:nowrap;font-weight:600;">CLASIFICA</th>
+            <th class="label-section" style="padding:12px 14px;text-align:center;white-space:nowrap;font-weight:600;">PUNTOS</th>
+          </tr>
+        </thead>
+
+        <!-- Filas -->
+        <tbody>
+          <tr *ngFor="let p of partidos; let i = index"
+            [style.background]="i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,.02)'"
+            style="border-bottom:1px solid var(--border);">
+
+            <!-- Fecha -->
+            <td style="padding:11px 14px;white-space:nowrap;">
+              <span class="text-muted" style="font-size:12px;">{{ p.fecha }}</span>
+            </td>
+
+            <!-- Partido -->
+            <td style="padding:11px 14px;white-space:nowrap;">
+              <span style="color:var(--primary);font-weight:600;font-size:13px;">{{ p.local }}</span>
+              <span class="text-muted" style="font-size:12px;margin:0 5px;">vs</span>
+              <span style="color:var(--primary);font-weight:600;font-size:13px;">{{ p.visitante }}</span>
+            </td>
+
+            <!-- 90 Min — mi pronóstico -->
+            <td style="padding:11px 14px;text-align:center;">
+              <span style="font-size:13px;font-weight:700;color:var(--primary);
+                           background:rgba(74,222,128,.12);border-radius:6px;
+                           padding:3px 10px;white-space:nowrap;">
+                {{ p.golesLocal }} - {{ p.golesVisitante }}
+              </span>
+            </td>
+
+            <!-- Final — resultado real -->
+            <td style="padding:11px 14px;text-align:center;">
+              <ng-container *ngIf="p.marcadorReal1 !== null && p.marcadorReal2 !== null; else sinFinal">
+                <span style="font-size:13px;font-weight:700;
+                             background:var(--card2);border:1px solid var(--border);
+                             border-radius:6px;padding:3px 10px;white-space:nowrap;">
+                  {{ p.marcadorReal1 }} - {{ p.marcadorReal2 }}
+                </span>
+              </ng-container>
+              <ng-template #sinFinal>
+                <span class="text-muted">-</span>
+              </ng-template>
+            </td>
+
+            <!-- Marcador (puntos) -->
+            <td style="padding:11px 14px;text-align:center;">
+              <span style="font-size:14px;font-weight:700;color:var(--primary);">
+                {{ p.marcador !== null ? p.marcador : '0' }}
+              </span>
+            </td>
+
+            <!-- Resultado (puntos) -->
+            <td style="padding:11px 14px;text-align:center;">
+              <span style="font-size:14px;font-weight:700;color:var(--primary);">
+                {{ p.resultado !== null ? p.resultado : '0' }}
+              </span>
+            </td>
+
+            <!-- Clasifica -->
+            <td style="padding:11px 14px;text-align:center;">
+              <span style="font-size:14px;font-weight:700;color:var(--primary);">
+                {{ p.clasificado !== null ? p.clasificado : '0' }}
+              </span>
+            </td>
+
+            <!-- Puntos totales -->
+            <td style="padding:11px 14px;text-align:center;">
+              <span *ngIf="p.total !== null"
+                style="font-size:15px;font-weight:900;color:var(--primary);">
+                {{ p.total }}
+              </span>
+              <span *ngIf="p.total === null" class="text-muted">•</span>
+            </td>
+
+          </tr>
+        </tbody>
+
+      </table>
+    </div>
+
+    <!-- Total acumulado -->
+    <div style="padding:14px 16px;border-top:2px solid var(--border);
+                display:flex;justify-content:flex-end;align-items:center;gap:16px;">
+      <span class="label-section">TOTAL ACUMULADO</span>
+      <span style="font-size:20px;font-weight:900;color:var(--primary);">
+        {{ totalPuntos }} pts
+      </span>
+    </div>
+
+  </div>
+</ng-container>
 
 </div>
 <style>@keyframes spin { to { transform: rotate(360deg); } }</style>

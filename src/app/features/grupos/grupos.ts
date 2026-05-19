@@ -2,16 +2,15 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule }        from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { NavbarComponent }     from '../../shared/components/nav/bottom-nav';
-import { AlertComponent }      from '../../shared/components/alert/alert';
 import { AlertService }        from '../../shared/services/alert.service';
 import { ApiService }          from '../../core/services/api.service';
-import { RouterLink, Router }  from '@angular/router';
+import { Router }  from '@angular/router';
 import { extractErrorMessage } from '../../core/utils/error.utils';
 
 @Component({
   selector: 'app-grupos',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NavbarComponent, AlertComponent, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, NavbarComponent],
   templateUrl: './grupos.html',
 })
 export class GruposComponent implements OnInit {
@@ -19,6 +18,9 @@ export class GruposComponent implements OnInit {
   loading          = false;
   cargandoEventos  = false;
   eventos: any[]   = [];
+  modalOtp = false;
+  otp: string | null = null;
+  nombreGrupo = '';
 
   constructor(
     private fb:           FormBuilder,
@@ -42,7 +44,7 @@ export class GruposComponent implements OnInit {
         this.eventos = Array.isArray(res) ? res : (res?.data ?? res?.Data ?? []);
         if (this.eventos.length) {
           this.form.patchValue({ idEvento: this.getIdEvento(this.eventos[0]) });
-        }
+        }        
         this.cargandoEventos = false;
         this.cdr.detectChanges();
       },
@@ -76,6 +78,8 @@ export class GruposComponent implements OnInit {
       .filter((t: any) => t.numero && /^\d{9}$/.test(t.numero))
       .map((t: any) => `593${t.numero}`);
 
+    this.nombreGrupo = nombre.trim();
+
     this.apiService.crearGrupo({
       IdGrupo:   null,
       IdEvento:  Number(idEvento),
@@ -83,15 +87,23 @@ export class GruposComponent implements OnInit {
       Alias:     alias?.trim() || '',
       Telefonos: telList,
     }).subscribe({
-      next: () => {
+      next: (res: any) => {
         this.loading = false;
-        this.alertService.success('Grupo creado exitosamente.');
-        setTimeout(() => this.router.navigate(['/inicio']), 2000);
+        this.otp = res?.tokenGrupo || null;
+        //this.alertService.success('Grupo creado exitosamente.');
+        this.modalOtp = true;
+        this.cdr.detectChanges(); 
+        //setTimeout(() => this.router.navigate(['/inicio']), 2000);
       },
       error: (err) => {
         this.loading = false;
         this.alertService.error(`Error al crear el grupo. ${extractErrorMessage(err)}`);
       },
     });
+  }
+
+  llevarInicio() {
+    this.modalOtp = false;
+    this.router.navigate(['/inicio']);
   }
 }

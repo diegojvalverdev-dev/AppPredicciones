@@ -1,58 +1,5 @@
 <app-navbar></app-navbar>
 
-<!-- ALERT INLINE -->
-<div *ngIf="alertData"
-  style="position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;
-         justify-content:center;z-index:9999;padding:20px;" (click)="alertData=null">
-  <div (click)="$event.stopPropagation()"
-    [style.border]="alertData.type==='success'?'1px solid rgba(74,222,128,.5)':'1px solid rgba(239,68,68,.4)'"
-    style="background:#112614;border-radius:20px;padding:32px 28px 24px;max-width:340px;width:100%;text-align:center;">
-    <div [style.background]="alertData.type==='success'?'rgba(74,222,128,.15)':'rgba(239,68,68,.15)'"
-      [style.color]="alertData.type==='success'?'#4ade80':'#f87171'"
-      style="width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
-      <svg *ngIf="alertData.type==='success'" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11.5 14.5 15 10"/></svg>
-      <svg *ngIf="alertData.type==='error'"   width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-    </div>
-    <p style="font-size:18px;font-weight:900;margin:0 0 8px;color:#fff;">{{alertData.type==='success'?'¡Éxito!':'¡Atención!'}}</p>
-    <p [style.color]="alertData.type==='success'?'#6b9c78':'#fca5a5'" style="font-size:14px;margin:0 0 24px;line-height:1.5;">{{alertData.message}}</p>
-    <button (click)="alertData=null" [style.background]="alertData.type==='success'?'#4ade80':'#f87171'"
-      style="width:100%;padding:12px;border-radius:10px;border:none;font-size:14px;font-weight:700;cursor:pointer;color:#000;">Aceptar</button>
-  </div>
-</div>
-
-<!-- POPUP NUEVO EVENTO -->
-<div *ngIf="showPopup"
-  style="position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;
-         justify-content:center;z-index:998;padding:20px;"
-  (click)="cerrarPopup()">
-  <div (click)="$event.stopPropagation()"
-    style="background:#112614;border:1px solid #1e4025;border-radius:20px;
-           padding:32px 28px;width:100%;max-width:400px;animation:qeSlide .2s ease;">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
-      <div style="width:44px;height:44px;background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.4);
-                  border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
-          <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-        </svg>
-      </div>
-      <div>
-        <h2 style="font-size:18px;font-weight:900;margin:0 0 2px;color:#fff;">Nuevo Evento</h2>
-        <p style="font-size:12px;color:#6b9c78;margin:0;">Ingresa el nombre del torneo o competencia.</p>
-      </div>
-    </div>
-    <div style="margin-bottom:24px;">
-      <label class="label-section mb-sm" style="display:block;">Nombre del evento</label>
-      <input type="text" [(ngModel)]="popupNombre" class="inp"
-        placeholder="Ej. Copa Demo 2026" (keyup.enter)="crearEvento()" />
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-      <button class="btn-dark" style="padding:12px;font-size:14px;width:100%;" (click)="cerrarPopup()">Cancelar</button>
-      <button class="btn-green" style="padding:12px;font-size:14px;font-weight:700;width:100%;border-radius:10px;"
-        (click)="crearEvento()" [disabled]="!popupNombre.trim()">Crear</button>
-    </div>
-  </div>
-</div>
 
 <div class="page">
 
@@ -71,23 +18,6 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       Nuevo evento
     </button>
-  </div>
-
-  <!-- Eventos del API -->
-  <div *ngIf="eventosAPI.length > 0" class="mb-xl">
-    <p class="label-section mb-md">EVENTOS DISPONIBLES</p>
-    <div style="display:flex;flex-wrap:wrap;gap:8px;">
-      <div *ngFor="let e of eventosAPI"
-        style="background:var(--card2);border:1px solid var(--border);border-radius:10px;
-               padding:10px 16px;display:flex;align-items:center;gap:8px;">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        <span style="font-size:14px;font-weight:600;">{{ getNombreEvento(e) }}</span>
-      </div>
-    </div>
-  </div>
-  <div *ngIf="cargandoEventos" class="flex-row mb-xl">
-    <div style="width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite;"></div>
-    <span class="text-muted">Cargando eventos...</span>
   </div>
 
   <!-- Eventos locales con partidos -->

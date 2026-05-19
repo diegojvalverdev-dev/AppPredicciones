@@ -3,11 +3,10 @@ import { CommonModule }      from '@angular/common';
 import { FormsModule }       from '@angular/forms';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { NavbarComponent }   from '../../shared/components/nav/bottom-nav';
+import { AlertService }      from '../../shared/services/alert.service';
 import { ApiService, GrupoDetalle, TelefonoGrupo, ParametroGrupo } from '../../core/services/api.service';
 import { AuthService }       from '../../core/services/auth';
 import { extractErrorMessage } from '../../core/utils/error.utils';
-
-interface AlertData { type: 'success' | 'error'; message: string; }
 
 @Component({
   selector: 'app-grupo-detalle',
@@ -17,12 +16,11 @@ interface AlertData { type: 'success' | 'error'; message: string; }
 })
 export class GrupoDetalleComponent implements OnInit {
   tabActivo: 'miembros' | 'reglas' = 'miembros';
-  grupoId = 0;
+  grupoId  = 0;
   cargando = false;
 
-  // Datos del grupo desde la API
   grupo: GrupoDetalle | null = null;
-  telefonos: TelefonoGrupo[] = [];
+  telefonos:  TelefonoGrupo[]  = [];
   parametros: ParametroGrupo[] = [];
   usuarioAdmin: any = null;
 
@@ -30,21 +28,28 @@ export class GrupoDetalleComponent implements OnInit {
   nuevoAlias    = '';
   cargandoTel   = false;
   errorTelefono = '';
-
-  // Toggles para reglas adicionales (basado en parámetros)
-  soloMinutos90   = true;
-  habilitarFinal4 = true;
   guardandoReglas = false;
 
-  // Alert inline
-  alertData: AlertData | null = null;
-  private alertTimer: any;
+  readonly puntajesClave = [
+    { clave: 'PUNTOS_MARCADOR',           label: 'Acertar marcador exacto'                   },
+    { clave: 'PUNTOS_RESULTADO',          label: 'Acertar resultado del partido'              },
+    { clave: 'PUNTOS_EQUIPO_CLASIFICADO', label: 'Acertar equipo clasificado (eliminatorias)' },
+    { clave: 'PUNTOS_GOLEADOR',           label: 'Acertar al goleador del torneo'             },
+    { clave: 'PUNTOS_MVP_TORNEO',         label: 'Acertar al MVP del torneo'                  },
+    { clave: 'PUNTOS_GOLES_GOLEADOR',     label: 'Acertar cantidad de goles del goleador'     },
+    { clave: 'PUNTOS_LUGAR1',             label: 'Acertar al CAMPEÓN'                         },
+    { clave: 'PUNTOS_LUGAR2',             label: 'Acertar al subcampeón'                      },
+    { clave: 'PUNTOS_LUGAR3',             label: 'Acertar al 3er puesto'                      },
+    { clave: 'PUNTOS_LUGAR4',             label: 'Acertar al 4to puesto'                      },
+    { clave: 'PUNTOS_ADICIONALES_TOP4',   label: 'Puntos adicionales Top 4'                   },
+  ];
 
   constructor(
-    private route:       ActivatedRoute,
-    private apiService:  ApiService,
-    private authService: AuthService,
-    private cdr:         ChangeDetectorRef,
+    private route:        ActivatedRoute,
+    private apiService:   ApiService,
+    private authService:  AuthService,
+    private alertService: AlertService,
+    private cdr:          ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
@@ -56,8 +61,8 @@ export class GrupoDetalleComponent implements OnInit {
     this.cargando = true;
     this.apiService.getGrupoDetalle(this.grupoId).subscribe({
       next: (res) => {
-        this.grupo     = res;
-        this.telefonos = res.Telefonos  ?? [];
+        this.grupo      = res;
+        this.telefonos  = res.Telefonos  ?? [];
         this.parametros = res.Parametros ?? [];
         this.usuarioAdmin = (res.Usuarios ?? []).find(
           (u: any) => u.gusr_idUsuario === res.gru_idUsuario_Admin
@@ -67,26 +72,25 @@ export class GrupoDetalleComponent implements OnInit {
       },
       error: (err) => {
         this.cargando = false;
-        this.showAlert('error', `Error al cargar el grupo. ${extractErrorMessage(err)}`);
+        this.alertService.error(`Error al cargar el grupo. ${extractErrorMessage(err)}`);
+        this.cdr.detectChanges();
       },
     });
   }
 
-  get nombreGrupo()  { return this.grupo?.gru_nombre  ?? 'Cargando...'; }
+  get nombreGrupo()  { return this.grupo?.gru_nombre ?? 'Cargando...'; }
   get torneoLabel()  { return 'COPA DEMO 2026'; }
   get esOwner(): boolean {
-    const uid = this.authService.getUsuario()?.['id'];
-    return this.grupo?.gru_idUsuario_Admin === uid;
+    return this.grupo?.gru_idUsuario_Admin === this.authService.getUsuario()?.['id'];
   }
-  get aliasAdmin()   { return this.usuarioAdmin?.gusr_alias ?? '—'; }
+  get aliasAdmin() { return this.usuarioAdmin?.gusr_alias ?? '—'; }
 
-  // ── Agregar teléfono ─────────────────────────────────────────
   agregarMiembro() {
     this.errorTelefono = '';
-    if (!this.nuevoTelefono.trim()) { this.errorTelefono = 'Ingresa el número.'; return; }
-    if (!/^\d{9}$/.test(this.nuevoTelefono.trim())) {
-      this.errorTelefono = 'Debe tener 9 dígitos (ej: 991234567).'; return;
-    }
+    if (!this.nuevoTelefono.trim())          { this.errorTelefono = 'Ingresa el número.'; return; }
+    if (!/^\d{9}$/.test(this.nuevoTelefono)) { this.errorTelefono = 'Debe tener 9 dígitos.'; return; }
+    if (!this.grupoId)                       { this.alertService.error('No se identificó el grupo.'); return; }
+
     this.cargandoTel = true;
     this.cdr.detectChanges();
 
@@ -96,7 +100,6 @@ export class GrupoDetalleComponent implements OnInit {
     }).subscribe({
       next: () => {
         this.cargandoTel = false;
-        // Agregar a lista local
         this.telefonos.push({
           tel_idGrupo:          this.grupoId,
           tel_numero_telefono:  `593${this.nuevoTelefono.trim()}`,
@@ -105,17 +108,18 @@ export class GrupoDetalleComponent implements OnInit {
         });
         this.nuevoTelefono = '';
         this.nuevoAlias    = '';
-        this.showAlert('success', 'Miembro agregado exitosamente.');
+        this.cdr.detectChanges();
+        this.alertService.success('Miembro agregado exitosamente.');
       },
       error: (err) => {
         this.cargandoTel = false;
+        this.cdr.detectChanges();
         const msg = extractErrorMessage(err);
-        this.showAlert('error', err?.status === 400 ? msg : `Error al agregar. ${msg}`);
+        this.alertService.error(err?.status === 400 ? msg : `Error al agregar. ${msg}`);
       },
     });
   }
 
-  // ── Eliminar teléfono ────────────────────────────────────────
   eliminarTelefono(tel: TelefonoGrupo) {
     if (!confirm(`¿Eliminar ${tel.tel_numero_telefono}?`)) return;
     this.apiService.eliminarTelefono({
@@ -126,58 +130,75 @@ export class GrupoDetalleComponent implements OnInit {
         this.telefonos = this.telefonos.filter(
           t => t.tel_numero_telefono !== tel.tel_numero_telefono
         );
-        this.showAlert('success', 'Miembro eliminado.');
+        this.cdr.detectChanges();
+        this.alertService.success('Miembro eliminado correctamente.');
       },
       error: (err) => {
         const msg = extractErrorMessage(err);
-        this.showAlert('error', err?.status === 400 ? msg : `Error al eliminar. ${msg}`);
+        this.alertService.error(err?.status === 400 ? msg : `Error al eliminar. ${msg}`);
       },
     });
   }
 
-  // ── Guardar parámetros ───────────────────────────────────────
   guardarReglas() {
     this.guardandoReglas = true;
+    
+    // Convertir 1/0 a SI/NO solo para los parámetros de toggle
+  const PARAMS_TOGGLE = ['FINAL_4_HABILITADO', 'MARCADOR_90_MINUTOS'];
+
+  const parametrosConvertidos = this.parametros.map(p => {
+    if (PARAMS_TOGGLE.includes(p.par_clave_parametro)) {
+      return {
+        ...p,
+        par_valorStr: p.par_valorStr === '1' || p.par_valorStr === 'SI' || p.par_valorStr === 'true'
+          ? 'SI'
+          : 'NO',
+      };
+    }
+    return p;
+  });
+
     this.apiService.guardarParametros(this.grupoId, {
       IdGrupo:    this.grupoId,
-      Parametros: this.parametros,
+      Parametros: parametrosConvertidos, 
     }).subscribe({
       next: () => {
         this.guardandoReglas = false;
-        this.showAlert('success', 'Reglas guardadas correctamente.');
+        this.alertService.success('Reglas guardadas correctamente.');
       },
       error: (err) => {
         this.guardandoReglas = false;
-        this.showAlert('error', `Error al guardar reglas. ${extractErrorMessage(err)}`);
+        this.alertService.error(`Error al guardar reglas. ${extractErrorMessage(err)}`);
       },
     });
   }
 
-  // ── Mapping de claves → etiquetas visibles ──────────────────
-  readonly puntajesClave = [
-    { clave: 'PUNTOS_MARCADOR',           label: 'Acertar marcador exacto'                  },
-    { clave: 'PUNTOS_RESULTADO',          label: 'Acertar resultado del partido'             },
-    { clave: 'PUNTOS_EQUIPO_CLASIFICADO', label: 'Acertar equipo clasificado (eliminatorias)'},
-    { clave: 'PUNTOS_GOLEADOR',           label: 'Acertar al goleador del torneo'            },
-    { clave: 'PUNTOS_MVP_TORNEO',         label: 'Acertar al MVP del torneo'                 },
-    { clave: 'PUNTOS_GOLES_GOLEADOR',     label: 'Acertar cantidad de goles del goleador'    },
-    { clave: 'PUNTOS_LUGAR1',             label: 'Acertar al CAMPEÓN'                        },
-    { clave: 'PUNTOS_LUGAR2',             label: 'Acertar al subcampeón'                     },
-    { clave: 'PUNTOS_LUGAR3',             label: 'Acertar al 3er puesto'                     },
-    { clave: 'PUNTOS_LUGAR4',             label: 'Acertar al 4to puesto'                     },
-  ];
-
-  // ── Helpers de parámetros ────────────────────────────────────
   getParam(clave: string): ParametroGrupo | undefined {
     return this.parametros.find(p => p.par_clave_parametro === clave);
   }
 
-  /** Incrementa/decrementa par_valorNum entre 1 y 10 */
+  /** Devuelve el valor numérico. Si el parámetro no vino del servidor, lo crea con valor 1. */
+  getParamNum(clave: string): number {
+    let p = this.getParam(clave);
+    if (!p) {
+      p = { par_idGrupo: this.grupoId, par_clave_parametro: clave,
+            par_valorNum: 1, par_valorStr: null, par_valorDate: null };
+      this.parametros.push(p);
+    }
+    return p.par_valorNum ?? 1;
+  }
+
+  /** Stepper por clave — garantiza que el parámetro existe antes de modificar */
+  stepParamByClave(clave: string, delta: number) {
+    this.getParamNum(clave); // crea si no existe
+    const p = this.getParam(clave)!;
+    p.par_valorNum = Math.max(1, Math.min(10, (p.par_valorNum ?? 1) + delta));
+  }
+
   stepParam(p: ParametroGrupo, delta: number) {
     p.par_valorNum = Math.max(1, Math.min(10, (p.par_valorNum ?? 0) + delta));
   }
 
-  /** Cambia par_valorStr entre '1' y '0' para toggles */
   toggleParam(p: ParametroGrupo, checked: boolean) {
     p.par_valorStr = checked ? '1' : '0';
   }
@@ -189,27 +210,13 @@ export class GrupoDetalleComponent implements OnInit {
 
   getParamDate(clave: string): string {
     const v = this.getParam(clave)?.par_valorDate;
-    if (!v) return '';
-    try { return v.substring(0, 10); } catch { return ''; }
-  }
-
-  // ── Alert local ──────────────────────────────────────────────
-  showAlert(type: 'success' | 'error', message: string) {
-    clearTimeout(this.alertTimer);
-    this.alertData = { type, message };
-    this.cdr.detectChanges();
-    this.alertTimer = setTimeout(() => {
-      this.alertData = null;
-      this.cdr.detectChanges();
-    }, 5000);
+    return v ? v.substring(0, 10) : '';
   }
 
   estadoLabel(estado: string): string {
-    const map: Record<string, string> = { P: 'Pendiente', A: 'Aceptado', R: 'Rechazado' };
-    return map[estado] ?? estado;
+    return ({ P:'Pendiente', A:'Aceptado', R:'Rechazado' } as any)[estado] ?? estado;
   }
 
-  // Número sin prefijo 593 para mostrar
   numSinPrefijo(tel: string): string {
     return tel.startsWith('593') ? tel.substring(3) : tel;
   }

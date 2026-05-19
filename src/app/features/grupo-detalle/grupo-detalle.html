@@ -1,41 +1,6 @@
 <app-navbar></app-navbar>
 
-<!-- Alert inline -->
-<div *ngIf="alertData"
-  style="position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;
-         align-items:center;justify-content:center;z-index:9999;padding:20px;"
-  (click)="alertData=null">
-  <div (click)="$event.stopPropagation()"
-    [style.border]="alertData.type==='success'?'1px solid rgba(74,222,128,.5)':'1px solid rgba(239,68,68,.4)'"
-    style="background:#112614;border-radius:20px;padding:32px 28px 24px;
-           max-width:340px;width:100%;text-align:center;">
-    <div [style.background]="alertData.type==='success'?'rgba(74,222,128,.15)':'rgba(239,68,68,.15)'"
-      [style.color]="alertData.type==='success'?'#4ade80':'#f87171'"
-      style="width:64px;height:64px;border-radius:50%;display:flex;align-items:center;
-             justify-content:center;margin:0 auto 16px;">
-      <svg *ngIf="alertData.type==='success'" width="32" height="32" viewBox="0 0 24 24"
-        fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/><polyline points="9 12 11.5 14.5 15 10"/>
-      </svg>
-      <svg *ngIf="alertData.type==='error'" width="32" height="32" viewBox="0 0 24 24"
-        fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/>
-        <line x1="12" y1="8" x2="12" y2="12"/>
-        <line x1="12" y1="16" x2="12.01" y2="16"/>
-      </svg>
-    </div>
-    <p style="font-size:18px;font-weight:900;margin:0 0 8px;color:#fff;">
-      {{ alertData.type==='success' ? '¡Éxito!' : '¡Atención!' }}
-    </p>
-    <p [style.color]="alertData.type==='success'?'#6b9c78':'#fca5a5'"
-      style="font-size:14px;margin:0 0 24px;line-height:1.5;">{{ alertData.message }}</p>
-    <button (click)="alertData=null"
-      [style.background]="alertData.type==='success'?'#4ade80':'#f87171'"
-      style="width:100%;padding:12px;border-radius:10px;border:none;
-             font-size:14px;font-weight:700;cursor:pointer;color:#000;">Aceptar</button>
-  </div>
-</div>
-<style>@keyframes qeSlide { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }</style>
+
 
 <div class="page">
 
@@ -74,6 +39,9 @@
           </span>
         </div>
         <span *ngIf="esOwner" class="badge-muted">OWNER</span>
+        <span class="text-muted" style="font-size:13px;">
+            📲Token de invitación: 
+          </span>
         <span *ngIf="grupo?.gru_token_invitacion" class="badge-muted" style="font-family:monospace;">
           {{ grupo?.gru_token_invitacion }}
         </span>
@@ -219,21 +187,19 @@
 
       <!-- ── PUNTAJES ── -->
       <div class="card mb-sm" style="overflow:hidden;">
-        <p class="label-section section-header mb-0">PUNTAJES (1 A 5)</p>
+        <p class="label-section section-header mb-0">PUNTAJES (1 A 10)</p>
         <div style="display:grid;grid-template-columns:1fr 1fr;padding:8px;">
 
-          <ng-container *ngFor="let pc of puntajesClave">
-            <div *ngIf="getParam(pc.clave) as p"
-              style="display:flex;align-items:center;justify-content:space-between;gap:10px;
-                     padding:12px 14px;border:1px solid var(--border);border-radius:8px;margin:4px;">
-              <span style="font-size:13px;font-weight:500;flex:1;line-height:1.3;">{{ pc.label }}</span>
-              <div class="stepper">
-                <button class="stepper__btn" (click)="stepParam(p, -1)">−</button>
-                <span class="stepper__val">{{ p.par_valorNum ?? 0 }}</span>
-                <button class="stepper__btn" (click)="stepParam(p, +1)">+</button>
-              </div>
+          <div *ngFor="let pc of puntajesClave"
+            style="display:flex;align-items:center;justify-content:space-between;gap:10px;
+                   padding:12px 14px;border:1px solid var(--border);border-radius:8px;margin:4px;">
+            <span style="font-size:13px;font-weight:500;flex:1;line-height:1.3;">{{ pc.label }}</span>
+            <div class="stepper">
+              <button class="stepper__btn" (click)="stepParamByClave(pc.clave, -1)">−</button>
+              <span class="stepper__val">{{ getParamNum(pc.clave) }}</span>
+              <button class="stepper__btn" (click)="stepParamByClave(pc.clave, +1)">+</button>
             </div>
-          </ng-container>
+          </div>
 
         </div>
       </div>
@@ -255,10 +221,10 @@
                 (change)="toggleParam(p90, $any($event.target).checked)"
                 style="opacity:0;width:0;height:0;position:absolute;" />
               <div class="toggle__track"
-                [class.toggle__track--on]="p90.par_valorStr==='1'||p90.par_valorStr==='true'"
-                [class.toggle__track--off]="p90.par_valorStr!=='1'&&p90.par_valorStr!=='true'">
+                [class.toggle__track--on]="p90.par_valorStr==='1'||p90.par_valorStr==='true'||p90.par_valorStr==='SI'"
+                [class.toggle__track--off]="p90.par_valorStr!=='1'&&p90.par_valorStr!=='true'&&p90.par_valorStr!=='SI'">
                 <div class="toggle__thumb"
-                  [class.toggle__thumb--on]="p90.par_valorStr==='1'||p90.par_valorStr==='true'"
+                  [class.toggle__thumb--on]="p90.par_valorStr==='1'||p90.par_valorStr==='true'||p90.par_valorStr==='SI'"
                   [class.toggle__thumb--off]="p90.par_valorStr!=='1'&&p90.par_valorStr!=='true'"></div>
               </div>
             </label>
@@ -278,10 +244,10 @@
                 (change)="toggleParam(pF4, $any($event.target).checked)"
                 style="opacity:0;width:0;height:0;position:absolute;" />
               <div class="toggle__track"
-                [class.toggle__track--on]="pF4.par_valorStr==='1'||pF4.par_valorStr==='true'"
-                [class.toggle__track--off]="pF4.par_valorStr!=='1'&&pF4.par_valorStr!=='true'">
+                [class.toggle__track--on]="pF4.par_valorStr==='1'||pF4.par_valorStr==='true'||pF4.par_valorStr==='SI'"
+                [class.toggle__track--off]="pF4.par_valorStr!=='1'&&pF4.par_valorStr!=='true'&&pF4.par_valorStr!=='SI'">
                 <div class="toggle__thumb"
-                  [class.toggle__thumb--on]="pF4.par_valorStr==='1'||pF4.par_valorStr==='true'"
+                  [class.toggle__thumb--on]="pF4.par_valorStr==='1'||pF4.par_valorStr==='true'||pF4.par_valorStr==='SI'"
                   [class.toggle__thumb--off]="pF4.par_valorStr!=='1'&&pF4.par_valorStr!=='true'"></div>
               </div>
             </label>

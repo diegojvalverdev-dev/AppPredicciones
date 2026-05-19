@@ -5,6 +5,8 @@ import { NavbarComponent } from '../../shared/components/nav/bottom-nav';
 import { AuthService }     from '../../core/services/auth';
 import { ApiService, GrupoUsuario } from '../../core/services/api.service';
 import { Usuario }         from '../../core/models/usuario.model';
+import { AlertService }        from '../../shared/services/alert.service';
+import { extractErrorMessage }  from '../../core/utils/error.utils';
 
 @Component({
   selector: 'app-inicio',
@@ -33,6 +35,7 @@ export class InicioComponent implements OnInit {
     private authService: AuthService,
     private apiService:  ApiService,
     private cdr:         ChangeDetectorRef,
+    private alertService: AlertService
   ) {}
 
   ngOnInit() {
@@ -57,5 +60,22 @@ export class InicioComponent implements OnInit {
 
   esOwner(g: GrupoUsuario): boolean {
     return g.gru_idUsuario_Admin === this.usuario?.['id'];
+  }
+
+  eliminarGrupo(event: Event, grupoId: number) {
+    event.stopPropagation(); // evita que el click navegue al grupo
+    event.preventDefault();
+    if (!confirm('¿Eliminar este grupo? Esta acción no se puede deshacer.')) return;
+
+    this.apiService.eliminarGrupo(grupoId).subscribe({
+      next: () => {
+        this.grupos = this.grupos.filter(g => g.gru_id !== grupoId);
+        this.cdr.detectChanges();
+        this.alertService.success('Grupo eliminado correctamente.');
+      },
+      error: (err : any) => {
+        this.alertService.error(extractErrorMessage(err));
+      },
+    });
   }
 }

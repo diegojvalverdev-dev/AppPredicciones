@@ -15,8 +15,7 @@ const EP = {
   GRUPOS_PARAMETROS:       (id: number) => `/backend/app/grupos/${id}/parametros`,
 
   // ── Partidos ─────────────────────────────────────────────────
-  PARTIDOS_GRUPOS_EQUIPOS: (grupoId: number) =>
-    `/backend/app/partidos/grupo-usuario/${grupoId}/grupos-equipos`,
+  PARTIDOS_GRUPOS_EQUIPOS: (grupoId: number) => `/backend/app/partidos/grupo-usuario/${grupoId}/grupos-equipos`,
 
   // ── Eventos ──────────────────────────────────────────────────
   EVENTOS_DISPONIBLES:     '/backend/app/eventos/disponibles',
@@ -24,8 +23,16 @@ const EP = {
   // ── Pronósticos ──────────────────────────────────────────────
   PRONOSTICOS_CREAR:       '/backend/app/pronosticos/crear',
   PRONOSTICOS_MODIFICAR:   '/backend/app/pronosticos/modificar',
-  HISTORIAL:               (grupoId: number) =>
-    `/backend/app/pronosticos/usuario/grupo/${grupoId}`,
+  PRONOSTICOS_GRUPO_AGRUP: (grupoId: number, agrupacion: string) => `/backend/app/pronosticos/usuario/grupo/${grupoId}/agrupacionEquipo/${encodeURIComponent(agrupacion)}`,
+  HISTORIAL:               (grupoId: number) => `/backend/app/pronosticos/usuario/grupo/${grupoId}`,
+
+  // ── Eventos ──────────────────────────────────────────────────
+  FINALFOUR_CREAR:          '/backend/app/final4/crear',
+  FINALFOUR_MODIFICAR:     '/backend/app/final4/actualizar',
+  FINALFOUR:                (grupoId: number) => `/backend/app/final4/grupo/${grupoId}`,
+
+  //ESTADISTICAS EXCEL
+  ADMIN_GRUPO:      (grupoId: number) => `/backend/app/grupos/grupo/${grupoId}`,
 };
 
 // ── Interfaces ────────────────────────────────────────────────
@@ -100,7 +107,7 @@ export interface CrearPronosticoRequest {
   Fase:            number;
   GolesLocal:      number;
   GolesVisita:     number;
-  EquipoClasifica: number | null;
+  EquipoClasifica: string | null;
 }
 
 export interface ModificarPronosticoRequest extends CrearPronosticoRequest {}
@@ -111,6 +118,35 @@ export interface CrearUsuarioRequest {
   Telefono: string;
   Password: string;
 }
+
+export interface CrearFinalFourRequest {
+  IdGrupo:       number;
+  IdEvento:      number
+  Campeon:       string;
+  Subcampeon:    string;
+  Tercero:       string;
+  Cuarto:        string;
+  goleador:      string;
+  cantGoles:     number | null;
+  mvpEvento:     string | null;
+  horaCreacion:  string | null;
+}
+
+export interface Final4Response {
+  IdGrupo:       number;
+  IdEvento:      number
+  Campeon:       string;
+  Subcampeon:    string;
+  Tercero:       string;
+  Cuarto:        string;
+  goleador:      string;
+  cantGoles:     number | null;
+  mvpEvento:     string | null;
+  horaCreacion:  string | null;
+  [key: string]: any; // por si el servidor devuelve campos adicionales
+}
+
+export interface ModificarFinalFourRequest extends CrearFinalFourRequest {}
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -165,6 +201,26 @@ export class ApiService {
   }
 
   /**
+   * GET /app/eventos/:idEvento/fases
+   * Lista de fases de un evento.
+   */
+  getFasesPorEvento(idEvento: number): Observable<any> {
+    return this.http.get(`/backend/app/eventos/${idEvento}/fases`);
+  }
+
+  /**
+   * GET /app/puntajes/grupo/:grupoId/evento/:eventoId/fase/:fase
+   * Ranking de posiciones por grupo, evento y fase.
+   */
+  getPosiciones(grupoId: number, eventoId: number, fase: number): Observable<any> {
+    return this.http.get(`/backend/app/puntajes/grupo/${grupoId}/evento/${eventoId}/fase/${fase}`);
+  }
+
+  getPosicionesFinal4(grupoId: number): Observable<any> {
+    return this.http.get(`/backend/app/puntajes/grupo/${grupoId}/ranking-final4`);
+  }
+
+  /**
    * GET /app/partidos/evento/:id/rango?idEvento=&fechaInicio=&fechaFin=
    * Lista partidos de un evento en un rango de fechas.
    */
@@ -183,7 +239,87 @@ export class ApiService {
     return this.http.put(EP.PRONOSTICOS_MODIFICAR, data);
   }
 
+  /**
+   * GET /app/pronosticos/usuario/grupo/:grupoId/agrupacionEquipo/:agrupacion
+   */
+  getPronosticosPorAgrupacion(grupoId: number, agrupacion: string): Observable<any> {
+    return this.http.get(EP.PRONOSTICOS_GRUPO_AGRUP(grupoId, agrupacion));
+  }
+
+  /**
+   * GET /app/pronosticos/usuario/grupo/:grupoId/fechaInicio/:fi/fechaFin/:ff
+   * Pronósticos del usuario para un grupo en un rango de fechas.
+   */
+  getPronosticosPorFechas(grupoId: number, fechaInicio: string, fechaFin: string): Observable<any> {
+    const url = `/backend/app/pronosticos/usuario/grupo/${grupoId}/fechaInicio/${fechaInicio}/fechaFin/${fechaFin}`;
+    return this.http.get(url);
+  }
+
   getHistorial(grupoId: number): Observable<any> {
     return this.http.get(EP.HISTORIAL(grupoId));
   }
+
+  /**
+   * DELETE /app/grupos/:id
+   * Elimina un grupo por su id.
+   */
+  eliminarGrupo(id: number): Observable<any> {
+    return this.http.delete(`/backend/app/grupos/eliminar/${id}`);
+  }
+
+  // ── FINAL 4 ──────────────────────────────────────────────
+  crearFinalFour(data: CrearFinalFourRequest): Observable<any> {
+    return this.http.post(EP.FINALFOUR_CREAR, data);
+  }
+
+  getFinalFour(grupoId: number): Observable<Final4Response | null> {
+    return this.http.get<Final4Response>(`/backend/app/final4/grupo/${grupoId}`);
+  }
+
+  modificarFinalFour(data: ModificarFinalFourRequest): Observable<any> {
+    return this.http.put(EP.FINALFOUR_MODIFICAR, data);
+  }
+
+  // ── CARGANDO JUGADORES ──────────────────────────────────────────────  
+  getJugadoresPorGrupo(eventoId: number): Observable<any> {
+    return this.http.get(`/backend/api/admin/eventos-jugadores/evento/${eventoId}`);
+  }
+
+  // ── ENVIO DE OTP EN PASSWORD ──────────────────────────────────────────────
+  solicitarOTP(login: string, telefono: string): Observable<any> {
+    const params = {
+      Login:    login,
+      Telefono: `593${telefono}`,
+    }
+    return this.http.post('/backend/app/reset-password/crear', params);
+  }
+
+  consultarEstadoOTP(idSolicitud: string, telefono: string, otp: string): Observable<any> {
+    return this.http.get(
+      `/backend/app/reset-password/solicitud/${idSolicitud}?telefono=593${telefono}&otp=${otp}`
+    );
+  }
+
+  resetearPassword(idSolicitud: string, telefono: string, otp: string, nuevoPassword: string): Observable<any> {
+    const params = {
+      IdSolicitudReset:   idSolicitud,
+      Telefono:           telefono,
+      Otp:                otp,
+      PasswordNuevo:      nuevoPassword,
+    }
+    return this.http.put('/backend/app/usuarios/reset-password', params);
+  }
+
+  exportarExcelPronosticos(idGrupo: string, fase: string): Observable<any> {
+    return this.http.get(
+      `/backend/app/reportes/pronosticos/excel?idGrupo=${idGrupo}&fase=${fase}`,
+      { responseType: 'blob' },
+    );
+  }
+
+  // ── CARGANDO ADMINISTRADOR ──────────────────────────────────────────────  
+  getAdmingrupo(grupoId: number): Observable<any> {
+    return this.http.get(EP.ADMIN_GRUPO(grupoId));
+  }
+  //{{base_url}}/app/grupos/grupo/8
 }

@@ -1,0 +1,328 @@
+<app-navbar></app-navbar>
+<div class="page">
+
+  <!-- Header + selectores -->
+  <div class="card card--hero mb-lg">
+    <p class="label-green mb-sm">
+      <span style="width:7px;height:7px;border-radius:50%;background:var(--primary);
+                   display:inline-block;margin-right:4px;"></span>
+      TABLA DE POSICIONES
+    </p>
+    <h1 class="title-hero mb-sm">STANDINGS</h1>
+    <p class="subtitle mb-lg">{{ torneoLabel }}</p>
+
+    <!-- Selector de grupo -->
+    <div class="flex-row gap-sm" style="flex-wrap:wrap;">
+      <div class="inp-group" style="flex:1;min-width:160px;max-width:240px;">
+        <select class="inp inp--select"
+          [value]="grupoActivo?.gru_id"
+          (change)="onCambiarGrupo($any($event.target).value)">
+          <option *ngIf="cargandoGrupos" value="">Cargando grupos...</option>
+          <option *ngFor="let g of grupos" [value]="g.gru_id">{{ g.gru_nombre }}</option>
+        </select>
+        <span class="inp-group__icon">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </span>
+      </div>
+
+      <!-- Selector de fase -->
+      <div class="inp-group" style="flex:1;min-width:160px;max-width:240px;">
+        <select class="inp inp--select"
+          [value]="faseActiva ? getFaseId(faseActiva) : ''"
+          (change)="onCambiarFase($any($event.target).value)"
+          [disabled]="cargandoFases || fases.length === 0">
+          <option *ngIf="cargandoFases" value="">Cargando fases...</option>
+          <option *ngIf="!cargandoFases && fases.length === 0" value="">Sin fases disponibles</option>
+          <option *ngFor="let f of fases" [value]="getFaseId(f)">{{ getFaseLabel(f) }}</option>
+        </select>
+        <span class="inp-group__icon">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </span>
+      </div>
+      <div class="inp-group" style="flex:1;min-width:160px;max-width:240px;text-align:right;">
+        <a class="btn-green btn-green--sm" style="text-decoration:none;" *ngIf="esAdmin" (click)="exportarEstadisticas()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+            <path d="M4 22h16"/>
+            <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+            <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+          </svg>
+          Exportar Estadísticas a Excel
+        </a>
+      </div>
+      <!-- Div generando -->
+      <div *ngIf="esAdmin && generando"
+        style="display:inline-flex;align-items:center;gap:8px;
+              background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3);
+              border-radius:8px;padding:8px 14px;">
+        <div style="width:14px;height:14px;border:2px solid rgba(74,222,128,.3);
+                    border-top-color:#4ade80;border-radius:50%;
+                    animation:spin .7s linear infinite;flex-shrink:0;"></div>
+        <span style="font-size:13px;font-weight:600;color:#4ade80;white-space:nowrap;">
+          Generando...
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla -->
+   <br>
+   <p class="label-green mb-md">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="M12 2a14.5 14.5 0 0 0 0 20A14.5 14.5 0 0 0 12 2"/>
+      <path d="M2 12h20"/>
+    </svg>
+    TABLA DE POSICIONES DE JUGADORES GENERAL
+  </p>
+  <div class="card" style="overflow:hidden;">
+
+    <!-- Header de tabla -->
+    <div class="section-header"
+      style="display:grid;grid-template-columns:44px 1fr 80px 80px;gap:8px;align-items:center;">
+      <span class="label-section" style="text-align:center;">#</span>
+      <span class="label-section">JUGADOR</span>
+      <span class="label-section" style="text-align:center;">RESULTADOS</span>
+      <span class="label-section" style="text-align:center;">MARCADOR</span>
+      <span class="label-section" style="text-align:center;">CLASIFICACION</span>
+      <span class="label-section" style="text-align:center;">TOTAL</span>
+    </div>
+
+    <!-- Spinner carga -->
+    <div *ngIf="cargando" style="padding:40px;text-align:center;">
+      <div style="width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--primary);
+                  border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px;"></div>
+      <p class="subtitle" style="font-size:12px;">Cargando posiciones...</p>
+    </div>
+
+    <!-- Sin datos -->
+    <div *ngIf="!cargando && tabla.length === 0" style="padding:48px 16px;text-align:center;">
+      <p class="subtitle mb-0">
+        {{ fases.length === 0
+          ? 'Selecciona un grupo para ver las posiciones.'
+          : 'Aún no hay posiciones registradas para esta fase.' }}
+      </p>
+    </div>
+
+    <!-- Filas del ranking -->
+    <div *ngFor="let p of tabla; let i = index"
+      style="display:grid;grid-template-columns:44px 1fr 80px 80px;gap:8px;
+             align-items:center;padding:14px 18px;"
+      [style.borderTop]="i > 0 ? '1px solid var(--border)' : 'none'"
+      [style.background]="i === 0 ? 'rgba(251,191,36,.05)' : i === 1 ? 'rgba(148,163,184,.04)' : 'transparent'">
+
+      <!-- Posición con medalla -->
+      <div style="text-align:center;">
+        <span *ngIf="p.pos <= 3"
+          style="font-size:18px;">
+          {{ p.pos === 1 ? '🥇' : p.pos === 2 ? '🥈' : '🥉' }}
+        </span>
+        <span *ngIf="p.pos > 3"
+          style="font-size:13px;font-weight:700;"
+          [style.color]="medallaColor(p.pos)">
+          {{ p.pos }}
+        </span>
+      </div>
+
+      <!-- Jugador -->
+      <div>
+        <p style="font-size:14px;font-weight:700;margin:0 0 2px;
+                  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+          {{ p.alias }}
+        </p>
+        <p *ngIf="p.usuario" class="text-muted"
+          style="font-size:11px;margin:0;">@{{ p.usuario }}</p>
+      </div>
+
+      <!-- Resultado -->
+      <div style="text-align:center;">
+        <span style="font-size:14px;font-weight:600;color:var(--muted);" [style.color]="'var(--primary)'">
+          {{ p.resultado }}</span>
+        <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
+      </div>
+
+      <!-- Marcador -->
+      <div style="text-align:center;">
+        <span style="font-size:14px;font-weight:600;color:var(--muted);" [style.color]="'var(--primary)'">
+          {{ p.marcador }}
+        </span>
+        <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
+      </div>
+
+      <!-- Clasificación -->
+      <div style="text-align:center;">
+        <span style="font-size:14px;font-weight:600;color:var(--muted);" [style.color]="'var(--primary)'">
+          {{ p.clasificacion }}
+        </span>
+        <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
+      </div>
+
+      <!-- Puntos -->
+      <div style="text-align:center;">
+        <span style="font-size:16px;font-weight:900;"
+          [style.color]="p.pos === 1 ? '#fbbf24' : 'var(--primary)'">
+          {{ p.puntos }}
+        </span>
+        <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
+      </div>
+
+    </div>
+  </div>
+  <!-- Tabla de posiciones final 4-->
+   <br>
+   <p class="label-green mb-md">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="M12 2a14.5 14.5 0 0 0 0 20A14.5 14.5 0 0 0 12 2"/>
+      <path d="M2 12h20"/>
+    </svg>
+    TABLA DE POSICIONES DE JUGADORES FINAL 4
+  </p>
+  <div class="card" style="overflow:hidden;">
+    
+    <!-- Header de tabla -->
+    <div class="section-header"
+      style="display:grid;grid-template-columns:44px 1fr 80px 80px;gap:8px;align-items:center;">
+      <span class="label-section" style="text-align:center;">#</span>
+      <span class="label-section">JUGADOR</span>
+      <span class="label-section">CAMPEON</span>
+      <span class="label-section">SUBCAMPEON</span>
+      <span class="label-section">TERCER LUGAR</span>
+      <span class="label-section">CUARTO LUGAR</span>
+      <span class="label-section">GOLEADOR</span>
+      <span class="label-section">GOLES</span>
+      <span class="label-section">MVP</span>
+      <span class="label-section">TOP 4</span>
+      <span class="label-section" style="text-align:center;">TOTAL</span>
+    </div>
+
+    <!-- Spinner carga -->
+    <div *ngIf="cargando" style="padding:40px;text-align:center;">
+      <div style="width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--primary);
+                  border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px;"></div>
+      <p class="subtitle" style="font-size:12px;">Cargando posiciones...</p>
+    </div>
+
+    <!-- Sin datos -->
+    <div *ngIf="!cargando && tabla.length === 0" style="padding:48px 16px;text-align:center;">
+      <p class="subtitle mb-0">
+        {{ fases.length === 0
+          ? 'Selecciona un grupo para ver las posiciones.'
+          : 'Aún no hay posiciones registradas para esta fase.' }}
+      </p>
+    </div>
+
+    <!-- Filas del ranking -->
+    <div *ngFor="let p of tablaFinal4; let i = index"
+      style="display:grid;grid-template-columns:44px 1fr 80px 80px;gap:8px;
+             align-items:center;padding:14px 18px;"
+      [style.borderTop]="i > 0 ? '1px solid var(--border)' : 'none'"
+      [style.background]="i === 0 ? 'rgba(251,191,36,.05)' : i === 1 ? 'rgba(148,163,184,.04)' : 'transparent'">
+
+      <!-- Posición con medalla -->
+      <div style="text-align:center;">
+        <span *ngIf="p.pos <= 3"
+          style="font-size:18px;">
+          {{ p.pos === 1 ? '🥇' : p.pos === 2 ? '🥈' : '🥉' }}
+        </span>
+        <span *ngIf="p.pos > 3"
+          style="font-size:13px;font-weight:700;"
+          [style.color]="medallaColor(p.pos)">
+          {{ p.pos }}
+        </span>
+      </div>
+
+      <!-- Jugador -->
+      <div>
+        <p style="font-size:14px;font-weight:700;margin:0 0 2px;
+                  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+          {{ p.alias }}
+        </p>
+        <p *ngIf="p.usuario" class="text-muted"
+          style="font-size:11px;margin:0;">@{{ p.usuario }}</p>
+      </div>
+
+      <!-- campeon -->
+      <div style="text-align:center;">
+        <span style="font-size:14px;font-weight:600;color:var(--muted);" [style.color]="'var(--primary)'">
+          {{ p.campeon }}</span>
+        <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
+      </div>
+
+      <!-- subcampeon -->
+      <div style="text-align:center;">
+        <span style="font-size:14px;font-weight:600;color:var(--muted);" [style.color]="'var(--primary)'">
+          {{ p.subcampeon }}
+        </span>
+        <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
+      </div>
+
+      <!-- tercer -->
+      <div style="text-align:center;">
+        <span style="font-size:14px;font-weight:600;color:var(--muted);" [style.color]="'var(--primary)'">
+          {{ p.tercer }}
+        </span>
+        <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
+      </div>
+
+      <!-- cuarto -->
+      <div style="text-align:center;">
+        <span style="font-size:14px;font-weight:600;color:var(--muted);" [style.color]="'var(--primary)'">
+          {{ p.cuarto }}
+        </span>
+        <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
+      </div>
+
+      <!-- goleador -->
+      <div style="text-align:center;">
+        <span style="font-size:14px;font-weight:600;color:var(--muted);" [style.color]="'var(--primary)'">
+          {{ p.goleador }}
+        </span>
+        <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
+      </div>
+
+      <!-- cantidad goles -->
+      <div style="text-align:center;">
+        <span style="font-size:14px;font-weight:600;color:var(--muted);" [style.color]="'var(--primary)'">
+          {{ p.goles }}
+        </span>
+        <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
+      </div>
+
+      <!-- MVP -->
+      <div style="text-align:center;">
+        <span style="font-size:14px;font-weight:600;color:var(--muted);" [style.color]="'var(--primary)'">
+          {{ p.mvp }}
+        </span>
+        <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
+      </div>
+
+      <!-- Adicional top 4 -->
+      <div style="text-align:center;">
+        <span style="font-size:14px;font-weight:600;color:var(--muted);" [style.color]="'var(--primary)'">
+          {{ p.top4 }}
+        </span>
+        <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
+      </div>
+      
+      <!-- Puntos -->
+      <div style="text-align:center;">
+        <span style="font-size:16px;font-weight:900;"
+          [style.color]="p.pos === 1 ? '#fbbf24' : 'var(--primary)'">
+          {{ p.total }}
+        </span>
+        <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+<style>@keyframes spin { to { transform: rotate(360deg); } }</style>

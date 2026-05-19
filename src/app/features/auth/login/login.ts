@@ -5,13 +5,12 @@ import { CommonModule }        from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AuthService }         from '../../../core/services/auth';
 import { AlertService }        from '../../../shared/services/alert.service';
-import { AlertComponent }      from '../../../shared/components/alert/alert';
 import { extractErrorMessage } from '../../../core/utils/error.utils';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, AlertComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './login.html',
 })
 export class LoginComponent {
@@ -43,12 +42,13 @@ export class LoginComponent {
         const msg = extractErrorMessage(err);
         // Detectar "usuario no encontrado" en el mensaje del servidor
         const notFound =
-          err?.status === 404 ||
+          err?.status === 404 || err?.status === 401 ||
           msg.toLowerCase().includes('no encontrado') ||
           msg.toLowerCase().includes('not found')     ||
           msg.toLowerCase().includes('no existe')     ||
           msg.toLowerCase().includes('usuario');
-        this.alertService.error(notFound ? `Usuario no encontrado. ${msg}` : `Error de Login. ${msg}`);
+
+        this.alertService.error(notFound ? `Datos de login incorrectos.` : `Error de Login. ${msg}`);
       },
     });
   }

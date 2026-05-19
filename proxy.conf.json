@@ -1,6 +1,6 @@
 {
   "/backend": {
-    "target": "https://192.168.111.23/pronosticos",
+    "target": "https://app2.eclipsoft.com:8443/pollamundial",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug",

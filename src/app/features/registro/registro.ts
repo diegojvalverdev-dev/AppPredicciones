@@ -4,13 +4,12 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { RouterLink, Router }  from '@angular/router';
 import { ApiService }          from '../../core/services/api.service';
 import { AlertService }        from '../../shared/services/alert.service';
-import { AlertComponent }      from '../../shared/components/alert/alert';
 import { extractErrorMessage } from '../../core/utils/error.utils';
 
 @Component({
   selector: 'app-registro',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, AlertComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './registro.html',
 })
 export class RegistroComponent {

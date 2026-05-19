@@ -1,16 +1,26 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
 
 export type AlertType = 'success' | 'error';
 export interface AlertData { type: AlertType; message: string; }
 
 @Injectable({ providedIn: 'root' })
 export class AlertService {
-  // Subject simple — cualquier suscriptor lo recibe
-  private _subject = new Subject<AlertData | null>();
-  readonly alert$ = this._subject.asObservable();
+  // Callback que el root component registra
+  private _onAlert?: (data: AlertData | null) => void;
 
-  success(msg: string) { this._subject.next({ type: 'success', message: msg }); }
-  error(msg: string)   { this._subject.next({ type: 'error',   message: msg }); }
-  dismiss()            { this._subject.next(null); }
+  register(cb: (data: AlertData | null) => void) {
+    this._onAlert = cb;
+  }
+
+  private timer: any;
+
+  show(type: AlertType, message: string, ms = 5000) {
+    clearTimeout(this.timer);
+    this._onAlert?.({ type, message });
+    this.timer = setTimeout(() => this._onAlert?.(null), ms);
+  }
+
+  success(msg: string) { this.show('success', msg); }
+  error(msg: string)   { this.show('error',   msg); }
+  dismiss()            { clearTimeout(this.timer); this._onAlert?.(null); }
 }
