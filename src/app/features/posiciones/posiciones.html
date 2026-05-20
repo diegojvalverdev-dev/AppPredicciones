@@ -190,16 +190,16 @@
           <tr style="border-bottom:1px solid var(--border);">
             <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;">#</th>
             <th class="label-section" style="padding:12px 10px;text-align:left;white-space:nowrap;">JUGADOR</th>
+            <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;
+                        color:var(--primary);">TOTAL</th>            
             <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;">CAMPEÓN</th>
-            <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;">SUBCAMPEÓN</th>
-            <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;">TERCER LUGAR</th>
-            <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;">CUARTO LUGAR</th>
+            <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;">2do.</th>
+            <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;">3er.</th>
+            <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;">4to.</th>
+            <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;">TOP 4</th>
             <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;">GOLEADOR</th>
             <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;">GOLES</th>
             <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;">MVP</th>
-            <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;">TOP 4</th>
-            <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;
-                        color:var(--primary);">TOTAL</th>
           </tr>
         </thead>
         <tbody>
@@ -240,6 +240,15 @@
               </p>
             </td>
 
+            <!-- Total -->
+            <td style="padding:11px 10px;text-align:center;">
+              <span style="font-size:16px;font-weight:900;"
+                [style.color]="p.pos===1?'#fbbf24':'var(--primary)'">
+                {{ p.total }}
+              </span>
+              <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
+            </td>
+
             <!-- Campeón -->
             <td style="padding:11px 10px;text-align:center;">
               <span style="font-size:13px;font-weight:700;color:var(--primary);">
@@ -272,6 +281,14 @@
               <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
             </td>
 
+            <!-- Top 4 -->
+            <td style="padding:11px 10px;text-align:center;">
+              <span style="font-size:13px;font-weight:700;color:var(--primary);">
+                {{ p.top4 }}
+              </span>
+              <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
+            </td>
+
             <!-- Goleador -->
             <td style="padding:11px 10px;text-align:center;">
               <span style="font-size:13px;font-weight:700;color:var(--primary);">
@@ -292,23 +309,6 @@
             <td style="padding:11px 10px;text-align:center;">
               <span style="font-size:13px;font-weight:700;color:var(--primary);">
                 {{ p.mvp }}
-              </span>
-              <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
-            </td>
-
-            <!-- Top 4 -->
-            <td style="padding:11px 10px;text-align:center;">
-              <span style="font-size:13px;font-weight:700;color:var(--primary);">
-                {{ p.top4 }}
-              </span>
-              <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
-            </td>
-
-            <!-- Total -->
-            <td style="padding:11px 10px;text-align:center;">
-              <span style="font-size:16px;font-weight:900;"
-                [style.color]="p.pos===1?'#fbbf24':'var(--primary)'">
-                {{ p.total }}
               </span>
               <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
             </td>

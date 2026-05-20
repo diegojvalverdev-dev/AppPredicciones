@@ -104,9 +104,7 @@ export class PosicionesComponent implements OnInit {
     this.cdr.detectChanges();
     this.cargarFases(g.gru_idEvento);
     this.verificarAdmin(); 
-  }
-
-  
+  }  
 
   // ── 2. Cargar fases del evento ────────────────────────────────
   cargarFases(idEvento: number) {
@@ -155,12 +153,12 @@ export class PosicionesComponent implements OnInit {
       next: (res: any) => {
         const lista: any[] = Array.isArray(res) ? res : (res?.data ?? []);
         this.tabla = lista.map((p: any, i: number) => ({
-          pos:      i + 1,
-          alias:    p.Alias    ?? p.alias    ?? p.gusr_alias ?? `Jugador ${i + 1}`,
-          usuario:  p.Usuario  ?? p.usuario  ?? p.login      ?? '',
-          puntos:   p.Puntos   ?? p.puntos   ?? p.PuntosTotales      ?? 0,
-          resultado: p.Resultado ?? p.resultado ?? p.PuntosResultado ?? 0,
-          marcador: p.Marcador ?? p.marcador ?? p.PuntosMarcador ?? 0,
+          pos:           i + 1,
+          alias:         p.Alias    ?? p.alias    ?? p.gusr_alias ?? `Jugador ${i + 1}`,
+          usuario:       p.Usuario  ?? p.usuario  ?? p.login      ?? '',
+          puntos:        p.Puntos   ?? p.puntos   ?? p.PuntosTotales      ?? 0,
+          resultado:     p.Resultado ?? p.resultado ?? p.PuntosResultado ?? 0,
+          marcador:      p.Marcador ?? p.marcador ?? p.PuntosMarcador ?? 0,
           clasificacion: p.Clasificacion ?? p.clasificacion ?? p.PuntosClasificacion ?? 0,
         }));
         this.cargando = false;
@@ -186,18 +184,18 @@ export class PosicionesComponent implements OnInit {
       next: (res: any) => {
         const lista: any[] = Array.isArray(res) ? res : (res?.data ?? []);
         this.tablaFinal4 = lista.map((p: any, i: number) => ({
-          pos:      i + 1,
-          alias:    p.Alias    ?? p.alias    ?? p.gusr_alias ?? `Jugador ${i + 1}`,
-          usuario:  p.Usuario  ?? p.usuario  ?? p.login      ?? '',
-          campeon:   p.PuntosCampeon      ?? 0,
+          pos:        i + 1,
+          alias:      p.Alias    ?? p.alias    ?? p.gusr_alias ?? `Jugador ${i + 1}`,
+          usuario:    p.Usuario  ?? p.usuario  ?? p.login      ?? '',
+          campeon:    p.PuntosCampeon      ?? 0,
           subcampeon: p.PuntosSubcampeon ?? 0,
-          tercer: p.PuntosTercerLugar ?? 0,
-          cuarto: p.PuntosCuartoLugar ?? 0,
-          goleador: p.PuntosGoleador ?? 0,
-          goles: p.PuntosGoles ?? 0,
-          mvp: p.PuntosMVP ?? 0,
-          top4: p.PuntosAdicionalTop4 ?? 0,
-          total: p.TotalPuntos ?? 0,
+          tercer:     p.PuntosTercerLugar ?? 0,
+          cuarto:     p.PuntosCuartoLugar ?? 0,
+          goleador:   p.PuntosGoleador ?? 0,
+          goles:      p.PuntosGoles ?? 0,
+          mvp:        p.PuntosMvp ?? 0,
+          top4:       p.PuntosAdicionalTop4 ?? 0,
+          total:      p.TotalPuntos ?? 0,
         }));
         this.cargando = false;
         this.cdr.detectChanges();

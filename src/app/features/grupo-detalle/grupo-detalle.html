@@ -217,7 +217,7 @@
             </div>
             <label class="toggle">
               <input type="checkbox"
-                [checked]="p90.par_valorStr === '1' || p90.par_valorStr === 'true'"
+                [checked]="p90.par_valorStr === 'SI' || p90.par_valorStr === 'true'"
                 (change)="toggleParam(p90, $any($event.target).checked)"
                 style="opacity:0;width:0;height:0;position:absolute;" />
               <div class="toggle__track"
@@ -225,7 +225,7 @@
                 [class.toggle__track--off]="p90.par_valorStr!=='1'&&p90.par_valorStr!=='true'&&p90.par_valorStr!=='SI'">
                 <div class="toggle__thumb"
                   [class.toggle__thumb--on]="p90.par_valorStr==='1'||p90.par_valorStr==='true'||p90.par_valorStr==='SI'"
-                  [class.toggle__thumb--off]="p90.par_valorStr!=='1'&&p90.par_valorStr!=='true'"></div>
+                  [class.toggle__thumb--off]="p90.par_valorStr!=='1'&&p90.par_valorStr!=='true'&&p90.par_valorStr!=='SI'"></div>
               </div>
             </label>
           </div>
@@ -240,7 +240,7 @@
             </div>
             <label class="toggle">
               <input type="checkbox"
-                [checked]="pF4.par_valorStr === '1' || pF4.par_valorStr === 'true'"
+                [checked]="pF4.par_valorStr === 'SI' || pF4.par_valorStr === 'true'"
                 (change)="toggleParam(pF4, $any($event.target).checked)"
                 style="opacity:0;width:0;height:0;position:absolute;" />
               <div class="toggle__track"
@@ -248,7 +248,8 @@
                 [class.toggle__track--off]="pF4.par_valorStr!=='1'&&pF4.par_valorStr!=='true'&&pF4.par_valorStr!=='SI'">
                 <div class="toggle__thumb"
                   [class.toggle__thumb--on]="pF4.par_valorStr==='1'||pF4.par_valorStr==='true'||pF4.par_valorStr==='SI'"
-                  [class.toggle__thumb--off]="pF4.par_valorStr!=='1'&&pF4.par_valorStr!=='true'"></div>
+                  [class.toggle__thumb--off]="pF4.par_valorStr!=='1'&&pF4.par_valorStr!=='true'&&pF4.par_valorStr!=='SI'">
+                </div>
               </div>
             </label>
           </div>

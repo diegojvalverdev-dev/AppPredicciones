@@ -7,6 +7,7 @@ import { AlertService }      from '../../shared/services/alert.service';
 import { ApiService, GrupoDetalle, TelefonoGrupo, ParametroGrupo } from '../../core/services/api.service';
 import { AuthService }       from '../../core/services/auth';
 import { extractErrorMessage } from '../../core/utils/error.utils';
+import { Usuario }         from '../../core/models/usuario.model';
 
 @Component({
   selector: 'app-grupo-detalle',
@@ -29,6 +30,10 @@ export class GrupoDetalleComponent implements OnInit {
   cargandoTel   = false;
   errorTelefono = '';
   guardandoReglas = false;
+
+  usuario: Usuario | null = null;  
+  telefonoUser = '';
+  telefonoNuevo = '';
 
   readonly puntajesClave = [
     { clave: 'PUNTOS_MARCADOR',           label: 'Acertar marcador exacto'                   },
@@ -67,6 +72,7 @@ export class GrupoDetalleComponent implements OnInit {
         this.usuarioAdmin = (res.Usuarios ?? []).find(
           (u: any) => u.gusr_idUsuario === res.gru_idUsuario_Admin
         ) ?? (res.Usuarios ?? [])[0] ?? null;
+        this.TraerTelefonoUser(res.gru_idUsuario_Admin);
         this.cargando = false;
         this.cdr.detectChanges();
       },
@@ -85,11 +91,40 @@ export class GrupoDetalleComponent implements OnInit {
   }
   get aliasAdmin() { return this.usuarioAdmin?.gusr_alias ?? '—'; }
 
+  TraerTelefonoUser(idUsuario: number) {
+    this.apiService.getTraerTelefono(idUsuario).subscribe({
+      next: (res: any) => {
+        this.telefonoUser = res?.Telefono ?? '';
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
   agregarMiembro() {
     this.errorTelefono = '';
     if (!this.nuevoTelefono.trim())          { this.errorTelefono = 'Ingresa el número.'; return; }
     if (!/^\d{9}$/.test(this.nuevoTelefono)) { this.errorTelefono = 'Debe tener 9 dígitos.'; return; }
     if (!this.grupoId)                       { this.alertService.error('No se identificó el grupo.'); return; }
+
+    const ultimoNumero = '593'+this.nuevoTelefono.trim();
+
+    if (ultimoNumero === this.telefonoUser) {
+      this.alertService.error('El número del Administrador no puede ser agregado.');
+      return;
+    }
+
+    // Validar que no esté duplicado en la lista
+    const yaExiste = this.telefonos.some(
+      t => t.tel_numero_telefono === ultimoNumero
+    );
+
+    if (yaExiste) {
+      this.alertService.error('Este número ya fue agregado a la lista.');
+      return;
+    }
 
     this.cargandoTel = true;
     this.cdr.detectChanges();

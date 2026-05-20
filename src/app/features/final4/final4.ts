@@ -100,7 +100,7 @@ export class Final4Component implements OnInit {
           (p: any) => p.par_clave_parametro === 'FINAL_4_HABILITADO'
         );
         this.habilitado =
-          paramF4?.par_valorStr === '1'    ||
+          paramF4?.par_valorStr === 'SI'    ||
           paramF4?.par_valorStr === 'true' ||
           paramF4?.par_valorNum  === 1;
 

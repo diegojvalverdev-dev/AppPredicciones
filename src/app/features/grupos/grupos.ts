@@ -6,6 +6,8 @@ import { AlertService }        from '../../shared/services/alert.service';
 import { ApiService }          from '../../core/services/api.service';
 import { Router }  from '@angular/router';
 import { extractErrorMessage } from '../../core/utils/error.utils';
+import { Usuario }         from '../../core/models/usuario.model';
+import { AuthService }     from '../../core/services/auth';
 
 @Component({
   selector: 'app-grupos',
@@ -21,9 +23,13 @@ export class GruposComponent implements OnInit {
   modalOtp = false;
   otp: string | null = null;
   nombreGrupo = '';
+  usuario: Usuario | null = null;  
+  telefonoUser = '';
+  telefonoNuevo = '';
 
   constructor(
     private fb:           FormBuilder,
+    private authService: AuthService,
     private apiService:   ApiService,
     private alertService: AlertService,
     private cdr:          ChangeDetectorRef,
@@ -46,10 +52,24 @@ export class GruposComponent implements OnInit {
           this.form.patchValue({ idEvento: this.getIdEvento(this.eventos[0]) });
         }        
         this.cargandoEventos = false;
+        this.usuario = this.authService.getUsuario();
+        this.TraerTelefonoUser(this.usuario?.['id'] ?? 0);
         this.cdr.detectChanges();
       },
       error: () => {
         this.cargandoEventos = false;
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  TraerTelefonoUser(idUsuario: number) {
+    this.apiService.getTraerTelefono(idUsuario).subscribe({
+      next: (res: any) => {
+        this.telefonoUser = res?.Telefono ?? '';
+        this.cdr.detectChanges();
+      },
+      error: () => {
         this.cdr.detectChanges();
       },
     });
@@ -66,7 +86,36 @@ export class GruposComponent implements OnInit {
 
   get telefonos() { return this.form.get('telefonos') as FormArray; }
   nuevoTel()      { return this.fb.group({ numero: ['', Validators.pattern(/^\d{9}$/)] }); }
-  agregar()       { this.telefonos.push(this.nuevoTel()); }
+  agregar()       { 
+    // Obtener el último campo de teléfono ingresado
+    const ultimoIndex  = this.telefonos.length - 1;
+    const ultimoNumero = this.telefonos.at(ultimoIndex).get('numero')?.value ?? '';
+
+    // Validar que no sea el teléfono del admin (con o sin prefijo 593)
+    const telConPrefijo    = `593${ultimoNumero}`;
+    const telUserSinPrefijo = this.telefonoUser.startsWith('593')
+      ? this.telefonoUser.substring(3)
+      : this.telefonoUser;
+
+    if (ultimoNumero === telUserSinPrefijo || telConPrefijo === this.telefonoUser) {
+      this.alertService.error('El número del Administrador no puede ser agregado.');
+      // Limpiar el campo
+      this.telefonos.at(ultimoIndex).get('numero')?.setValue('');
+      return;
+    }
+
+    // Validar que no esté duplicado en la lista
+    const yaExiste = this.telefonos.controls.some((ctrl, i) =>
+      i !== ultimoIndex && ctrl.get('numero')?.value === ultimoNumero && ultimoNumero !== ''
+    );
+
+    if (yaExiste) {
+      this.alertService.error('Este número ya fue agregado a la lista.');
+      this.telefonos.at(ultimoIndex).get('numero')?.setValue('');
+      return;
+    }
+    this.telefonos.push(this.nuevoTel()); 
+  }
   quitar(i: number) { if (this.telefonos.length > 1) this.telefonos.removeAt(i); }
 
   onSubmit() {
