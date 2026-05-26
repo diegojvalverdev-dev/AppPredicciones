@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule }    from '@angular/common';
-import { FormsModule }     from '@angular/forms';
+import { FormsModule, ReactiveFormsModule }     from '@angular/forms';
 import { NavbarComponent } from '../../shared/components/nav/bottom-nav';
 import { ApiService }      from '../../core/services/api.service';
 
@@ -23,7 +23,7 @@ interface GrupoFecha { label: string; partidos: Partido[]; }
 @Component({
   selector: 'app-partidos',
   standalone: true,
-  imports: [CommonModule, FormsModule, NavbarComponent],
+  imports: [CommonModule, FormsModule, NavbarComponent, ReactiveFormsModule],
   templateUrl: './partidos.html',
 })
 export class PartidosComponent implements OnInit {
@@ -43,6 +43,8 @@ export class PartidosComponent implements OnInit {
   partidos: Partido[]    = [];
   fechas:   GrupoFecha[] = [];
   cargando  = false;
+
+  estadoId = 'PEN';
 
   constructor(private apiService: ApiService, private cdr: ChangeDetectorRef) {}
 
@@ -89,7 +91,7 @@ export class PartidosComponent implements OnInit {
     this.fechas   = [];
     this.cdr.detectChanges();
 
-    this.apiService.getPartidosPorRango(this.eventoId, this.desde, this.hasta).subscribe({
+    this.apiService.getPartidosPorRango(this.eventoId, this.desde, this.hasta, this.estadoId).subscribe({
       next: (res: any) => {
         this.partidos = Array.isArray(res) ? res : [];
         this.fechas   = this.agruparPorFecha(this.partidos);

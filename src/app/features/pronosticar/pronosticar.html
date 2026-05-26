@@ -140,12 +140,15 @@
       <span class="partido-teams__name partido-teams__name--right">{{ p.local }}</span>
       <div class="partido-score">
         <input type="number" [(ngModel)]="p.golesLocal" min="0" max="20"
-          class="partido-score__inp" placeholder="0"
-          (input)="calcularResultado(p)" />
+          class="partido-score__inp" placeholder="-"
+          step="1" id="local-{{p.id}}"
+          (input)="soloEntero($event, p, 'local');calcularResultado(p)" 
+          (keyup.enter)="enfocarVisitante(p.id)" />
         <span class="partido-score__sep">-</span>
         <input type="number" [(ngModel)]="p.golesVisitante" min="0" max="20"
-          class="partido-score__inp" placeholder="0"
-          (input)="calcularResultado(p)" />
+          class="partido-score__inp" placeholder="-"
+          step="1" id="visitante-{{p.id}}"
+          (input)="soloEntero($event, p, 'visitante'); calcularResultado(p)" />
       </div>
       <span class="partido-teams__name">{{ p.visitante }}</span>
     </div>
@@ -156,7 +159,7 @@
         <button class="partido-btn"
           [class.partido-btn--active]="p.pronostico==='local'"
           (click)="seleccionar(p,'local')"
-          [disabled]="p.golesLocal !== null && p.golesVisitante !== null"
+          [disabled]="p.golesLocal === null || p.golesVisitante === null || p.golesLocal !== null || p.golesVisitante !== null"
           [style.opacity]="(p.golesLocal !== null && p.golesVisitante !== null) ? '0.6' : '1'"
           [style.cursor]="(p.golesLocal !== null && p.golesVisitante !== null) ? 'default' : 'pointer'">
           {{ p.local.substring(0,3).toUpperCase() }}
@@ -166,7 +169,7 @@
         <button class="partido-btn"
           [class.partido-btn--active]="p.pronostico==='empate'"
           (click)="seleccionar(p,'empate')"
-          [disabled]="p.golesLocal !== null && p.golesVisitante !== null"
+          [disabled]="p.golesLocal === null || p.golesVisitante === null || p.golesLocal !== null || p.golesVisitante !== null"
           [style.opacity]="(p.golesLocal !== null && p.golesVisitante !== null) ? '0.6' : '1'"
           [style.cursor]="(p.golesLocal !== null && p.golesVisitante !== null) ? 'default' : 'pointer'">
           X
@@ -176,7 +179,7 @@
         <button class="partido-btn"
           [class.partido-btn--active]="p.pronostico==='visitante'"
           (click)="seleccionar(p,'visitante')"
-          [disabled]="p.golesLocal !== null && p.golesVisitante !== null"
+          [disabled]="p.golesLocal === null || p.golesVisitante === null || p.golesLocal !== null || p.golesVisitante !== null"
           [style.opacity]="(p.golesLocal !== null && p.golesVisitante !== null) ? '0.6' : '1'"
           [style.cursor]="(p.golesLocal !== null && p.golesVisitante !== null) ? 'default' : 'pointer'">
           {{ p.visitante.substring(0,3).toUpperCase() }}

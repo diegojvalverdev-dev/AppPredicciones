@@ -86,7 +86,7 @@ export class HistorialComponent implements OnInit {
     const fechaRaw = p['HoraPartido'] ?? p['Hora'] ?? '';
     return {
       fecha:          fechaRaw ? new Date(fechaRaw).toLocaleString('es-EC',
-                        { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }).toUpperCase() : '—',
+                        { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit', hour12: false, }).toUpperCase().replace('.', '').replace(',', ',') : '—',
       grupo:          p['Fase'] != null ? `FASE ${p['Fase']}` : '—',
       local:          p['PaisLocal']           ?? '—',
       visitante:      p['PaisVisitante']       ?? '—',

@@ -149,17 +149,18 @@ export class PosicionesComponent implements OnInit {
     const eventoId = this.grupoActivo.gru_idEvento;
     const fase     = this.getFaseId(this.faseActiva);
 
-    this.apiService.getPosiciones(this.grupoActivo.gru_id, eventoId, fase).subscribe({
+    if(fase === 0) {
+      this.apiService.getPosicionesTotal(this.grupoActivo.gru_id, eventoId).subscribe({
       next: (res: any) => {
         const lista: any[] = Array.isArray(res) ? res : (res?.data ?? []);
         this.tabla = lista.map((p: any, i: number) => ({
           pos:           i + 1,
           alias:         p.Alias    ?? p.alias    ?? p.gusr_alias ?? `Jugador ${i + 1}`,
           usuario:       p.Usuario  ?? p.usuario  ?? p.login      ?? '',
-          puntos:        p.Puntos   ?? p.puntos   ?? p.PuntosTotales      ?? 0,
-          resultado:     p.Resultado ?? p.resultado ?? p.PuntosResultado ?? 0,
-          marcador:      p.Marcador ?? p.marcador ?? p.PuntosMarcador ?? 0,
-          clasificacion: p.Clasificacion ?? p.clasificacion ?? p.PuntosClasificacion ?? 0,
+          puntos:        p.Puntos   ?? p.puntos   ?? p.PuntosTotales ?? p.TotalPuntos ?? 0,
+          resultado:     p.Resultado ?? p.resultado ?? p.PuntosResultado ?? p.TotalResultados ?? 0,
+          marcador:      p.Marcador ?? p.marcador ?? p.PuntosMarcador ?? p.TotalMarcadores ?? 0,
+          clasificacion: p.Clasificacion ?? p.clasificacion ?? p.PuntosClasificacion ?? p.TotalClasificaciones ?? 0,
         }));
         this.cargando = false;
         this.cargarPosicionesFinal4();
@@ -171,6 +172,32 @@ export class PosicionesComponent implements OnInit {
         this.cdr.detectChanges();
       },
     });
+    }else{
+      this.apiService.getPosiciones(this.grupoActivo.gru_id, eventoId, fase).subscribe({
+        next: (res: any) => {
+          const lista: any[] = Array.isArray(res) ? res : (res?.data ?? []);
+          this.tabla = lista.map((p: any, i: number) => ({
+            pos:           i + 1,
+            alias:         p.Alias    ?? p.alias    ?? p.gusr_alias ?? `Jugador ${i + 1}`,
+            usuario:       p.Usuario  ?? p.usuario  ?? p.login      ?? '',
+            puntos:        p.Puntos   ?? p.puntos   ?? p.PuntosTotales      ?? 0,
+            resultado:     p.Resultado ?? p.resultado ?? p.PuntosResultado ?? 0,
+            marcador:      p.Marcador ?? p.marcador ?? p.PuntosMarcador ?? 0,
+            clasificacion: p.Clasificacion ?? p.clasificacion ?? p.PuntosClasificacion ?? 0,
+          }));
+          this.cargando = false;
+          this.cargarPosicionesFinal4();
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          this.cargando = false;
+          this.alertService.error(`Error al cargar posiciones. ${extractErrorMessage(err)}`);
+          this.cdr.detectChanges();
+        },
+      });
+    }
+
+    
   }
 
   // ── 4. Cargar ranking fINAL 4─────────────────────────────────────────

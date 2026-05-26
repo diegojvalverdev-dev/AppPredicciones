@@ -42,6 +42,12 @@
         <p *ngIf="form.get('telefono')?.invalid && form.get('telefono')?.touched" class="text-danger">Ingresa 9 dígitos (ej: 991234567)</p>
       </div>
 
+      <div>
+        <label class="label-section mb-sm" style="display:block;">Email</label>
+        <input type="email" formControlName="email" class="inp" autocomplete="email" placeholder="Ej. juanp@example.com" />
+        <p *ngIf="form.get('email')?.invalid && form.get('email')?.touched" class="text-danger">Email inválido</p>
+      </div>
+
       <button type="submit" class="btn-green btn-green--full" [disabled]="form.invalid || loading">
         {{ loading ? 'CREANDO...' : 'CREAR CUENTA' }}
       </button>

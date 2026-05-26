@@ -123,10 +123,11 @@
               <div class="inp-phone__prefix"><span class="inp-phone__label">EC</span> +593</div>
               <input type="tel" [(ngModel)]="nuevoTelefono" placeholder="991234567"
                 class="inp-phone__field" maxlength="9"
-                (input)="errorTelefono=''" (keyup.enter)="agregarMiembro()" />
+                (input)="errorTelefono=''; quitarEspacios($event)" (keyup.enter)="agregarMiembro()" 
+                (paste)="onPasteTelefono($event)"/>
             </div>
-            <input type="text" [(ngModel)]="nuevoAlias" placeholder="Alias (opcional)"
-              class="inp" style="flex:1;min-width:100px;" (keyup.enter)="agregarMiembro()" />
+            <!--<input type="text" [(ngModel)]="nuevoAlias" placeholder="Alias (opcional)"
+              class="inp" style="flex:1;min-width:100px;" (keyup.enter)="agregarMiembro()" />-->
             <button (click)="agregarMiembro()" class="btn-icon"
               [style.opacity]="cargandoTel?'0.6':'1'" [disabled]="cargandoTel">
               <svg *ngIf="!cargandoTel" width="18" height="18" viewBox="0 0 24 24"

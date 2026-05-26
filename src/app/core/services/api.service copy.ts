@@ -8,7 +8,7 @@ const BASE = environment.production ? environment.apiBase : '/backend';
 // Prefijo /backend → proxy reenvía a https://192.168.111.23/pronosticos/*
 const EP = {
   // ── Usuarios ─────────────────────────────────────────────────
-  /*USUARIOS_CREAR:          `${BASE}/app/usuarios/`,
+  USUARIOS_CREAR:          `${BASE}/app/usuarios/`,
 
   // ── Grupos ───────────────────────────────────────────────────
   GRUPOS_USUARIO:          `${BASE}/app/grupos/usuario`,
@@ -44,64 +44,14 @@ const EP = {
   PUNTAJES_GRUPO_EVENTO_FASE: (grupoId: number, eventoId: number, fase: number) => `${BASE}/app/puntajes/grupo/${grupoId}/evento/${eventoId}/fase/${fase}`,
   PUNTAJES_GRUPO_EVENTO_FASE_TOTAL: (grupoId: number, eventoId: number) => `${BASE}/app/puntajes/grupo/${grupoId}/evento/${eventoId}`,
   POSICIONES_FINAL4: (grupoId: number) => `${BASE}/app/puntajes/grupo/${grupoId}/ranking-final4`,
-  PARTIDOS_POR_RANGO: (idEvento: number, fechaInicio: string, fechaFin: string, estado: string) => `${BASE}/app/partidos/evento/${idEvento}/rango?idEvento=${idEvento}&fechaInicio=${fechaInicio}&fechaFin=${fechaFin}&estado=${estado}`,
+  PARTIDOS_POR_RANGO: (idEvento: number, fechaInicio: string, fechaFin: string) => `${BASE}/app/partidos/evento/${idEvento}/rango?idEvento=${idEvento}&fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`,
 
   TRAER_FINALFOUR: (grupoId: number) => `${BASE}/app/final4/grupo/${grupoId}`,
   JUGADORES_POR_GRUPO: (eventoId: number) => `${BASE}/api/admin/eventos-jugadores/evento/${eventoId}`,
-  SOLICITAR_OTP: `${BASE}/app/reset-password/crear`,
+  SOLICITAR_OTP: '${BASE}/app/reset-password/crear',
   CONSULTAR_OTP: (idSolicitud: string, telefono: string, otp: string) => `${BASE}/app/reset-password/solicitud/${idSolicitud}?telefono=593${telefono}&otp=${otp}`,
   RESETEAR_PASSWORD: `${BASE}/app/usuarios/reset-password`,
   TRAER_TELEFONO_USER: (usuarioId: number) => `${BASE}/app/usuarios/${usuarioId}`,
-  TRAER_EQUIPOS: (eventoId: number) => `${BASE}/app/eventos-final/evento/${eventoId}/equipos`,
-*/
-  
-  USUARIOS_CREAR:          'backend/app/usuarios/',
-
-  // ── Grupos ───────────────────────────────────────────────────
-  GRUPOS_USUARIO:          'backend/app/grupos/usuario',
-  GRUPOS_DETALLE:          (id: number) => `backend/app/grupos/${id}`,
-  GRUPOS_CREAR:            'backend/app/grupos/crear',
-  GRUPOS_TELEFONO:         'backend/app/grupos/telefono',
-  GRUPOS_PARAMETROS:       (id: number) => `backend/app/grupos/${id}/parametros`,
-  GRUPOS_ELIMINAR:         (id: number) => `backend/app/grupos/eliminar/${id}`,
-
-  // ── Partidos ─────────────────────────────────────────────────
-  PARTIDOS_GRUPOS_EQUIPOS: (grupoId: number) => `backend/app/partidos/grupo-usuario/${grupoId}/grupos-equipos`,
-
-  // ── Eventos ──────────────────────────────────────────────────
-  EVENTOS_DISPONIBLES:     'backend/app/eventos/disponibles',
-
-  // ── Pronósticos ──────────────────────────────────────────────
-  PRONOSTICOS_CREAR:       'backend/app/pronosticos/crear',
-  PRONOSTICOS_MODIFICAR:   'backend/app/pronosticos/modificar',
-  PRONOSTICOS_GRUPO_AGRUP: (grupoId: number, agrupacion: string) => `backend/app/pronosticos/usuario/grupo/${grupoId}/agrupacionEquipo/${encodeURIComponent(agrupacion)}`,
-  HISTORIAL:               (grupoId: number) => `backend/app/pronosticos/usuario/grupo/${grupoId}`,
-  PRONOSTICOS_FECHAS:      (grupoId: number, fechaInicio: string, fechaFin: string) => `backend/app/pronosticos/usuario/grupo/${grupoId}/fechaInicio/${fechaInicio}/fechaFin/${fechaFin}`,
-
-  // ── Eventos ──────────────────────────────────────────────────
-  FINALFOUR_CREAR:         'backend/app/final4/crear',
-  FINALFOUR_MODIFICAR:     'backend/app/final4/actualizar',
-  FINALFOUR:                (grupoId: number) => `backend/app/final4/grupo/${grupoId}`,
-
-  //ESTADISTICAS EXCEL
-  ADMIN_GRUPO:      (grupoId: number) => `backend/app/grupos/grupo/${grupoId}`,
-  EXPORTAR_EXCEL_PRONOSTICOS: (idGrupo: string, fase: string) => `backend/app/reportes/pronosticos/excel?idGrupo=${idGrupo}&fase=${fase}`,
-
-  FASES_POR_EVENTO: (idEvento: number) => `backend/app/eventos/${idEvento}/fases-todo`, 
-  PUNTAJES_GRUPO_EVENTO_FASE: (grupoId: number, eventoId: number, fase: number) => `backend/app/puntajes/grupo/${grupoId}/evento/${eventoId}/fase/${fase}`,
-  PUNTAJES_GRUPO_EVENTO_FASE_TOTAL: (grupoId: number, eventoId: number) => `backend/app/puntajes/grupo/${grupoId}/evento/${eventoId}`,
-  POSICIONES_FINAL4: (grupoId: number) => `backend/app/puntajes/grupo/${grupoId}/ranking-final4`,
-  PARTIDOS_POR_RANGO: (idEvento: number, fechaInicio: string, fechaFin: string, estado: string) => `backend/app/partidos/evento/${idEvento}/rango?idEvento=${idEvento}&fechaInicio=${fechaInicio}&fechaFin=${fechaFin}&estado=${estado}`,
-
-  TRAER_FINALFOUR: (grupoId: number) => `backend/app/final4/grupo/${grupoId}`,
-  JUGADORES_POR_GRUPO: (eventoId: number) => `backend/api/admin/eventos-jugadores/evento/${eventoId}`,
-  SOLICITAR_OTP: 'backend/app/reset-password/crear',
-  CONSULTAR_OTP: (idSolicitud: string, telefono: string, otp: string) => `backend/app/reset-password/solicitud/${idSolicitud}?telefono=593${telefono}&otp=${otp}`,
-  RESETEAR_PASSWORD: 'backend/app/usuarios/reset-password',
-
-  TRAER_TELEFONO_USER: (usuarioId: number) => `backend/app/usuarios/${usuarioId}`,
-
-  TRAER_EQUIPOS: (eventoId: number) => `backend/app/eventos-final/evento/${eventoId}/equipos`,
 
 };
 
@@ -187,7 +137,6 @@ export interface CrearUsuarioRequest {
   Nombre:   string;
   Telefono: string;
   Password: string;
-  Email: string;
 }
 
 export interface CrearFinalFourRequest {
@@ -300,8 +249,8 @@ export class ApiService {
    * GET /app/partidos/evento/:id/rango?idEvento=&fechaInicio=&fechaFin=
    * Lista partidos de un evento en un rango de fechas.
    */
-  getPartidosPorRango(idEvento: number, fechaInicio: string, fechaFin: string, estado: string): Observable<any> {
-    return this.http.get(EP.PARTIDOS_POR_RANGO(idEvento, fechaInicio, fechaFin, estado));
+  getPartidosPorRango(idEvento: number, fechaInicio: string, fechaFin: string): Observable<any> {
+    return this.http.get(EP.PARTIDOS_POR_RANGO(idEvento, fechaInicio, fechaFin));
   }
 
   // ── Pronósticos ──────────────────────────────────────────────
@@ -395,13 +344,8 @@ export class ApiService {
     return this.http.get(EP.ADMIN_GRUPO(grupoId));
   }
 
-  // ── TRAER TELEFONO DEL USUARIO ──────────────────────────────────────────────  
+   // ── TRAER TELEFONO DEL USUARIO ──────────────────────────────────────────────  
   getTraerTelefono(usuarioId: number): Observable<any> {
     return this.http.get(EP.TRAER_TELEFONO_USER(usuarioId));
-  }
-
-  // ── TRAER EQUIPOS DEL MUNDIAL ──────────────────────────────────────────────  
-  getTraerEquipos(eventoId: number): Observable<any> {
-    return this.http.get(EP.TRAER_EQUIPOS(eventoId));
   }
 }

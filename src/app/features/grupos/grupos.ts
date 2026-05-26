@@ -155,4 +155,24 @@ export class GruposComponent implements OnInit {
     this.modalOtp = false;
     this.router.navigate(['/inicio']);
   }
+
+  quitarEspacios(event: Event) {
+    const input = event.target as HTMLInputElement;
+    input.value = input.value.replace(/\D/g, '').substring(0, 9);
+    // Actualizar el FormControl reactivo
+    const index = this.telefonos.controls.findIndex(
+      c => c.get('numero')?.value === input.value || 
+      document.activeElement === input
+    );
+    if (index >= 0) {
+      this.telefonos.at(index).get('numero')?.setValue(input.value, { emitEvent: false });
+    }
+  }
+
+  onPasteTelefono(event: ClipboardEvent, index: number) {
+    event.preventDefault();
+    const texto  = event.clipboardData?.getData('text') ?? '';
+    const limpio = texto.replace(/\D/g, '').substring(0, 9);
+    this.telefonos.at(index).get('numero')?.setValue(limpio);
+  }
 }

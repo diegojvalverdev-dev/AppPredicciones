@@ -255,4 +255,18 @@ export class GrupoDetalleComponent implements OnInit {
   numSinPrefijo(tel: string): string {
     return tel.startsWith('593') ? tel.substring(3) : tel;
   }
+
+  quitarEspacios(event: Event) {
+    const input = event.target as HTMLInputElement;
+    input.value = input.value.replace(/\s/g, '').replace(/\D/g, '').substring(0, 9);
+    this.nuevoTelefono = input.value;
+  }
+
+  onPasteTelefono(event: ClipboardEvent) {
+    event.preventDefault(); // evitar que pegue el texto original
+    const texto = event.clipboardData?.getData('text') ?? '';
+    // Quitar espacios, guiones y todo lo que no sea número
+    const limpio = texto.replace(/\D/g, '').substring(0, 9);
+    this.nuevoTelefono = limpio;
+  }
 }

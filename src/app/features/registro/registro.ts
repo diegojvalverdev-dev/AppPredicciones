@@ -27,6 +27,7 @@ export class RegistroComponent {
       password: ['', [Validators.required, Validators.minLength(6)]],
       nombre:   ['', Validators.required],
       telefono: ['', [Validators.required, Validators.pattern(/^\d{9}$/)]],
+      email: ['', [Validators.required, Validators.minLength(6)]],
     });
   }
 
@@ -34,13 +35,14 @@ export class RegistroComponent {
     if (this.form.invalid) return;
     this.loading = true;
 
-    const { login, password, nombre, telefono } = this.form.value;
+    const { login, password, nombre, telefono, email } = this.form.value;
 
     this.apiService.crearUsuario({
       Login:    login.trim(),
       Nombre:   nombre.trim(),
       Telefono: `593${telefono.trim()}`,
       Password: password,
+      Email: email.trim(),
     }).subscribe({
       next: () => {
         this.loading = false;

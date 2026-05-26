@@ -975,37 +975,81 @@ body {
 .gap-lg { gap: 16px; }
 
 
-/* Fix iOS — evitar zoom automático en todos los inputs */
-input[type="text"],
-input[type="password"],
-input[type="tel"],
-input[type="email"],
-input[type="number"],
-input[type="date"],
-select,
-textarea {
-  font-size: 16px !important;
+/* Quitar el ojo nativo del navegador en inputs de tipo password */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear,
+input[type="password"]::-webkit-credentials-auto-fill-button {
+  display: none;
 }
 
-/* Quitar ojo nativo y autocompletado de Safari/iOS */
-input::-webkit-credentials-auto-fill-button,
-input::-webkit-strong-password-auto-fill-button,
-input::-webkit-contacts-auto-fill-button,
-input[type="password"]::-webkit-credentials-auto-fill-button,
+input[type="password"] {
+  -webkit-appearance: none;
+}
+
+input::-webkit-textfield-decoration-container {
+  display: none;
+}
+
+/* Ocultar ojo nativo en Safari iOS */
+/*input[type="password"]::-webkit-credentials-auto-fill-button,
 input[type="password"]::-webkit-strong-password-auto-fill-button {
   display: none !important;
   visibility: hidden;
   pointer-events: none;
-  position: absolute;
-  right: 0;
-}
+}*/
 
-/* Quitar ojo nativo en Edge/IE */
-input[type="password"]::-ms-reveal,
-input[type="password"]::-ms-clear {
-  display: none !important;
-}
 
 link[rel="icon"] {
   border-radius: 50px;
+}
+
+.password-wrapper{
+  position: relative;
+  width: 100%;
+}
+
+.password-ios{
+  width: 100%;
+  height: 52px;
+
+  padding-left: 14px;
+  padding-right: 50px;
+
+  font-size: 16px !important;
+
+  position: relative;
+  z-index: 1;
+
+  -webkit-appearance: none;
+  appearance: none;
+
+  box-sizing: border-box;
+}
+
+.toggle-password-btn{
+  position: absolute;
+
+  right: 8px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  width: 32px;
+  height: 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  background: transparent;
+
+  padding: 0;
+  margin: 0;
+
+  z-index: 2;
+
+  cursor: pointer;
+
+  -webkit-tap-highlight-color: transparent;
 }

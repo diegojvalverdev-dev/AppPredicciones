@@ -35,7 +35,7 @@ export class PronosticarComponent implements OnInit {
   cargandoPartidos  = false;
 
   vista: 'grupos' | 'fechas' = 'grupos';
-  fechaDesde = '2026-04-28';
+  fechaDesde = this.hoy();
   fechaHasta = this.hoy();
 
   // Listas separadas por vista
@@ -145,6 +145,7 @@ export class PronosticarComponent implements OnInit {
         this.cdr.detectChanges();
       },
     });
+    this.buscarPorFechas();
   }
 
   // ── Cambio de vista ───────────────────────────────────────────
@@ -387,5 +388,31 @@ export class PronosticarComponent implements OnInit {
       return;
     }
     con.forEach(p => this.guardarPronostico(p));
+  }
+
+  soloEntero(event: Event, p: Partido, campo: 'local' | 'visitante') {
+    const input  = event.target as HTMLInputElement;
+    // Eliminar decimales y negativos
+    let valor = Math.floor(Math.abs(Number(input.value)));
+    // Máximo 20
+    if (valor > 20) valor = 0;
+    // Actualizar el input visualmente
+    input.value = isNaN(valor) ? '' : String(valor);
+    // Actualizar el modelo
+    if (campo === 'local') {
+      p.golesLocal = isNaN(valor) ? null : valor;
+    } else {
+      p.golesVisitante = isNaN(valor) ? null : valor;
+    }
+    // Calcular resultado automático
+    this.calcularResultado(p);
+  }
+
+  enfocarVisitante(partidoId: number) {
+    const input = document.getElementById(`visitante-${partidoId}`) as HTMLInputElement;
+    if (input) {
+      input.focus();
+      input.select(); // selecciona el texto para reemplazar fácilmente
+    }
   }
 }

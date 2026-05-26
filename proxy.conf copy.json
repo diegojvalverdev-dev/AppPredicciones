@@ -1,0 +1,9 @@
+{
+  "/backend": {
+    "target": "https://app2.eclipsoft.com:8443/pollamundial",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "pathRewrite": { "^/backend": "" }
+  }
+}

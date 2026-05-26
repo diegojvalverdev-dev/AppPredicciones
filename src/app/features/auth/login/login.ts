@@ -16,6 +16,7 @@ import { extractErrorMessage } from '../../../core/utils/error.utils';
 export class LoginComponent {
   form: FormGroup;
   loading = false;
+  mostrarPassword = false;
 
   constructor(
     private fb:           FormBuilder,

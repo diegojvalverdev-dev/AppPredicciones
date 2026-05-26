@@ -37,6 +37,8 @@ export class Final4Component implements OnInit {
   goleador   = '';
   golesGoleador: number | null = null;
   error = '';
+  fechatope = new Date().toISOString().slice(0,16); // formato 'YYYY-MM-DDTHH:mm'
+  fechaHoy = new Date().toISOString().slice(0,16);
 
   // ── Buscador de jugadores ─────────────────────────────────────
   jugadores: any[]         = [];
@@ -55,6 +57,7 @@ export class Final4Component implements OnInit {
     private alertService: AlertService,
     private cdr:          ChangeDetectorRef,
   ) {}
+  
 
   ngOnInit() {
     this.apiService.getGruposUsuario().subscribe({
@@ -104,8 +107,27 @@ export class Final4Component implements OnInit {
           paramF4?.par_valorStr === 'true' ||
           paramF4?.par_valorNum  === 1;
 
+        const paramFecha = (detalle.Parametros ?? []).find(
+          (p: any) => p.par_clave_parametro === 'FECHA_TOPE_GOLEADOR'
+        );
+
+        if (paramFecha?.par_valorDate) {
+          const fecha = new Date(paramFecha.par_valorDate);
+          const año   = fecha.getFullYear();
+
+          // Si el año es mayor a 9000 (fecha "infinita" del servidor), dejar vacío
+          if (año > 9000) {
+            this.fechatope = '';
+          } else {
+            fecha.setDate(fecha.getDate() + 1);
+            this.fechatope = fecha.toISOString().slice(0, 16);
+          }
+        } else {
+          this.fechatope = '';
+        }
+
         if (this.habilitado) {
-          this.cargarEquipos(g.gru_id);
+          this.cargarEquipos(g.gru_idEvento);
           this.cargarFinal4(g.gru_id);
           this.cargarJugadores(g.gru_idEvento); 
         } else {
@@ -117,30 +139,78 @@ export class Final4Component implements OnInit {
     });
   }
 
-  private cargarEquipos(grupoId: number) {
-    this.apiService.getGruposEquipos(grupoId).subscribe({
-      next: (res: any) => {
-        const lista: any[] = Array.isArray(res) ? res : (res?.data ?? []);
-        const paises = new Set<string>();
-        lista.forEach((p: any) => {
-          if (p.pais1 ?? p.equipo1) paises.add(p.pais1 ?? p.equipo1);
-          if (p.pais2 ?? p.equipo2) paises.add(p.pais2 ?? p.equipo2);
-        });
-        this.equipos  = paises.size ? [...paises] : this.defaultEquipos();
-        this.cargando = false;
-        this.cdr.detectChanges();
-      },
-      error: () => {
-        this.equipos  = this.defaultEquipos();
-        this.cargando = false;
-        this.cdr.detectChanges();
-      },
-    });
-  }
+  private cargarEquipos(eventoId: number) {
+  this.apiService.getTraerEquipos(eventoId).subscribe({
+    next: (res: any) => {
+      const lista: any[] = Array.isArray(res) ? res : (res?.data ?? []);
+
+      this.equipos = lista
+        .map((p: any) => p.Nombre ?? p.nombre ?? p.pais1 ?? p.equipo1 ?? '')
+        .filter((nombre: string) => nombre.trim() !== '');
+
+      if (!this.equipos.length) this.equipos = this.defaultEquipos();
+      this.cargando = false;
+      this.cdr.detectChanges();
+    },
+    error: () => {
+      this.equipos  = this.defaultEquipos();
+      this.cargando = false;
+      this.cdr.detectChanges();
+    },
+  });
+}
 
   private defaultEquipos(): string[] {
-    return ['Ecuador','Argentina','Brasil','Colombia','Uruguay',
-            'Chile','México','Paraguay','Perú','Bolivia','Venezuela'];
+    return [
+      "México",
+      "Canadá",
+      "Estados Unidos",
+      "Argentina",
+      "Brasil",
+      "Colombia",
+      "Ecuador",
+      "Paraguay",
+      "Uruguay",
+      "Australia",
+      "Irán",
+      "Japón",
+      "Jordania",
+      "Corea del Sur",
+      "Catar",
+      "Arabia Saudita",
+      "Uzbekistán",
+      "Irak",
+      "Nueva Zelanda",
+      "Argelia",
+      "Cabo Verde",
+      "Costa de Marfil",
+      "Egipto",
+      "Ghana",
+      "Marruecos",
+      "Senegal",
+      "Sudáfrica",
+      "Túnez",
+      "República Democrática del Congo",
+      "Curazao",
+      "Haití",
+      "Panamá",
+      "Austria",
+      "Bélgica",
+      "Bosnia y Herzegovina",
+      "Croacia",
+      "República Checa",
+      "Inglaterra",
+      "Francia",
+      "Alemania",
+      "Países Bajos",
+      "Noruega",
+      "Portugal",
+      "Escocia",
+      "España",
+      "Suecia",
+      "Suiza",
+      "Turquía"
+    ];
   }
 
   opcionesDisponibles(excluir: string[]): string[] {
@@ -152,22 +222,64 @@ export class Final4Component implements OnInit {
     this.cuarto  = ''; this.mvp = ''; this.goleador = '';
     this.golesGoleador = null; this.error = '';
   }
-
-
-    guardando = false;
+  
+  guardando = false;
 
   guardar() {
     this.error = '';
 
     if (!this.campeon || !this.subcampeon || !this.tercero || !this.cuarto) {
       this.error = 'Debes seleccionar los 4 puestos del podio.';
+      this.alertService.error(this.error);
       return;
     }
+
     const sel = [this.campeon, this.subcampeon, this.tercero, this.cuarto];
     if (new Set(sel).size !== 4) {
       this.error = 'No puedes seleccionar el mismo equipo en dos puestos.';
+      this.alertService.error(this.error);
       return;
     }
+
+    //validar fecha goleador para permitir guardar, se suma 1 día para validar la fecha tope.
+    if (this.fechatope) {
+      const fechaTope = new Date(this.fechatope);
+      const añoTope   = fechaTope.getFullYear();
+
+      if (añoTope <= 9000 && añoTope >= 2000) {
+        // Sumar 1 día en variable temporal — sin modificar this.fechatope
+        const fechaTopeConDia = new Date(fechaTope);
+        fechaTopeConDia.setDate(fechaTopeConDia.getDate() + 1);
+
+        const fechaHoy = new Date();
+        if (fechaTopeConDia < fechaHoy) {
+          this.error = 'La fecha tope para guardar el Final 4 ya ha pasado.';
+          this.alertService.error(this.error);
+          return;
+        }
+      }
+      // Si año > 9000 → fecha infinita → permitir sin restricción
+    }
+
+    const esFechaVacia = (fecha: string): boolean => {
+      if (!fecha) return true;
+      const año = new Date(fecha).getFullYear();
+      // Si el año es mayor a 9000 o menor a 2000, se considera vacía/infinita
+      return año > 9000 || año < 2000;
+    };
+
+    if (!esFechaVacia(this.fechatope) && this.fechatope < this.fechaHoy) {
+      this.error = 'La fecha tope para guardar el Final 4 ya ha pasado.';
+      this.alertService.error(this.error);
+      return;
+    }
+
+    if(this.golesGoleador == 0 || this.golesGoleador == null) {
+      this.error = 'Debe ingresar los goles del goleador.';
+      this.alertService.error(this.error);
+      return;
+    }
+
     if (!this.grupoActivo) return;
 
     this.guardando = true;
@@ -222,6 +334,7 @@ export class Final4Component implements OnInit {
           this.goleador      = res.Goleador       ?? res.goleador      ?? '';
           this.golesGoleador = res.CantGoles      ?? res.CantGoles     ?? null;
           this.yaGuardado    = true;
+          this.fechatope     = res.FechaTope      ?? res.fechaTope     ?? this.fechatope;
         }
         this.cdr.detectChanges();
       },

@@ -46,6 +46,22 @@
       </div>
     </div>
 
+    <div class="mb-md">
+      <label class="label-section mb-sm" style="display:block;">Estado</label>
+      <div class="inp-group">
+        <select class="inp inp--select"
+          (change)="buscarPartidos()" [(ngModel)]="estadoId">
+          <option value="PEN">PENDIENTE</option>
+          <option value="FIN">FINALIZADO</option>
+        </select>
+        <span class="inp-group__icon">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </span>
+      </div>
+    </div>
+
     <!-- Fechas -->
     <div class="filter-grid mb-md">
       <div>

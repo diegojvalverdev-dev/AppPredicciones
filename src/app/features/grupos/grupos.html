@@ -61,7 +61,8 @@
           <div *ngFor="let tel of telefonos.controls; let i = index" [formGroupName]="i" class="flex-row gap-sm">
             <div class="inp-phone" style="flex:1;">
               <div class="inp-phone__prefix"><span class="inp-phone__label">EC</span> +593</div>
-              <input type="tel" formControlName="numero" class="inp-phone__field" placeholder="991234567" />
+              <input type="tel" formControlName="numero" class="inp-phone__field" placeholder="991234567" 
+                    maxlength="9" (input)="quitarEspacios($event)" (paste)="onPasteTelefono($event, i)"/>
             </div>
             <button *ngIf="i === telefonos.length - 1" type="button" (click)="agregar()" class="btn-icon">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>

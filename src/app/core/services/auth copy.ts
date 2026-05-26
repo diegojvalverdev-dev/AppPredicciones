@@ -8,19 +8,12 @@ import { Usuario }             from '../models/usuario.model';
 const TOKEN_KEY = 'token';
 const USER_KEY  = 'usuario';
 
-// Prefijo /pollamundial → interceptado por proxy.conf.json
+// Prefijo /backend → interceptado por proxy.conf.json
 // → reenvía a https://192.168.111.23/pronosticos/*
 const LOGIN_URL   = '/backend/api/auth/login';
 const USUARIO_URL = (id: number) => `/backend/app/usuarios/${id}`;
 const FORGOT_URL  = '/backend/api/auth/forgot-password';
 const RESET_URL   = '/backend/api/auth/reset-password';
-
-/*
-const LOGIN_URL   = '/pollamundial/api/auth/login';
-const USUARIO_URL = (id: number) => `/pollamundial/app/usuarios/${id}`;
-const FORGOT_URL  = '/pollamundial/api/auth/forgot-password';
-const RESET_URL   = '/pollamundial/api/auth/reset-password';*/
-
 
 const FIELD_USER = 'Usuario';
 const FIELD_PASS = 'Password';
