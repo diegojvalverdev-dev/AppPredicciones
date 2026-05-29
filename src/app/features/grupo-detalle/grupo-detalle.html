@@ -5,11 +5,12 @@
 <div class="page">
 
   <!-- Volver -->
+   
   <a routerLink="/inicio" class="btn-ghost mb-lg"
     style="display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--muted);text-decoration:none;">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
       stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-    Volver
+    Volver a Inicio
   </a>
 
   <!-- Spinner carga inicial -->
@@ -23,6 +24,13 @@
 
     <!-- Header grupo -->
     <div class="card card--hero mb-lg">
+      <p class="label-green mb-sm">        
+        <span style="margin-left:auto;">
+          <span style="width:7px;height:7px;border-radius:50%;background:var(--primary);
+                   display:inline-block;margin-right:4px;"></span>
+          UBICACIÓN ACTUAL: ADMINISTRADOR DE GRUPO
+        </span>
+      </p> 
       <p class="label-green mb-sm">{{ torneoLabel }}</p>
       <h1 class="title-hero mb-sm">{{ nombreGrupo | uppercase }}</h1>
       <div class="flex-row mb-lg" style="flex-wrap:wrap;">
@@ -63,6 +71,16 @@
         <a routerLink="/final4"     class="btn-dark btn-dark--sm" style="text-decoration:none;">Final 4</a>
         <a routerLink="/posiciones" class="btn-dark btn-dark--sm" style="text-decoration:none;">Posiciones</a>
         <a routerLink="/historial"  class="btn-dark btn-dark--sm" style="text-decoration:none;">Historial</a>
+        <button (click)="copiarInvitacion()" class="btn-dark btn-dark--sm"
+          style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+          </svg>
+          Copiar Invitación
+        </button>
       </div>
     </div>
 
@@ -260,7 +278,7 @@
         <ng-container *ngIf="getParam('FECHA_TOPE_GOLEADOR') as pFG">
           <div class="section-body">
             <p class="toggle-label__title mb-sm">
-              Fecha máxima para registrar al goleador del torneo
+              Fecha máxima para registrar al goleador del torneo y al Final 4
             </p>
             <div class="inp-group" style="max-width:220px;">
               <input type="date" class="inp" style="padding-right:36px;"

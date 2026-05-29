@@ -1,6 +1,4 @@
 <app-navbar></app-navbar>
-
-
 <div class="page">
 
   <!-- Header -->
@@ -12,105 +10,39 @@
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
         </svg>
       </div>
-      <div><h1 class="title-page mb-0">ADMIN</h1><p class="subtitle" style="margin:0;">Eventos y partidos</p></div>
+      <div><h1 class="title-page mb-0">MI CUENTA</h1></div>
     </div>
-    <button (click)="abrirPopup()" class="btn-green" style="padding:11px 20px;font-size:14px;font-weight:700;gap:8px;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      Nuevo evento
-    </button>
   </div>
 
-  <!-- Eventos locales con partidos -->
-  <div *ngFor="let evento of eventos()" class="card mb-lg" style="padding:24px;">
+  <div class="card filter-card mb-xl" style="padding:clamp(20px,5vw,32px);">
+    <form (ngSubmit)="onSubmit()" class="flex-col gap-lg">
 
-    <div class="flex-between mb-lg">
       <div>
-        <h2 style="font-size:18px;font-weight:900;margin:0 0 4px;">{{ evento.nombre }}</h2>
-        <p class="subtitle" style="font-size:12px;margin:0;">{{ resumenEvento(evento) }}</p>
+        <label class="label-section mb-sm" style="display:block;">Nombre completo</label>
+        <input type="text" [(ngModel)]="nombre" name="nombre" class="inp" autocomplete="name" placeholder="Ej. Juan P." />
+        <p *ngIf="this.nombre === ''" class="text-danger">Nombre requerido</p>
       </div>
-      <button (click)="eliminarEvento(evento.id)"
-        style="background:none;border:none;cursor:pointer;color:var(--muted);padding:4px;flex-shrink:0;transition:color .15s;"
-        onmouseenter="this.style.color='#f87171'" onmouseleave="this.style.color='var(--muted)'" title="Eliminar evento">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-          <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
-        </svg>
+
+      <div>
+        <label class="label-section mb-sm" style="display:block;">Teléfono (Ecuador)</label>
+        <div class="inp-phone">
+          <div class="inp-phone__prefix"><span class="inp-phone__label">EC</span> +593</div>
+          <input type="tel" [(ngModel)]="telefono" name="telefono" class="inp-phone__field" placeholder="991234567" />
+        </div>
+        <p class="text-muted mt-sm">Se enviará como 593XXXXXXXXX al servidor.</p>
+        <p *ngIf="this.telefono.length !== 9" class="text-danger">Ingresa 9 dígitos (ej: 991234567)</p>
+      </div>
+
+      <div>
+        <label class="label-section mb-sm" style="display:block;">Email</label>
+        <input type="email" [(ngModel)]="email" name="email" class="inp" autocomplete="email" placeholder="Ej. juanp@example.com" />
+        <p *ngIf="this.email === ''" class="text-danger">Email requerido</p>
+      </div>
+
+      <button type="submit" class="btn-green btn-green--full" [disabled]="loading">
+        {{ loading ? 'ACTUALIZANDO...' : 'ACTUALIZAR CUENTA' }}
       </button>
-    </div>
-
-    <!-- Formulario añadir partido -->
-    <div class="card2" style="padding:16px;margin-bottom:16px;border-radius:12px;">
-      <div *ngIf="initForm(evento.id) as f"
-        style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr)) auto;gap:10px;align-items:flex-end;">
-        <div>
-          <label class="label-section mb-sm" style="display:block;">Grupo</label>
-          <div class="inp-group"><select [(ngModel)]="f.grupo" class="inp inp--select" style="font-size:12px;"><option *ngFor="let g of grupos">{{ g }}</option></select><span class="inp-group__icon"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></span></div>
-        </div>
-        <div>
-          <label class="label-section mb-sm" style="display:block;">Fase</label>
-          <div class="inp-group"><select [(ngModel)]="f.fase" class="inp inp--select" style="font-size:12px;"><option *ngFor="let fs of fases">{{ fs }}</option></select><span class="inp-group__icon"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></span></div>
-        </div>
-        <div>
-          <label class="label-section mb-sm" style="display:block;">Local</label>
-          <input type="text" [(ngModel)]="f.local" class="inp" placeholder="Equipo local" style="font-size:12px;" />
-        </div>
-        <div>
-          <label class="label-section mb-sm" style="display:block;">Visitante</label>
-          <input type="text" [(ngModel)]="f.visitante" class="inp" placeholder="Equipo visitante" style="font-size:12px;" />
-        </div>
-        <div>
-          <label class="label-section mb-sm" style="display:block;">Fecha</label>
-          <input type="datetime-local" [(ngModel)]="f.fecha" class="inp" style="font-size:12px;" />
-        </div>
-        <div style="display:flex;align-items:flex-end;padding-bottom:1px;">
-          <button (click)="agregarPartido(evento)" class="btn-green"
-            style="height:42px;width:52px;font-size:20px;font-weight:700;border-radius:10px;padding:0;">+</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Lista partidos -->
-    <div style="display:flex;flex-direction:column;gap:10px;">
-      <div *ngFor="let p of evento.partidos" class="card2" style="padding:14px 18px;border-radius:12px;">
-        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
-          <span class="badge-green" style="font-size:11px;">{{ p.grupo }}</span>
-          <span style="font-size:14px;font-weight:700;">{{ p.local }}</span>
-          <span class="subtitle" style="font-size:12px;">vs</span>
-          <span style="font-size:14px;font-weight:700;">{{ p.visitante }}</span>
-          <span class="subtitle" style="font-size:12px;flex:1;">{{ p.fecha }}</span>
-          <button (click)="eliminarPartido(evento.id, p.id)"
-            style="background:none;border:none;cursor:pointer;color:var(--muted);padding:2px;transition:color .15s;"
-            onmouseenter="this.style.color='#f87171'" onmouseleave="this.style.color='var(--muted)'">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-          </button>
-        </div>
-        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-          <span class="label-section">MARCADOR REAL</span>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <input type="number" [(ngModel)]="p.golesLocal" min="0" max="20" class="partido-score__inp" placeholder="–" style="width:44px;" />
-            <span class="subtitle" style="font-size:16px;">–</span>
-            <input type="number" [(ngModel)]="p.golesVisitante" min="0" max="20" class="partido-score__inp" placeholder="–" style="width:44px;" />
-          </div>
-          <button (click)="guardarResultado(p)" class="btn-green" style="padding:8px 18px;font-size:13px;font-weight:700;"
-            [style.opacity]="p.guardado?'0.7':'1'">
-            {{ p.guardado ? '✅ Guardado' : 'Guardar resultado' }}
-          </button>
-        </div>
-      </div>
-      <div *ngIf="evento.partidos.length === 0" style="padding:20px;text-align:center;">
-        <p class="subtitle">Sin partidos. Usa el formulario de arriba para agregar.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Sin eventos locales -->
-  <div *ngIf="eventos().length === 0" class="card" style="padding:40px;text-align:center;">
-    <p class="subtitle mb-md">Crea un evento local para agregar partidos.</p>
-    <button (click)="abrirPopup()" class="btn-green" style="padding:11px 24px;font-size:14px;">+ Crear evento</button>
+    </form>    
   </div>
 
 </div>
-<style>
-@keyframes spin    { to { transform: rotate(360deg); } }
-@keyframes qeSlide { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
-</style>

@@ -46,7 +46,7 @@ export class GrupoDetalleComponent implements OnInit {
     { clave: 'PUNTOS_LUGAR2',             label: 'Acertar al subcampeón'                      },
     { clave: 'PUNTOS_LUGAR3',             label: 'Acertar al 3er puesto'                      },
     { clave: 'PUNTOS_LUGAR4',             label: 'Acertar al 4to puesto'                      },
-    { clave: 'PUNTOS_ADICIONALES_TOP4',   label: 'Puntos adicionales Top 4'                   },
+    { clave: 'PUNTOS_ADICIONALES_TOP4',   label: 'Puntos adicionales Final 4'                   },
   ];
 
   constructor(
@@ -268,5 +268,39 @@ export class GrupoDetalleComponent implements OnInit {
     // Quitar espacios, guiones y todo lo que no sea número
     const limpio = texto.replace(/\D/g, '').substring(0, 9);
     this.nuevoTelefono = limpio;
+  }
+
+  copiarInvitacion() {
+    const token   = this.grupo?.gru_token_invitacion ?? '';
+    const nombre  = this.nombreGrupo;
+    const texto   = `¡Te invito a unirte al grupo "${nombre}" en EclipGol! 🏆⚽\n\nTu token de invitación es: ${token}\n\n📲 Escríbele a nuestro bot de WhatsApp: +593 986409740`;
+
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(texto).then(() => {
+        this.alertService.success('¡Invitación copiada al portapapeles!');
+      }).catch(() => {
+        this.copiarFallback(texto);
+      });
+    } else {
+      this.copiarFallback(texto);
+    }
+  }
+
+  // Fallback para navegadores que no soportan clipboard API (Safari iOS)
+  private copiarFallback(texto: string) {
+    const el       = document.createElement('textarea');
+    el.value       = texto;
+    el.style.position = 'fixed';
+    el.style.opacity  = '0';
+    document.body.appendChild(el);
+    el.focus();
+    el.select();
+    try {
+      document.execCommand('copy');
+      this.alertService.success('¡Invitación copiada al portapapeles!');
+    } catch {
+      this.alertService.error('No se pudo copiar. Copia el token manualmente.');
+    }
+    document.body.removeChild(el);
   }
 }

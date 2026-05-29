@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* ═══════════════════════════════════════════════════════════
-   QUINIELAEC – Design Tokens
+   ECLIPGOL – Design Tokens
 ═══════════════════════════════════════════════════════════ */
 :root {
   --bg:        #0a1a0e;
@@ -1008,4 +1008,156 @@ input[type="password"]::-ms-clear {
 
 link[rel="icon"] {
   border-radius: 50px;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family: Arial, sans-serif;
+}
+
+body{
+
+    min-height:100vh;
+
+    background-image:
+        linear-gradient(
+            rgba(0,0,0,.18),
+            rgba(0,18,8,.82)
+        ),
+        url("img/estadio_jugador.jpeg");
+
+    background-repeat:no-repeat;
+
+    /* llena pantalla manteniendo proporción */
+    background-size:cover;
+
+    /* jugador visible derecha */
+    background-position:center center;
+
+    background-color:#08120b;
+
+    overflow-x:hidden;
+}
+
+/* Glow ambiental verde */
+body::before{
+    content:"";
+    position:absolute;
+    inset:0;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(0,255,140,0.10),
+            transparent 70%
+        );
+
+    pointer-events:none;
+}
+
+/* Tarjeta Login */
+.login-card{
+
+    position:relative;
+    z-index:2;
+
+    width:380px;
+
+    padding:45px;
+
+    border-radius:18px;
+
+    background:rgba(5,15,10,0.80);
+
+    backdrop-filter:blur(10px);
+
+    border:1px solid rgba(0,255,140,0.15);
+
+    box-shadow:
+        0 0 35px rgba(0,255,120,0.12);
+
+    color:white;
+
+    text-align:center;
+}
+
+.login-card h1{
+    margin-bottom:30px;
+    font-size:32px;
+}
+
+.login-card input{
+
+    width:100%;
+    padding:14px;
+
+    margin-bottom:18px;
+
+    border:none;
+    border-radius:10px;
+
+    background:rgba(255,255,255,0.07);
+
+    color:white;
+
+    outline:none;
+}
+
+.login-card input::placeholder{
+    color:#a7a7a7;
+}
+
+.login-card button{
+
+    width:100%;
+    padding:14px;
+
+    border:none;
+    border-radius:12px;
+
+    background:#00e676;
+
+    color:#02150b;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    transition:.3s;
+}
+
+.login-card button:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 0 20px rgba(0,255,140,0.5);
+
+    background:#00ff84;
+}
+
+@media (max-width:768px){
+
+    body{
+
+        background-image:
+            linear-gradient(
+                rgba(0,0,0,.18),
+                rgba(0,18,8,.82)
+            ),
+            url("img/estadio.png");
+
+        background-repeat:no-repeat;
+
+        /* mantiene forma completa */
+        background-size:auto 100vh;
+
+        background-position:center top;
+
+        background-color:#08120b;
+
+    }
+
 }

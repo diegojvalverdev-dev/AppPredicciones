@@ -53,15 +53,16 @@ const EP = {
   RESETEAR_PASSWORD: `${BASE}/app/usuarios/reset-password`,
   TRAER_TELEFONO_USER: (usuarioId: number) => `${BASE}/app/usuarios/${usuarioId}`,
   TRAER_EQUIPOS: (eventoId: number) => `${BASE}/app/eventos-final/evento/${eventoId}/equipos`,
+  ACTUALIZAR_DATOS: (usuarioId: number) => `${BASE}/app/usuarios/${usuarioId}`,
 */
   
-  USUARIOS_CREAR:          'backend/app/usuarios/',
+  USUARIOS_CREAR:          `backend/app/usuarios/`,
 
   // ── Grupos ───────────────────────────────────────────────────
-  GRUPOS_USUARIO:          'backend/app/grupos/usuario',
+  GRUPOS_USUARIO:          `backend/app/grupos/usuario`,
   GRUPOS_DETALLE:          (id: number) => `backend/app/grupos/${id}`,
-  GRUPOS_CREAR:            'backend/app/grupos/crear',
-  GRUPOS_TELEFONO:         'backend/app/grupos/telefono',
+  GRUPOS_CREAR:            `backend/app/grupos/crear`,
+  GRUPOS_TELEFONO:         `backend/app/grupos/telefono`,
   GRUPOS_PARAMETROS:       (id: number) => `backend/app/grupos/${id}/parametros`,
   GRUPOS_ELIMINAR:         (id: number) => `backend/app/grupos/eliminar/${id}`,
 
@@ -69,18 +70,18 @@ const EP = {
   PARTIDOS_GRUPOS_EQUIPOS: (grupoId: number) => `backend/app/partidos/grupo-usuario/${grupoId}/grupos-equipos`,
 
   // ── Eventos ──────────────────────────────────────────────────
-  EVENTOS_DISPONIBLES:     'backend/app/eventos/disponibles',
+  EVENTOS_DISPONIBLES:     `backend/app/eventos/disponibles`,
 
   // ── Pronósticos ──────────────────────────────────────────────
-  PRONOSTICOS_CREAR:       'backend/app/pronosticos/crear',
-  PRONOSTICOS_MODIFICAR:   'backend/app/pronosticos/modificar',
+  PRONOSTICOS_CREAR:       `backend/app/pronosticos/crear`,
+  PRONOSTICOS_MODIFICAR:   `backend/app/pronosticos/modificar`,
   PRONOSTICOS_GRUPO_AGRUP: (grupoId: number, agrupacion: string) => `backend/app/pronosticos/usuario/grupo/${grupoId}/agrupacionEquipo/${encodeURIComponent(agrupacion)}`,
   HISTORIAL:               (grupoId: number) => `backend/app/pronosticos/usuario/grupo/${grupoId}`,
   PRONOSTICOS_FECHAS:      (grupoId: number, fechaInicio: string, fechaFin: string) => `backend/app/pronosticos/usuario/grupo/${grupoId}/fechaInicio/${fechaInicio}/fechaFin/${fechaFin}`,
 
   // ── Eventos ──────────────────────────────────────────────────
-  FINALFOUR_CREAR:         'backend/app/final4/crear',
-  FINALFOUR_MODIFICAR:     'backend/app/final4/actualizar',
+  FINALFOUR_CREAR:         `backend/app/final4/crear`,
+  FINALFOUR_MODIFICAR:     `backend/app/final4/actualizar`,
   FINALFOUR:                (grupoId: number) => `backend/app/final4/grupo/${grupoId}`,
 
   //ESTADISTICAS EXCEL
@@ -102,6 +103,8 @@ const EP = {
   TRAER_TELEFONO_USER: (usuarioId: number) => `backend/app/usuarios/${usuarioId}`,
 
   TRAER_EQUIPOS: (eventoId: number) => `backend/app/eventos-final/evento/${eventoId}/equipos`,
+
+  ACTUALIZAR_DATOS: (usuarioId: number) => `backend/app/usuarios/${usuarioId}`,
 
 };
 
@@ -215,6 +218,13 @@ export interface Final4Response {
   mvpEvento:     string | null;
   horaCreacion:  string | null;
   [key: string]: any; // por si el servidor devuelve campos adicionales
+}
+
+export interface ActualizarUsuarioAdminRequest {
+  Login:   string;
+  Nombre:   string;
+  Telefono: string;
+  Email: string;
 }
 
 export interface ModificarFinalFourRequest extends CrearFinalFourRequest {}
@@ -403,5 +413,10 @@ export class ApiService {
   // ── TRAER EQUIPOS DEL MUNDIAL ──────────────────────────────────────────────  
   getTraerEquipos(eventoId: number): Observable<any> {
     return this.http.get(EP.TRAER_EQUIPOS(eventoId));
+  }
+
+  // ── ACTUALIZAR DATOS USUARIO ──────────────────────────────────────────────
+  actualizarDatos(usuarioId: number, data: ActualizarUsuarioAdminRequest): Observable<any> {
+    return this.http.put(EP.ACTUALIZAR_DATOS(usuarioId), data);
   }
 }

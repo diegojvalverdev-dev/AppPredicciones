@@ -216,50 +216,50 @@ export class PronosticarComponent implements OnInit {
 
   // ── Map API → Partido ─────────────────────────────────────────
   private mapPronostico(p: any): Partido {
-  const fechaRaw = p['HoraPartido'] ?? p['Hora'] ?? '';
-  const g1 = p['Goles1'];
-  const g2 = p['Goles2'];
+    const fechaRaw = p['HoraPartido'] ?? p['Hora'] ?? '';
+    const g1 = p['Goles1'];
+    const g2 = p['Goles2'];
 
-  // Calcular pronostico correcto según goles guardados
-  let pronostico: 'local' | 'empate' | 'visitante' | null = null;
-  if (g1 != null && g2 != null) {
-    if      (Number(g1) > Number(g2)) pronostico = 'local';
-    else if (Number(g1) < Number(g2)) pronostico = 'visitante';
-    else                               pronostico = 'empate';
+    // Calcular pronostico correcto según goles guardados
+    let pronostico: 'local' | 'empate' | 'visitante' | null = null;
+    if (g1 != null && g2 != null) {
+      if      (Number(g1) > Number(g2)) pronostico = 'local';
+      else if (Number(g1) < Number(g2)) pronostico = 'visitante';
+      else                               pronostico = 'empate';
+    }
+
+    // Calcular clasificado automático si es eliminación
+    const esEliminacion = p['PartidoEliminacion'] ?? false;
+    const local     = p['PaisLocal']     ?? '—';
+    const visitante = p['PaisVisitante'] ?? '—';
+
+    let equipoClasifica = p['PaisClasifica'] ?? null;
+    if (esEliminacion && g1 != null && g2 != null && !equipoClasifica) {
+      if      (Number(g1) > Number(g2)) equipoClasifica = local;
+      else if (Number(g1) < Number(g2)) equipoClasifica = visitante;
+      // empate → null, usuario elige
+    }
+
+    return {
+      id:             p['IdPartido']     ?? 0,
+      local,
+      visitante,
+      fecha:          fechaRaw ? fechaRaw.substring(0, 10) : '',
+      hora:           fechaRaw ? new Date(fechaRaw).toLocaleTimeString('es-EC',
+                        { hour:'2-digit', minute:'2-digit' }) : '',
+      grupoPartido:   this.grupoPartidoActivo,
+      torneo:         this.grupoActivo?.gru_nombre ?? '',
+      golesLocal:     g1 ?? null,
+      golesVisitante: g2 ?? null,
+      pronostico,
+      pronosticoGuardado: g1 != null,
+      guardando:      false,
+      fase:           p['Fase'] ?? 1,
+      PartidoEliminacion: esEliminacion,
+      GrupoEquipo:    p['GrupoEquipo'] ?? '—',
+      EquipoClasifica: equipoClasifica,
+    };
   }
-
-  // Calcular clasificado automático si es eliminación
-  const esEliminacion = p['PartidoEliminacion'] ?? false;
-  const local     = p['PaisLocal']     ?? '—';
-  const visitante = p['PaisVisitante'] ?? '—';
-
-  let equipoClasifica = p['PaisClasifica'] ?? null;
-  if (esEliminacion && g1 != null && g2 != null && !equipoClasifica) {
-    if      (Number(g1) > Number(g2)) equipoClasifica = local;
-    else if (Number(g1) < Number(g2)) equipoClasifica = visitante;
-    // empate → null, usuario elige
-  }
-
-  return {
-    id:             p['IdPartido']     ?? 0,
-    local,
-    visitante,
-    fecha:          fechaRaw ? fechaRaw.substring(0, 10) : '',
-    hora:           fechaRaw ? new Date(fechaRaw).toLocaleTimeString('es-EC',
-                      { hour:'2-digit', minute:'2-digit' }) : '',
-    grupoPartido:   this.grupoPartidoActivo,
-    torneo:         this.grupoActivo?.gru_nombre ?? '',
-    golesLocal:     g1 ?? null,
-    golesVisitante: g2 ?? null,
-    pronostico,
-    pronosticoGuardado: g1 != null,
-    guardando:      false,
-    fase:           p['Fase'] ?? 1,
-    PartidoEliminacion: esEliminacion,
-    GrupoEquipo:    p['GrupoEquipo'] ?? '—',
-    EquipoClasifica: equipoClasifica,
-  };
-}
 
   // ── Selección y guardado ──────────────────────────────────────
   seleccionar(p: Partido, op: 'local' | 'empate' | 'visitante') {

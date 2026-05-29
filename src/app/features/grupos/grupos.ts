@@ -26,6 +26,7 @@ export class GruposComponent implements OnInit {
   usuario: Usuario | null = null;  
   telefonoUser = '';
   telefonoNuevo = '';
+  tokengrupo = '';
 
   constructor(
     private fb:           FormBuilder,
@@ -86,36 +87,45 @@ export class GruposComponent implements OnInit {
 
   get telefonos() { return this.form.get('telefonos') as FormArray; }
   nuevoTel()      { return this.fb.group({ numero: ['', Validators.pattern(/^\d{9}$/)] }); }
-  agregar()       { 
-    // Obtener el último campo de teléfono ingresado
+  agregar() {
     const ultimoIndex  = this.telefonos.length - 1;
-    const ultimoNumero = this.telefonos.at(ultimoIndex).get('numero')?.value ?? '';
+    const ultimoCtrl   = this.telefonos.at(ultimoIndex);
+    const ultimoNumero = ultimoCtrl.get('numero')?.value ?? '';
 
-    // Validar que no sea el teléfono del admin (con o sin prefijo 593)
-    const telConPrefijo    = `593${ultimoNumero}`;
-    const telUserSinPrefijo = this.telefonoUser.startsWith('593')
+    // Validar que tenga 9 dígitos antes de agregar otro
+    if (!ultimoNumero || !/^\d{9}$/.test(ultimoNumero)) {
+      ultimoCtrl.get('numero')?.markAsTouched();
+      this.alertService.error('Completa el número (9 dígitos) antes de agregar otro.');
+      return;
+    }
+
+    // Validar que no sea el teléfono del administrador
+    const telConPrefijo     = `593${ultimoNumero}`;
+    const telUserSinPrefijo = this.telefonoUser?.startsWith('593')
       ? this.telefonoUser.substring(3)
-      : this.telefonoUser;
+      : this.telefonoUser ?? '';
 
     if (ultimoNumero === telUserSinPrefijo || telConPrefijo === this.telefonoUser) {
       this.alertService.error('El número del Administrador no puede ser agregado.');
-      // Limpiar el campo
-      this.telefonos.at(ultimoIndex).get('numero')?.setValue('');
+      ultimoCtrl.get('numero')?.setValue('');
       return;
     }
 
-    // Validar que no esté duplicado en la lista
-    const yaExiste = this.telefonos.controls.some((ctrl, i) =>
-      i !== ultimoIndex && ctrl.get('numero')?.value === ultimoNumero && ultimoNumero !== ''
-    );
+    // Validar duplicados — comparar contra TODOS los campos anteriores
+    const yaExiste = this.telefonos.controls
+      .slice(0, ultimoIndex) // solo los anteriores, no el actual
+      .some(ctrl => ctrl.get('numero')?.value === ultimoNumero);
 
     if (yaExiste) {
       this.alertService.error('Este número ya fue agregado a la lista.');
-      this.telefonos.at(ultimoIndex).get('numero')?.setValue('');
+      ultimoCtrl.get('numero')?.setValue('');
       return;
     }
-    this.telefonos.push(this.nuevoTel()); 
+
+    // Todo válido — agregar nuevo campo vacío
+    this.telefonos.push(this.nuevoTel());
   }
+
   quitar(i: number) { if (this.telefonos.length > 1) this.telefonos.removeAt(i); }
 
   onSubmit() {
@@ -156,17 +166,12 @@ export class GruposComponent implements OnInit {
     this.router.navigate(['/inicio']);
   }
 
-  quitarEspacios(event: Event) {
-    const input = event.target as HTMLInputElement;
-    input.value = input.value.replace(/\D/g, '').substring(0, 9);
-    // Actualizar el FormControl reactivo
-    const index = this.telefonos.controls.findIndex(
-      c => c.get('numero')?.value === input.value || 
-      document.activeElement === input
-    );
-    if (index >= 0) {
-      this.telefonos.at(index).get('numero')?.setValue(input.value, { emitEvent: false });
-    }
+  quitarEspacios(event: Event, index: number) {
+    const input  = event.target as HTMLInputElement;
+    const limpio = input.value.replace(/\D/g, '').substring(0, 9);
+    input.value  = limpio;
+    // Actualizar el FormControl usando el índice directamente
+    this.telefonos.at(index).get('numero')?.setValue(limpio, { emitEvent: false });
   }
 
   onPasteTelefono(event: ClipboardEvent, index: number) {
@@ -174,5 +179,39 @@ export class GruposComponent implements OnInit {
     const texto  = event.clipboardData?.getData('text') ?? '';
     const limpio = texto.replace(/\D/g, '').substring(0, 9);
     this.telefonos.at(index).get('numero')?.setValue(limpio);
+  }
+
+  copiarInvitacion() {
+    const token   = this.otp;
+    const nombre  = this.nombreGrupo;
+    const texto   = `¡Te invito a unirte al grupo "${nombre}" en EclipGol! 🏆⚽\n\nTu token de invitación es: ${token}\n\n📲 Escríbele a nuestro bot de WhatsApp: +593 986409740`;
+
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(texto).then(() => {
+        this.alertService.success('¡Invitación copiada al portapapeles!');
+      }).catch(() => {
+        this.copiarFallback(texto);
+      });
+    } else {
+      this.copiarFallback(texto);
+    }
+  }
+
+  // Fallback para navegadores que no soportan clipboard API (Safari iOS)
+  private copiarFallback(texto: string) {
+    const el       = document.createElement('textarea');
+    el.value       = texto;
+    el.style.position = 'fixed';
+    el.style.opacity  = '0';
+    document.body.appendChild(el);
+    el.focus();
+    el.select();
+    try {
+      document.execCommand('copy');
+      this.alertService.success('¡Invitación copiada al portapapeles!');
+    } catch {
+      this.alertService.error('No se pudo copiar. Copia el token manualmente.');
+    }
+    document.body.removeChild(el);
   }
 }
