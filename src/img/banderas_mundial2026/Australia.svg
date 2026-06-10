@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
+  <rect width="900" height="600" fill="#00008B"/>
+  <g stroke="white" stroke-width="62" fill="none">
+    <line x1="0" y1="0" x2="300" y2="200"/>
+    <line x1="300" y1="0" x2="0" y2="200"/>
+  </g>
+  <g stroke="#CC0000" stroke-width="38" fill="none">
+    <line x1="0" y1="0" x2="300" y2="200"/>
+    <line x1="300" y1="0" x2="0" y2="200"/>
+  </g>
+  <rect y="83"  width="300" height="34" fill="white"/>
+  <rect x="133" width="34"  height="200" fill="white"/>
+  <rect y="90"  width="300" height="20" fill="#CC0000"/>
+  <rect x="140" width="20"  height="200" fill="#CC0000"/>
+  <g fill="white">
+    <polygon points="150,240 158,264 184,264 163,278 171,302 150,288 129,302 137,278 116,264 142,264"/>
+    <polygon points="600,255 608,279 634,279 613,293 621,317 600,303 579,317 587,293 566,279 592,279"/>
+    <polygon points="700,155 708,179 732,179 712,193 720,217 700,203 680,217 688,193 668,179 692,179"/>
+    <polygon points="780,295 788,319 812,319 792,333 800,357 780,343 760,357 768,333 748,319 772,319"/>
+    <polygon points="618,415 626,439 650,439 630,453 638,477 618,463 598,477 606,453 586,439 610,439"/>
+    <circle cx="700" cy="376" r="12"/>
+  </g>
+</svg>

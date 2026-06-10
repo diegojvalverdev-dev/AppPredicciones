@@ -23,6 +23,9 @@ export class ResetPasswordComponent implements OnInit {
   telefonoGuardado = '';
   tokenValido = true;
   otp: string | null = null;
+  mostrarPassword = false;
+  mostrarPassword2 = false;
+  valpassword = false;
 
   constructor(
     private fb:     FormBuilder,
@@ -54,9 +57,11 @@ export class ResetPasswordComponent implements OnInit {
 
     this.cdr.detectChanges();
   }  
-  private matchPasswords(group: FormGroup) {
+
+  private matchPasswords = (group: FormGroup) => {
     const pass = group.get('nuevoPassword')?.value;
     const confirm = group.get('repetirPassword')?.value;
+    this.valpassword = pass !== confirm && pass !== '' && confirm !== '' ? true : false;
     return pass === confirm ? null : { mismatch: true };
   }
 

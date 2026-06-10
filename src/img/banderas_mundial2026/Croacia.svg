@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
+  <rect width="900" height="200" fill="#FF0000"/>
+  <rect y="200" width="900" height="200" fill="#FFFFFF"/>
+  <rect y="400" width="900" height="200" fill="#0000CD"/>
+  <g transform="translate(450,238)">
+    <rect x="-68" y="-68" width="136" height="136" fill="#FF0000"/>
+    <g fill="white">
+      <rect x="-68" y="-68" width="45" height="45"/>
+      <rect x="-23" y="-68" width="46" height="45"/>
+      <rect x="23"  y="-68" width="45" height="45"/>
+      <rect x="-68" y="-23" width="45" height="46"/>
+      <rect x="23"  y="-23" width="45" height="46"/>
+      <rect x="-68" y="23"  width="45" height="45"/>
+      <rect x="-23" y="23"  width="46" height="45"/>
+      <rect x="23"  y="23"  width="45" height="45"/>
+    </g>
+    <rect x="-68" y="-84" width="136" height="16" fill="#FF0000"/>
+    <polygon points="-68,-84 68,-84 68,-100 0,-128 -68,-100" fill="#0000CD"/>
+    <polygon points="-68,-84 -45,-100 -68,-100" fill="#FF0000"/>
+    <polygon points="68,-84  45,-100 68,-100"  fill="#FF0000"/>
+    <polygon points="0,-84 -24,-100 24,-100" fill="#FFFFFF"/>
+  </g>
+</svg>

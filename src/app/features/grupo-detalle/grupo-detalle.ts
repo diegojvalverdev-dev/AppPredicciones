@@ -85,7 +85,7 @@ export class GrupoDetalleComponent implements OnInit {
   }
 
   get nombreGrupo()  { return this.grupo?.gru_nombre ?? 'Cargando...'; }
-  get torneoLabel()  { return 'COPA DEMO 2026'; }
+  get torneoLabel()  { return this.grupo?.gru_nombre_evento ?? ''; }
   get esOwner(): boolean {
     return this.grupo?.gru_idUsuario_Admin === this.authService.getUsuario()?.['id'];
   }
@@ -227,7 +227,7 @@ export class GrupoDetalleComponent implements OnInit {
   stepParamByClave(clave: string, delta: number) {
     this.getParamNum(clave); // crea si no existe
     const p = this.getParam(clave)!;
-    p.par_valorNum = Math.max(1, Math.min(10, (p.par_valorNum ?? 1) + delta));
+    p.par_valorNum = Math.max(0, Math.min(10, (p.par_valorNum ?? 1) + delta));
   }
 
   stepParam(p: ParametroGrupo, delta: number) {
@@ -239,12 +239,14 @@ export class GrupoDetalleComponent implements OnInit {
   }
 
   setParamDate(clave: string, value: string) {
-    const p = this.getParam(clave);
-    if (p) p.par_valorDate = value ? `${value}T00:00:00` : null;
+    const p = this.getParam(clave);    
+    if (p) p.par_valorDate = value ? `${value}T00:00:00` : '';
   }
 
   getParamDate(clave: string): string {
-    const v = this.getParam(clave)?.par_valorDate;
+    var v = this.getParam(clave)?.par_valorDate;
+    if(v == '9999-12-31T00:00:00')
+      v = new Date().toISOString().slice(0,10);
     return v ? v.substring(0, 10) : '';
   }
 

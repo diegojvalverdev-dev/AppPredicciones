@@ -54,6 +54,9 @@ const EP = {
   TRAER_TELEFONO_USER: (usuarioId: number) => `${BASE}/app/usuarios/${usuarioId}`,
   TRAER_EQUIPOS: (eventoId: number) => `${BASE}/app/eventos-final/evento/${eventoId}/equipos`,
   ACTUALIZAR_DATOS: (usuarioId: number) => `${BASE}/app/usuarios/${usuarioId}`,
+
+  VALIDA_OTP_GRUPO: (codigo: string) => `${BASE}/app/grupos/usuario/valida-token?token=${codigo}`,
+  GUARDAR_ALIAS: `${BASE}/app/grupos/usuario/acepta-invitacion`,
 */
   
   USUARIOS_CREAR:          `backend/app/usuarios/`,
@@ -106,6 +109,10 @@ const EP = {
 
   ACTUALIZAR_DATOS: (usuarioId: number) => `backend/app/usuarios/${usuarioId}`,
 
+  VALIDA_OTP_GRUPO: (codigo: string) => `backend/app/grupos/usuario/valida-token?token=${codigo}`,
+
+  GUARDAR_ALIAS: `backend/app/grupos/usuario/acepta-invitacion`,
+
 };
 
 // ── Interfaces ────────────────────────────────────────────────
@@ -119,6 +126,7 @@ export interface GrupoUsuario {
   gru_hora_creacion:      string;
   gru_hora_actualizacion: string | null;
   gusr_alias:             string;
+  gru_nombre_evento:     string;
 }
 
 export interface GrupoDetalle {
@@ -129,6 +137,7 @@ export interface GrupoDetalle {
   gru_token_invitacion:   string;
   gru_hora_creacion:      string;
   gru_hora_actualizacion: string | null;
+  gru_nombre_evento:     string;
   Telefonos:  TelefonoGrupo[];
   Usuarios:   UsuarioGrupo[];
   Parametros: ParametroGrupo[];
@@ -247,6 +256,11 @@ export class ApiService {
   /** GET /app/grupos/:id — detalle de un grupo (teléfonos, usuarios, parámetros) */
   getGrupoDetalle(id: number): Observable<GrupoDetalle> {
     return this.http.get<GrupoDetalle>(EP.GRUPOS_DETALLE(id));
+  }
+
+  /** GET /app/grupos/:id/reglas — extrae las reglas/parametros del grupo */
+  getReglasGrupo(id: number): Observable<GrupoDetalle> {
+    return this.getGrupoDetalle(id);
   }
 
   /** POST /app/grupos/crear */
@@ -418,5 +432,19 @@ export class ApiService {
   // ── ACTUALIZAR DATOS USUARIO ──────────────────────────────────────────────
   actualizarDatos(usuarioId: number, data: ActualizarUsuarioAdminRequest): Observable<any> {
     return this.http.put(EP.ACTUALIZAR_DATOS(usuarioId), data);
+  }
+
+  // Paso 1: valida el OTP y devuelve info del grupo
+  validarOtp(codigo: string): Observable<any> {
+    return this.http.get(EP.VALIDA_OTP_GRUPO(codigo));
+  }
+
+  // Paso 2: une al usuario al grupo con un alias
+  unirseAGrupo(alias: string, token: string): Observable<any> {
+    const params = {
+      Token: token,
+      Alias: alias,
+    }
+    return this.http.post(EP.GUARDAR_ALIAS, params);
   }
 }

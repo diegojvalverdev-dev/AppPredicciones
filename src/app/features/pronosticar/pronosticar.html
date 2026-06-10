@@ -137,20 +137,34 @@
     </div>
 
     <div class="partido-teams mb-sm">
-      <span class="partido-teams__name partido-teams__name--right">{{ p.local }}</span>
+      <div class="partido-team partido-team--local">
+        <img [src]="imagenBandera(p.Bandera1)" [alt]="p.local" class="partido-team-logo" loading="lazy" />
+        <div class="partido-team-divider" aria-hidden="true"></div>
+        <img [src]="imagenBandera(p.Bandera2)" [alt]="p.visitante" class="partido-team-logo" loading="lazy" />
+      </div>
+    </div>
+
+    <div class="partido-teams mb-sm">
+      <div class="partido-team partido-team--local">
+        <span class="partido-teams__name partido-teams__name--right">{{ p.local }}</span>
+      </div>
+
       <div class="partido-score">
         <input type="number" [(ngModel)]="p.golesLocal" min="0" max="20"
           class="partido-score__inp" placeholder="-"
           step="1" id="local-{{p.id}}"
           (input)="soloEntero($event, p, 'local');calcularResultado(p)" 
           (keyup.enter)="enfocarVisitante(p.id)" />
-        <span class="partido-score__sep">-</span>
+        <div class="partido-team-divider" aria-hidden="true"></div>
         <input type="number" [(ngModel)]="p.golesVisitante" min="0" max="20"
           class="partido-score__inp" placeholder="-"
           step="1" id="visitante-{{p.id}}"
           (input)="soloEntero($event, p, 'visitante'); calcularResultado(p)" />
       </div>
-      <span class="partido-teams__name">{{ p.visitante }}</span>
+
+      <div class="partido-team partido-team--visitante">
+        <span class="partido-teams__name">{{ p.visitante }}</span>
+      </div>
     </div>
 
     <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">

@@ -1,6 +1,6 @@
 {
   "/backend": {
-    "target": "https://app2.eclipsoft.com:8443",
+    "target": "https://192.168.110.20:8045",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug",

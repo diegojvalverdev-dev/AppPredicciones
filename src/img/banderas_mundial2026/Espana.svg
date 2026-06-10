@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
+  <rect width="900" height="150" fill="#AA151B"/>
+  <rect y="150" width="900" height="300" fill="#F1BF00"/>
+  <rect y="450" width="900" height="150" fill="#AA151B"/>
+  <g transform="translate(310,300)">
+    <rect x="-20" y="-82" width="40" height="14" fill="#AA151B"/>
+    <rect x="-28" y="-68" width="8" height="124" fill="#AA151B"/>
+    <rect x="20"  y="-68" width="8" height="124" fill="#AA151B"/>
+    <rect x="-28" y="56"  width="56" height="16" rx="7" fill="#AA151B"/>
+    <rect x="-20" y="-62" width="40" height="102" rx="5" fill="#AA151B" stroke="#C09300" stroke-width="2"/>
+    <rect x="-20" y="-62" width="40" height="51"  rx="5" fill="#CF2B36"/>
+    <rect x="-20" y="-11" width="40" height="51"  fill="#CF2B36"/>
+    <rect x="-9"  y="-30" width="18" height="30" rx="9" fill="#F1BF00"/>
+    <ellipse rx="28" ry="15" cy="-64" fill="#CF2B36" stroke="#C09300" stroke-width="2"/>
+    <circle cx="-44" cy="-18" r="24" fill="#F1BF00" stroke="#C09300" stroke-width="2"/>
+    <circle cx="-44" cy="-18" r="18" fill="#AA151B"/>
+    <text x="-44" y="-11" text-anchor="middle" fill="#F1BF00" font-size="18" font-weight="bold" font-family="serif">E</text>
+  </g>
+</svg>

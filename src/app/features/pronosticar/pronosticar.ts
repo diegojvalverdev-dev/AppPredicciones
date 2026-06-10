@@ -14,7 +14,7 @@ interface Partido {
   pronostico: 'local' | 'empate' | 'visitante' | null;
   pronosticoGuardado: boolean; guardando: boolean;
   fase: number; PartidoEliminacion?: boolean; EquipoClasifica?: string; 
-  GrupoEquipo?: string;
+  GrupoEquipo?: string; Bandera1?: string; Bandera2?: string;
 }
 
 interface GrupoFecha { fecha: string; label: string; items: Partido[]; }
@@ -214,11 +214,18 @@ export class PronosticarComponent implements OnInit {
       }));
   }
 
+  imagenBandera(pais: string): string {
+    if(pais == null || pais.trim() === '') pais = 'Sin_bandera.svg';
+    return document.baseURI + `img/banderas_mundial2026/${pais}`;
+  }
+
   // ── Map API → Partido ─────────────────────────────────────────
   private mapPronostico(p: any): Partido {
     const fechaRaw = p['HoraPartido'] ?? p['Hora'] ?? '';
     const g1 = p['Goles1'];
     const g2 = p['Goles2'];
+    const Bandera1 = p['Bandera1'];
+    const Bandera2 = p['Bandera2'];
 
     // Calcular pronostico correcto según goles guardados
     let pronostico: 'local' | 'empate' | 'visitante' | null = null;
@@ -258,6 +265,8 @@ export class PronosticarComponent implements OnInit {
       PartidoEliminacion: esEliminacion,
       GrupoEquipo:    p['GrupoEquipo'] ?? '—',
       EquipoClasifica: equipoClasifica,
+      Bandera1: Bandera1,
+      Bandera2: Bandera2,
     };
   }
 

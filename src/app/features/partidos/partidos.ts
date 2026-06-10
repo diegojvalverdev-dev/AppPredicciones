@@ -16,6 +16,8 @@ interface Partido {
   goles1:          number | null;
   goles2:          number | null;
   estado:          string;
+  bandera1:          string;
+  bandera2:          string;
 }
 
 interface GrupoFecha { label: string; partidos: Partido[]; }
@@ -43,6 +45,8 @@ export class PartidosComponent implements OnInit {
   partidos: Partido[]    = [];
   fechas:   GrupoFecha[] = [];
   cargando  = false;
+  Bandera1= '';
+  Bandera2= '';
 
   estadoId = 'PEN';
 
@@ -146,5 +150,10 @@ export class PartidosComponent implements OnInit {
     const d = new Date();
     d.setDate(d.getDate() + n);
     return d.toISOString().substring(0, 10);
+  }
+
+  imagenBandera(pais: string): string {
+    if(pais == null || pais.trim() === '') pais = 'Sin_bandera.svg';
+    return document.baseURI + `img/banderas_mundial2026/${pais}`;
   }
 }

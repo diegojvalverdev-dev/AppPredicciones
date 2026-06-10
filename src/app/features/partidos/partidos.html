@@ -127,7 +127,13 @@
             <span class="text-muted" style="font-size:11px;">{{ formatHora(p.fecha) }}</span>
           </div>
         </div>
-
+        <div class="partido-teams mb-sm">
+          <div class="partido-team partido-team--local">
+            <img [src]="imagenBandera(p.bandera1)" [alt]="p.pais1" class="partido-team-logo" loading="lazy" />
+            <div class="partido-team-divider" aria-hidden="true"></div>
+            <img [src]="imagenBandera(p.bandera2)" [alt]="p.pais2" class="partido-team-logo" loading="lazy" />
+          </div>
+        </div>
         <!-- Equipos y resultado -->
         <div style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;">
 

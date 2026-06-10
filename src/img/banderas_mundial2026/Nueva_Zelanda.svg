@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
+  <rect width="900" height="600" fill="#00247D"/>
+  <g stroke="white" stroke-width="62" fill="none">
+    <line x1="0" y1="0" x2="300" y2="200"/>
+    <line x1="300" y1="0" x2="0" y2="200"/>
+  </g>
+  <g stroke="#CC0000" stroke-width="38" fill="none">
+    <line x1="0" y1="0" x2="300" y2="200"/>
+    <line x1="300" y1="0" x2="0" y2="200"/>
+  </g>
+  <rect y="83"  width="300" height="34" fill="white"/>
+  <rect x="133" width="34"  height="200" fill="white"/>
+  <rect y="90"  width="300" height="20" fill="#CC0000"/>
+  <rect x="140" width="20"  height="200" fill="#CC0000"/>
+  <g fill="#CC0000" stroke="white" stroke-width="5">
+    <polygon points="598,112 613,157 660,157 623,183 637,228 598,202 559,228 573,183 536,157 583,157"/>
+    <polygon points="740,72  752,108 790,108 761,128 773,164 740,144 707,164 719,128 690,108 728,108"/>
+    <polygon points="820,228 832,264 870,264 841,284 853,320 820,300 787,320 799,284 770,264 808,264"/>
+    <polygon points="698,368 710,404 748,404 719,424 731,460 698,440 665,460 677,424 648,404 686,404"/>
+  </g>
+</svg>

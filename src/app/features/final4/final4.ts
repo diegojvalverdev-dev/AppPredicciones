@@ -23,6 +23,7 @@ export class Final4Component implements OnInit {
 
   // Final 4 habilitado para el grupo activo
   habilitado = false;
+  parametrosGrupo: string[] = [];
 
   grupo  = '';
   torneo = '';
@@ -35,6 +36,7 @@ export class Final4Component implements OnInit {
   cuarto     = '';
   mvp        = '';
   goleador   = '';
+  torneoLabel = '';
   golesGoleador: number | null = null;
   error = '';
   fechatope = new Date().toISOString().slice(0,16); // formato 'YYYY-MM-DDTHH:mm'
@@ -82,6 +84,7 @@ export class Final4Component implements OnInit {
   seleccionarGrupo(g: GrupoUsuario) {
     this.grupoActivo = g;
     this.grupo       = g.gru_nombre;
+    this.torneoLabel = g.gru_nombre_evento;
     this.cargando    = true;
     this.habilitado  = false;
 
@@ -130,6 +133,7 @@ export class Final4Component implements OnInit {
           this.cargarEquipos(g.gru_idEvento);
           this.cargarFinal4(g.gru_id);
           this.cargarJugadores(g.gru_idEvento); 
+          this.cargarGrupoDetalle(g.gru_id);
         } else {
           this.cargando = false;
           this.cdr.detectChanges();
@@ -228,16 +232,44 @@ export class Final4Component implements OnInit {
   guardar() {
     this.error = '';
 
-    if (!this.campeon || !this.subcampeon || !this.tercero || !this.cuarto) {
-      this.error = 'Debes seleccionar los 4 puestos del podio.';
-      this.alertService.error(this.error);
-      return;
-    }
+    var Parcampeon = parseInt(this.parametrosGrupo[7]);
+    var Parsubcampeon = parseInt(this.parametrosGrupo[8]);
+    var Partercero = parseInt(this.parametrosGrupo[9]);
+    var Parcuarto = parseInt(this.parametrosGrupo[10]);
 
+    if(Parcampeon > 0 && Parsubcampeon > 0 && Partercero > 0 && Parcuarto > 0) {
+      if (!this.campeon || !this.subcampeon || !this.tercero || !this.cuarto) {
+        this.alertService.error('Debes seleccionar los 4 puestos del podio.');
+        return;
+      }
+    }else{
+      if(Parcampeon > 0 && !this.campeon) {       
+        this.alertService.error('Debes seleccionar al Campeón.');
+        return;
+      }
+
+      if(Parsubcampeon > 0 && !this.subcampeon) {
+        this.alertService.error('Debes seleccionar al Sub Campeón.');
+        return;
+      }
+
+      if(Partercero > 0 && !this.tercero) {
+        this.alertService.error('Debes seleccionar al Tercer lugar.');
+        return;
+      }
+
+      if(Parcuarto > 0 && !this.cuarto) {
+        this.alertService.error('Debes seleccionar al Cuarto lugar.');
+        return;
+      }
+    }
+    
     const sel = [this.campeon, this.subcampeon, this.tercero, this.cuarto];
-    if (new Set(sel).size !== 4) {
-      this.error = 'No puedes seleccionar el mismo equipo en dos puestos.';
-      this.alertService.error(this.error);
+    //primero se filtra para eliminar todos los campos que estén vacíos o nulos.
+    const seleccionados = sel.filter(v => v && v.trim() !== '');
+    //luego se compara entre campos para no seleccionar el mismo equipo.
+    if (new Set(seleccionados).size !== seleccionados.length) {
+      this.alertService.error('No puedes seleccionar el mismo equipo en dos puestos.');
       return;
     }
 
@@ -253,8 +285,7 @@ export class Final4Component implements OnInit {
 
         const fechaHoy = new Date();
         if (fechaTopeConDia < fechaHoy) {
-          this.error = 'La fecha tope para guardar el Final 4 ya ha pasado.';
-          this.alertService.error(this.error);
+          this.alertService.error('La fecha tope para guardar el Final 4 ya ha pasado.');
           return;
         }
       }
@@ -269,14 +300,12 @@ export class Final4Component implements OnInit {
     };
 
     if (!esFechaVacia(this.fechatope) && this.fechatope < this.fechaHoy) {
-      this.error = 'La fecha tope para guardar el Final 4 ya ha pasado.';
-      this.alertService.error(this.error);
+      this.alertService.error('La fecha tope para guardar el Final 4 ya ha pasado.');
       return;
     }
 
-    if(this.golesGoleador == 0 || this.golesGoleador == null) {
-      this.error = 'Debe ingresar los goles del goleador.';
-      this.alertService.error(this.error);
+    if(this.golesGoleador == null) { //this.golesGoleador == 0 || 
+      this.alertService.error('Debe ingresar los goles del goleador.');
       return;
     }
 
@@ -391,6 +420,21 @@ export class Final4Component implements OnInit {
 
   cerrarDropdown() {
     setTimeout(() => { this.dropdownAbierto = null; }, 200);
+  }
+
+  cargarGrupoDetalle(grupoId: number) {
+    this.cargando = true;
+    this.apiService.getGrupoDetalle(grupoId).subscribe({
+      next: (res) => {
+        this.parametrosGrupo = res.Parametros?.map((p: any) => p.par_valorNum) ?? [];
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.cargando = false;
+        this.alertService.error(`Error al cargar el grupo. ${extractErrorMessage(err)}`);
+        this.cdr.detectChanges();
+      },
+    });
   }
 }
 

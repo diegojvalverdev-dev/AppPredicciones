@@ -61,7 +61,7 @@
 
     <!-- Header del grupo -->
     <div class="card card--hero mb-xl">
-      <p class="label-green mb-sm">{{ grupo | uppercase }} · COPA DEMO 2026</p>
+      <p class="label-green mb-sm">{{ grupo | uppercase }} · {{ torneoLabel | uppercase }}</p>
       <h1 class="title-hero mb-sm">FINAL 4</h1>
       <p class="subtitle mb-0">Pronostica el podio, MVP y goleador del torneo.</p>
     </div>
@@ -251,7 +251,7 @@
     <!-- Goles -->
     <div class="flex-center gap-sm" style="flex-shrink:0;">
       <input type="number" [(ngModel)]="golesGoleador" min="0"
-        class="partido-score__inp" placeholder="0" style="width:52px;" />
+        class="partido-score__inp" style="width:52px;" />
       <span class="text-muted" style="font-size:13px;font-weight:600;white-space:nowrap;">Goles</span>
     </div>
   </div>
