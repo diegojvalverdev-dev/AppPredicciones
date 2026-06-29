@@ -349,6 +349,7 @@ export class Final4Component implements OnInit {
   cargarFinal4(grupoId: number) {
     this.cargandoDatos = true;
     this.cdr.detectChanges();
+    this.yaGuardado = false;
 
     this.apiService.getFinalFour(grupoId).subscribe({
       next: (res: any) => {
@@ -365,6 +366,7 @@ export class Final4Component implements OnInit {
           this.yaGuardado    = true;
           this.fechatope     = res.FechaTope      ?? res.fechaTope     ?? this.fechatope;
         }
+
         this.cdr.detectChanges();
       },
       error: (err: any) => {

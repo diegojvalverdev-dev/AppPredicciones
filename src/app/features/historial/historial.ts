@@ -30,6 +30,9 @@ export class HistorialComponent implements OnInit {
   sinDatos        = false;
   partidos: PronosticoPartido[] = [];
   vistaHistorial: 'tarjetas' | 'tabla' = 'tarjetas';
+  // Fechas — por defecto: semana actual
+  desde = this.hoy();
+  hasta = this.enDias(7);
 
   constructor(
     private apiService:   ApiService,
@@ -61,12 +64,22 @@ export class HistorialComponent implements OnInit {
     if (g) { this.grupoSeleccionado = g; this.cargarHistorial(); }
   }
 
+  private hoy(): string {
+    return new Date().toISOString().substring(0, 10);
+  }
+
+  private enDias(n: number): string {
+    const d = new Date();
+    d.setDate(d.getDate() + n);
+    return d.toISOString().substring(0, 10);
+  }
+
   cargarHistorial() {
     if (!this.grupoSeleccionado) return;
     this.cargando = true; this.sinDatos = false; this.partidos = [];
     this.cdr.detectChanges();
 
-    this.apiService.getHistorial(this.grupoSeleccionado.gru_id).subscribe({
+    this.apiService.getHistorial(this.grupoSeleccionado.gru_id, this.desde, this.hasta).subscribe({
       next: (res: any) => {
         const lista: any[] = Array.isArray(res) ? res : [];
         this.partidos = lista.map(p => this.mapPartido(p));

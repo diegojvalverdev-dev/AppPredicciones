@@ -89,10 +89,10 @@
           <tr style="border-bottom:1px solid var(--border);">
             <th class="label-section" style="padding:12px 14px;text-align:center;white-space:nowrap;">#</th>
             <th class="label-section" style="padding:12px 14px;text-align:left;white-space:nowrap;">JUGADOR</th>
+            <th class="label-section" style="padding:12px 14px;text-align:center;white-space:nowrap;">PUNTOS</th>
             <th class="label-section" style="padding:12px 14px;text-align:center;white-space:nowrap;">RESULTADO</th>
             <th class="label-section" style="padding:12px 14px;text-align:center;white-space:nowrap;">MARCADOR</th>
             <th class="label-section" style="padding:12px 14px;text-align:center;white-space:nowrap;">CLASIFICACION</th>
-            <th class="label-section" style="padding:12px 14px;text-align:center;white-space:nowrap;">PUNTOS</th>
           </tr>
         </thead>
         <tbody>
@@ -133,6 +133,15 @@
               </p>
             </td>
 
+            <!-- Puntos -->
+            <td style="padding:12px 14px;text-align:center;">
+              <span style="font-size:16px;font-weight:900;"
+                [style.color]="p.pos===1?'#fbbf24':'var(--primary)'">
+                {{ p.puntos }}
+              </span>
+              <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
+            </td>
+
             <!-- resultado -->
             <td style="padding:12px 14px;text-align:center;">
               <span style="font-size:14px;font-weight:600;color:var(--muted);">
@@ -152,15 +161,6 @@
               <span style="font-size:14px;font-weight:600;color:var(--muted);">
                 {{ p.clasificacion }}
               </span>
-            </td>
-
-            <!-- Puntos -->
-            <td style="padding:12px 14px;text-align:center;">
-              <span style="font-size:16px;font-weight:900;"
-                [style.color]="p.pos===1?'#fbbf24':'var(--primary)'">
-                {{ p.puntos }}
-              </span>
-              <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
             </td>
 
           </tr>

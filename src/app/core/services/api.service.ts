@@ -28,7 +28,8 @@ const EP = {
   PRONOSTICOS_CREAR:       `${BASE}/app/pronosticos/crear`,
   PRONOSTICOS_MODIFICAR:   `${BASE}/app/pronosticos/modificar`,
   PRONOSTICOS_GRUPO_AGRUP: (grupoId: number, agrupacion: string) => `${BASE}/app/pronosticos/usuario/grupo/${grupoId}/agrupacionEquipo/${encodeURIComponent(agrupacion)}`,
-  HISTORIAL:               (grupoId: number) => `${BASE}/app/pronosticos/usuario/grupo/${grupoId}`,
+  HISTORIAL:               (grupoId: number, fechaInicio: string, fechaFin: string) => `${BASE}/app/pronosticos/usuario/grupo/${grupoId}?pFechaIni=${fechaInicio}&pFechaFin=${fechaFin}`,
+  //HISTORIAL:               (grupoId: number) => `${BASE}/app/pronosticos/usuario/grupo/${grupoId}`,
   PRONOSTICOS_FECHAS:      (grupoId: number, fechaInicio: string, fechaFin: string) => `${BASE}/app/pronosticos/usuario/grupo/${grupoId}/fechaInicio/${fechaInicio}/fechaFin/${fechaFin}`,
 
   // ── Eventos ──────────────────────────────────────────────────
@@ -79,7 +80,7 @@ const EP = {
   PRONOSTICOS_CREAR:       `backend/app/pronosticos/crear`,
   PRONOSTICOS_MODIFICAR:   `backend/app/pronosticos/modificar`,
   PRONOSTICOS_GRUPO_AGRUP: (grupoId: number, agrupacion: string) => `backend/app/pronosticos/usuario/grupo/${grupoId}/agrupacionEquipo/${encodeURIComponent(agrupacion)}`,
-  HISTORIAL:               (grupoId: number) => `backend/app/pronosticos/usuario/grupo/${grupoId}`,
+  HISTORIAL:               (grupoId: number, fechaInicio: string, fechaFin: string) => `backend/app/pronosticos/usuario/grupo/${grupoId}?pFechaIni=${fechaInicio}&pFechaFin=${fechaFin}`,
   PRONOSTICOS_FECHAS:      (grupoId: number, fechaInicio: string, fechaFin: string) => `backend/app/pronosticos/usuario/grupo/${grupoId}/fechaInicio/${fechaInicio}/fechaFin/${fechaFin}`,
 
   // ── Eventos ──────────────────────────────────────────────────
@@ -352,8 +353,8 @@ export class ApiService {
     return this.http.get(EP.PRONOSTICOS_FECHAS(grupoId, fechaInicio, fechaFin));
   }
 
-  getHistorial(grupoId: number): Observable<any> {
-    return this.http.get(EP.HISTORIAL(grupoId));
+  getHistorial(grupoId: number, fechaInicio: string, fechaFin: string): Observable<any> {
+    return this.http.get(EP.HISTORIAL(grupoId, fechaInicio, fechaFin));
   }
 
   /**
