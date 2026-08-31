@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600">
+  <rect width="900" height="200" fill="#74ACDF"/>
+  <rect y="200" width="900" height="200" fill="#FFFFFF"/>
+  <rect y="400" width="900" height="200" fill="#74ACDF"/>
+  <g transform="translate(450,300)">
+    <g fill="#F6B40E">
+      <rect x="-5" y="-95" width="10" height="24" transform="rotate(0)"/>
+      <rect x="-5" y="-95" width="10" height="24" transform="rotate(22.5)"/>
+      <rect x="-5" y="-95" width="10" height="24" transform="rotate(45)"/>
+      <rect x="-5" y="-95" width="10" height="24" transform="rotate(67.5)"/>
+      <rect x="-5" y="-95" width="10" height="24" transform="rotate(90)"/>
+      <rect x="-5" y="-95" width="10" height="24" transform="rotate(112.5)"/>
+      <rect x="-5" y="-95" width="10" height="24" transform="rotate(135)"/>
+      <rect x="-5" y="-95" width="10" height="24" transform="rotate(157.5)"/>
+      <rect x="-5" y="-95" width="10" height="24" transform="rotate(180)"/>
+      <rect x="-5" y="-95" width="10" height="24" transform="rotate(202.5)"/>
+      <rect x="-5" y="-95" width="10" height="24" transform="rotate(225)"/>
+      <rect x="-5" y="-95" width="10" height="24" transform="rotate(247.5)"/>
+      <rect x="-5" y="-95" width="10" height="24" transform="rotate(270)"/>
+      <rect x="-5" y="-95" width="10" height="24" transform="rotate(292.5)"/>
+      <rect x="-5" y="-95" width="10" height="24" transform="rotate(315)"/>
+      <rect x="-5" y="-95" width="10" height="24" transform="rotate(337.5)"/>
+      <polygon points="0,-100 7,-82 -7,-82" transform="rotate(11.25)"/>
+      <polygon points="0,-100 7,-82 -7,-82" transform="rotate(33.75)"/>
+      <polygon points="0,-100 7,-82 -7,-82" transform="rotate(56.25)"/>
+      <polygon points="0,-100 7,-82 -7,-82" transform="rotate(78.75)"/>
+      <polygon points="0,-100 7,-82 -7,-82" transform="rotate(101.25)"/>
+      <polygon points="0,-100 7,-82 -7,-82" transform="rotate(123.75)"/>
+      <polygon points="0,-100 7,-82 -7,-82" transform="rotate(146.25)"/>
+      <polygon points="0,-100 7,-82 -7,-82" transform="rotate(168.75)"/>
+      <polygon points="0,-100 7,-82 -7,-82" transform="rotate(191.25)"/>
+      <polygon points="0,-100 7,-82 -7,-82" transform="rotate(213.75)"/>
+      <polygon points="0,-100 7,-82 -7,-82" transform="rotate(236.25)"/>
+      <polygon points="0,-100 7,-82 -7,-82" transform="rotate(258.75)"/>
+      <polygon points="0,-100 7,-82 -7,-82" transform="rotate(281.25)"/>
+      <polygon points="0,-100 7,-82 -7,-82" transform="rotate(303.75)"/>
+      <polygon points="0,-100 7,-82 -7,-82" transform="rotate(326.25)"/>
+      <polygon points="0,-100 7,-82 -7,-82" transform="rotate(348.75)"/>
+    </g>
+    <circle r="56" fill="#F6B40E"/>
+    <circle r="44" fill="#85C1E9"/>
+    <path d="M-21,7 Q0,-20 21,7 Q11,24 0,26 Q-11,24 -21,7Z" fill="#F6B40E"/>
+    <ellipse cx="-13" cy="-9" rx="7" ry="8" fill="#85340A"/>
+    <ellipse cx="13"  cy="-9" rx="7" ry="8" fill="#85340A"/>
+    <path d="M-9,9 Q0,18 9,9" stroke="#85340A" stroke-width="3" fill="none"/>
+  </g>
+</svg>

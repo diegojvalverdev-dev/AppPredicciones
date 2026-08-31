@@ -1,0 +1,48 @@
+<app-navbar></app-navbar>
+<div class="page">
+
+  <!-- Header -->
+  <div class="flex-between mb-xl">
+    <div style="display:flex;align-items:center;gap:14px;">
+      <div style="width:52px;height:52px;min-width:52px;background:var(--card2);border:1px solid var(--border);
+                  border-radius:12px;display:flex;align-items:center;justify-content:center;">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <div><h1 class="title-page mb-0">MI CUENTA</h1></div>
+    </div>
+  </div>
+
+  <div class="card filter-card mb-xl" style="padding:clamp(20px,5vw,32px);">
+    <form (ngSubmit)="onSubmit()" class="flex-col gap-lg">
+
+      <div>
+        <label class="label-section mb-sm" style="display:block;">Nombre completo</label>
+        <input type="text" [(ngModel)]="nombre" name="nombre" class="inp" autocomplete="name" placeholder="Ej. Juan P." />
+        <p *ngIf="this.nombre === ''" class="text-danger">Nombre requerido</p>
+      </div>
+
+      <div>
+        <label class="label-section mb-sm" style="display:block;">Teléfono (Ecuador)</label>
+        <div class="inp-phone">
+          <div class="inp-phone__prefix"><span class="inp-phone__label">EC</span> +593</div>
+          <input type="tel" [(ngModel)]="telefono" name="telefono" class="inp-phone__field" placeholder="991234567" />
+        </div>
+        <p class="text-muted mt-sm">Se enviará como 593XXXXXXXXX al servidor.</p>
+        <p *ngIf="this.telefono.length !== 9" class="text-danger">Ingresa 9 dígitos (ej: 991234567)</p>
+      </div>
+
+      <div>
+        <label class="label-section mb-sm" style="display:block;">Email</label>
+        <input type="email" [(ngModel)]="email" name="email" class="inp" autocomplete="email" placeholder="Ej. juanp@example.com" />
+        <p *ngIf="this.email === ''" class="text-danger">Email requerido</p>
+      </div>
+
+      <button type="submit" class="btn-green btn-green--full" [disabled]="loading">
+        {{ loading ? 'ACTUALIZANDO...' : 'ACTUALIZAR CUENTA' }}
+      </button>
+    </form>    
+  </div>
+
+</div>

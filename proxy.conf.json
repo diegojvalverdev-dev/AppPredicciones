@@ -1,0 +1,9 @@
+{
+  "/backend": {
+    "target": "https://192.168.110.20:8045",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "pathRewrite": { "^/backend": "/pollamundial" }
+  }
+}

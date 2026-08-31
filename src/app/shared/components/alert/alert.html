@@ -1,0 +1,71 @@
+<div *ngIf="alerta" class="qe-alert-overlay" (click)="dismiss()">
+  <div class="qe-alert"
+    [class.qe-alert--success]="alerta.type === 'success'"
+    [class.qe-alert--error]="alerta.type === 'error'"
+    (click)="$event.stopPropagation()">
+
+    <!-- Ícono -->
+    <div class="qe-alert__icon">
+      <svg *ngIf="alerta.type === 'success'"
+        width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <polyline points="9 12 11.5 14.5 15 10"/>
+      </svg>
+      <svg *ngIf="alerta.type === 'error'"
+        width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+    </div>
+
+    <!-- Título -->
+    <p class="qe-alert__title">
+      {{ alerta.type === 'success' ? '¡Éxito!' : '¡Atención!' }}
+    </p>
+
+    <!-- Mensaje -->
+    <p class="qe-alert__message">{{ alerta.message }}</p>
+
+    <!-- Botón -->
+    <button class="qe-alert__btn" (click)="dismiss()">Aceptar</button>
+
+  </div>
+</div>
+
+<style>
+.qe-alert-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.6);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000; padding: 20px;
+  animation: fadeIn .15s ease;
+}
+.qe-alert {
+  background: #112614; border-radius: 20px; padding: 32px 28px 24px;
+  max-width: 340px; width: 100%; text-align: center;
+  animation: slideUp .2s ease; border: 1px solid #1e4025;
+}
+.qe-alert--success { border-color: rgba(74,222,128,.5); }
+.qe-alert--error   { border-color: rgba(239,68,68,.4);  }
+.qe-alert__icon {
+  width: 64px; height: 64px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px;
+}
+.qe-alert--success .qe-alert__icon { background: rgba(74,222,128,.15); color: #4ade80; }
+.qe-alert--error   .qe-alert__icon { background: rgba(239,68,68,.15);  color: #f87171; }
+.qe-alert__title   { font-size: 18px; font-weight: 900; margin: 0 0 8px; color: #fff; }
+.qe-alert__message { font-size: 14px; color: #6b9c78; margin: 0 0 24px; line-height: 1.5; }
+.qe-alert--error .qe-alert__message { color: #fca5a5; }
+.qe-alert__btn {
+  width: 100%; padding: 12px; border-radius: 10px; border: none;
+  font-size: 14px; font-weight: 700; cursor: pointer; transition: opacity .15s; letter-spacing: .5px;
+}
+.qe-alert__btn:hover { opacity: .85; }
+.qe-alert--success .qe-alert__btn { background: #4ade80; color: #000; }
+.qe-alert--error   .qe-alert__btn { background: #f87171; color: #000; }
+@keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+</style>

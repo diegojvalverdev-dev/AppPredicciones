@@ -1,0 +1,316 @@
+<app-navbar></app-navbar>
+
+
+
+<div class="page">
+
+  <!-- Volver -->
+   
+  <a routerLink="/inicio" class="btn-ghost mb-lg"
+    style="display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--muted);text-decoration:none;">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+      stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    Volver a Inicio
+  </a>
+
+  <!-- Spinner carga inicial -->
+  <div *ngIf="cargando" style="text-align:center;padding:48px 0;">
+    <div style="width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--primary);
+                border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 14px;"></div>
+    <p class="subtitle">Cargando grupo...</p>
+  </div>
+
+  <ng-container *ngIf="!cargando">
+
+    <!-- Header grupo -->
+    <div class="card card--hero mb-lg">
+      <p class="label-green mb-sm">        
+        <span style="margin-left:auto;">
+          <span style="width:7px;height:7px;border-radius:50%;background:var(--primary);
+                   display:inline-block;margin-right:4px;"></span>
+          UBICACIÓN ACTUAL: ADMINISTRADOR DE GRUPO
+        </span>
+      </p> 
+      <p class="label-green mb-sm">{{ torneoLabel }}</p>
+      <h1 class="title-hero mb-sm">{{ nombreGrupo | uppercase }}</h1>
+      <div class="flex-row mb-lg" style="flex-wrap:wrap;">
+        <div class="flex-row gap-sm">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          <span class="text-muted" style="font-size:13px;">
+            {{ telefonos.length + 1 }} miembro{{ telefonos.length !== 0 ? 's' : '' }}
+          </span>
+        </div>
+        <span *ngIf="esOwner" class="badge-muted">OWNER</span>
+        <span class="text-muted" style="font-size:13px;">
+            📲Token de invitación: 
+          </span>
+        <span *ngIf="grupo?.gru_token_invitacion" class="badge-muted" style="font-family:monospace;">
+          {{ grupo?.gru_token_invitacion }}
+        </span>
+      </div>
+
+      <!-- Accesos rápidos -->
+      <div class="quick-actions">
+        <a routerLink="/pronosticar" class="btn-green btn-green--sm" style="text-decoration:none;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+            <path d="M4 22h16"/>
+            <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+            <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+          </svg>
+          Pronosticar
+        </a>
+        <a routerLink="/final4"     class="btn-dark btn-dark--sm" style="text-decoration:none;">Final 4</a>
+        <a routerLink="/posiciones" class="btn-dark btn-dark--sm" style="text-decoration:none;">Posiciones</a>
+        <a routerLink="/historial"  class="btn-dark btn-dark--sm" style="text-decoration:none;">Historial</a>
+        <button (click)="copiarInvitacion()" class="btn-dark btn-dark--sm"
+          style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+          </svg>
+          Copiar Invitación
+        </button>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tab-group tab-group--2 mb-lg">
+      <button class="tab-btn" [class.tab-btn--active]="tabActivo==='miembros'" (click)="tabActivo='miembros'">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        Miembros
+      </button>
+      <button class="tab-btn" [class.tab-btn--active]="tabActivo==='reglas'" (click)="tabActivo='reglas'">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/>
+          <line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/>
+          <line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/>
+          <line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/>
+          <line x1="17" y1="16" x2="23" y2="16"/>
+        </svg>
+        Reglas
+      </button>
+    </div>
+
+    <!-- ═══ TAB MIEMBROS ═══ -->
+    <ng-container *ngIf="tabActivo==='miembros'">
+
+      <!-- Dueño -->
+      <div class="card mb-sm" style="overflow:hidden;">
+        <p class="label-section section-header mb-0">DUEÑO DEL GRUPO</p>
+        <div class="member-row">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)"
+            stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 4l3 12h14l3-12-6 4-4-7-4 7-6-4z"/>
+            <line x1="12" y1="20" x2="12" y2="16"/>
+          </svg>
+          <div class="member-info">
+            <p class="member-info__name">{{ aliasAdmin }}</p>
+            <p class="member-info__phone">ID #{{ grupo?.gru_idUsuario_Admin }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Añadir miembro -->
+      <div class="card mb-sm" style="overflow:hidden;">
+        <p class="label-section section-header mb-0">AÑADIR MIEMBRO</p>
+        <div class="section-body">
+          <p class="text-muted mb-sm" style="font-size:11px;">
+            Grupo ID: <strong style="color:var(--primary);">{{ grupoId }}</strong>
+            · El número se enviará con prefijo 593
+          </p>
+          <div class="flex-row gap-sm" style="flex-wrap:wrap;">
+            <div class="inp-phone" style="flex:1;min-width:180px;">
+              <div class="inp-phone__prefix"><span class="inp-phone__label">EC</span> +593</div>
+              <input type="tel" [(ngModel)]="nuevoTelefono" placeholder="991234567"
+                class="inp-phone__field" maxlength="9"
+                (input)="errorTelefono=''; quitarEspacios($event)" (keyup.enter)="agregarMiembro()" 
+                (paste)="onPasteTelefono($event)"/>
+            </div>
+            <!--<input type="text" [(ngModel)]="nuevoAlias" placeholder="Alias (opcional)"
+              class="inp" style="flex:1;min-width:100px;" (keyup.enter)="agregarMiembro()" />-->
+            <button (click)="agregarMiembro()" class="btn-icon"
+              [style.opacity]="cargandoTel?'0.6':'1'" [disabled]="cargandoTel">
+              <svg *ngIf="!cargandoTel" width="18" height="18" viewBox="0 0 24 24"
+                fill="none" stroke="#000" stroke-width="2.5">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              <svg *ngIf="cargandoTel" width="18" height="18" viewBox="0 0 24 24"
+                fill="none" stroke="#000" stroke-width="2.5"
+                style="animation:spin .7s linear infinite;">
+                <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
+          <p *ngIf="errorTelefono" class="text-danger mt-sm">{{ errorTelefono }}</p>
+          <p *ngIf="nuevoTelefono.length>0 && nuevoTelefono.length<=9"
+            class="text-muted mt-sm" style="font-size:11px;">
+            Se enviará: <strong>593{{ nuevoTelefono }}</strong>
+          </p>
+        </div>
+      </div>
+
+      <!-- Lista teléfonos -->
+      <div class="card" style="overflow:hidden;">
+        <p class="label-section section-header mb-0">
+          MIEMBROS ({{ telefonos.length }})
+        </p>
+        <div *ngIf="telefonos.length===0" style="padding:28px 18px;text-align:center;">
+          <p class="subtitle mb-0">Aún no hay miembros invitados.</p>
+        </div>
+        <div *ngFor="let t of telefonos; let i=index"
+          class="member-row" [style.borderTop]="i>0?'1px solid var(--border)':'none'">
+          <!-- Avatar inicial del número -->
+          <div class="member-avatar">{{ numSinPrefijo(t.tel_numero_telefono).charAt(0) }}</div>
+          <div class="member-info">
+            <p class="member-info__name">+{{ t.tel_numero_telefono }}</p>
+            <p class="member-info__phone">
+              Estado: {{ estadoLabel(t.tel_estado_solicitud) }}
+              · {{ t.tel_hora | date:'dd/MM/yyyy HH:mm' }}
+            </p>
+          </div>
+          <button (click)="eliminarTelefono(t)"
+            class="btn-ghost btn-ghost--danger" title="Eliminar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+              <path d="M10 11v6"/><path d="M14 11v6"/>
+              <path d="M9 6V4h6v2"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- ═══ TAB REGLAS ═══ -->
+    <ng-container *ngIf="tabActivo==='reglas'">
+
+      <!-- ── PUNTAJES ── -->
+      <div class="card mb-sm" style="overflow:hidden;">
+        <p class="label-section section-header mb-0">PUNTAJES (1 A 10)</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;padding:8px; overflow-x:auto;-webkit-overflow-scrolling:touch;">
+
+          <div *ngFor="let pc of puntajesClave"
+            style="display:flex;align-items:center;justify-content:space-between;gap:10px;
+                   padding:12px 14px;border:1px solid var(--border);border-radius:8px;margin:4px;">
+            <span style="font-size:13px;font-weight:500;flex:1;line-height:1.3;">{{ pc.label }}</span>
+            <div class="stepper">
+              <button class="stepper__btn" (click)="stepParamByClave(pc.clave, -1)">−</button>
+              <span class="stepper__val">{{ getParamNum(pc.clave) }}</span>
+              <button class="stepper__btn" (click)="stepParamByClave(pc.clave, +1)">+</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── REGLAS ADICIONALES ── -->
+      <div class="card mb-lg" style="overflow:hidden;">
+        <p class="label-section section-header mb-0">REGLAS ADICIONALES</p>
+
+        <!-- Toggle: Solo 90 minutos -->
+        <ng-container *ngIf="getParam('MARCADOR_90_MINUTOS') as p90">
+          <div class="toggle-wrap">
+            <div>
+              <p class="toggle-label__title">Solo válido marcador de los 90 minutos</p>
+              <p class="toggle-label__desc">No considera prórroga ni penales.</p>
+            </div>
+            <label class="toggle">
+              <input type="checkbox"
+                [checked]="p90.par_valorStr === 'SI' || p90.par_valorStr === 'true'"
+                (change)="toggleParam(p90, $any($event.target).checked)"
+                style="opacity:0;width:0;height:0;position:absolute;" />
+              <div class="toggle__track"
+                [class.toggle__track--on]="p90.par_valorStr==='1'||p90.par_valorStr==='true'||p90.par_valorStr==='SI'"
+                [class.toggle__track--off]="p90.par_valorStr!=='1'&&p90.par_valorStr!=='true'&&p90.par_valorStr!=='SI'">
+                <div class="toggle__thumb"
+                  [class.toggle__thumb--on]="p90.par_valorStr==='1'||p90.par_valorStr==='true'||p90.par_valorStr==='SI'"
+                  [class.toggle__thumb--off]="p90.par_valorStr!=='1'&&p90.par_valorStr!=='true'&&p90.par_valorStr!=='SI'"></div>
+              </div>
+            </label>
+          </div>
+        </ng-container>
+
+        <!-- Toggle: Final 4 -->
+        <ng-container *ngIf="getParam('FINAL_4_HABILITADO') as pF4">
+          <div class="toggle-wrap">
+            <div>
+              <p class="toggle-label__title">Habilitar juego "Final 4"</p>
+              <p class="toggle-label__desc">Pronósticos de los 4 mejores del torneo.</p>
+            </div>
+            <label class="toggle">
+              <input type="checkbox"
+                [checked]="pF4.par_valorStr === 'SI' || pF4.par_valorStr === 'true'"
+                (change)="toggleParam(pF4, $any($event.target).checked)"
+                style="opacity:0;width:0;height:0;position:absolute;" />
+              <div class="toggle__track"
+                [class.toggle__track--on]="pF4.par_valorStr==='1'||pF4.par_valorStr==='true'||pF4.par_valorStr==='SI'"
+                [class.toggle__track--off]="pF4.par_valorStr!=='1'&&pF4.par_valorStr!=='true'&&pF4.par_valorStr!=='SI'">
+                <div class="toggle__thumb"
+                  [class.toggle__thumb--on]="pF4.par_valorStr==='1'||pF4.par_valorStr==='true'||pF4.par_valorStr==='SI'"
+                  [class.toggle__thumb--off]="pF4.par_valorStr!=='1'&&pF4.par_valorStr!=='true'&&pF4.par_valorStr!=='SI'">
+                </div>
+              </div>
+            </label>
+          </div>
+        </ng-container>
+
+        <!-- Fecha tope goleador -->
+        <ng-container *ngIf="getParam('FECHA_TOPE_GOLEADOR') as pFG">
+          <div class="section-body">
+            <p class="toggle-label__title mb-sm">
+              Fecha máxima para registrar al goleador del torneo y al Final 4
+            </p>
+            <div class="inp-group" style="max-width:220px;">
+              <input type="date" class="inp" style="padding-right:36px;"
+                [value]="getParamDate('FECHA_TOPE_GOLEADOR')"
+                (change)="setParamDate('FECHA_TOPE_GOLEADOR', $any($event.target).value)" />
+              <span class="inp-group__icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/>
+                  <line x1="8"  y1="2" x2="8"  y2="6"/>
+                  <line x1="3"  y1="10" x2="21" y2="10"/>
+                </svg>
+              </span>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+
+      <!-- Guardar -->
+      <button (click)="guardarReglas()" class="btn-green btn-green--full"
+        [disabled]="guardandoReglas">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+          <polyline points="17 21 17 13 7 13 7 21"/>
+          <polyline points="7 3 7 8 15 8"/>
+        </svg>
+        {{ guardandoReglas ? 'GUARDANDO...' : 'GUARDAR REGLAS' }}
+      </button>
+
+    </ng-container>
+
+  </ng-container>
+</div>
+<style>@keyframes spin { to { transform:rotate(360deg); } }</style>

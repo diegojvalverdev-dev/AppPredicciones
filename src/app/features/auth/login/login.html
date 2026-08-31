@@ -1,75 +1,97 @@
-<div class="min-h-screen">
-  <!--
-    <app-header></app-header>
-  -->
-
-  <main class="mx-auto flex max-w-md flex-col items-center px-4 py-10">
-
-    <div class="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-primary shadow-glow">
-      <!-- ícono opcional -->
-      🏆
+<div class="page-centered">
+  <div class="qe-logo-wrap">
+    <div class="qe-logo-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+        <path d="M4 22h16"/>
+        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+      </svg>
     </div>
+    <div class="qe-logo-text">
+      <span>ECLIPGOL</span>
+      <small>PRONÓSTICOS</small>
+    </div>
+  </div>
 
-    <h1 class="mb-2 text-3xl font-black uppercase tracking-tight">
-      Bienvenido
-    </h1>
+  <div class="card page-centered__card" style="padding:clamp(20px,5vw,32px);">
+    <h1 class="mb-sm" style="font-size:20px;font-weight:900;text-align:center;">Bienvenido</h1>
+    <p class="subtitle mb-xl">Ingresa para hacer tus pronósticos</p>
 
-    <p class="mb-8 text-sm text-muted-foreground">
-      Ingresa para hacer tus pronósticos
-    </p>
-
-    <form
-      [formGroup]="form"
-      (ngSubmit)="onSubmit()"
-      class="w-full space-y-4 rounded-2xl border border-border bg-card p-6 shadow-card"
-    >
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex-col gap-md">
 
       <!-- Usuario -->
-      <div class="space-y-2">
-        <label class="text-sm font-medium">Usuario</label>
-        <input
-          type="text"
-          formControlName="username"
-          class="input-lovable"
-        />
+      <div>
+        <label class="label-section mb-sm" style="display:block;">Usuario</label>
+        <input type="text" formControlName="username" class="inp"
+          placeholder="tu_usuario"
+          autocomplete="username"
+          autocorrect="off"
+          autocapitalize="none"
+          style="font-size:16px;" />
       </div>
 
-      <!-- Password -->
-      <div class="space-y-2">
-        <label class="text-sm font-medium">Contraseña</label>
-        <input
-          type="password"
-          formControlName="password"
-          class="input-lovable"
-        />
+      <!-- Contraseña -->
+      <div>
+        <div class="flex-between mb-sm">
+          <label class="label-section">Contraseña</label>
+          <a routerLink="/forgot-password" class="text-primary"
+            style="font-size:11px;text-decoration:none;">Generar / Recuperar contraseña</a>
+        </div>
+
+        <div style="position:relative;">
+          <!-- UN SOLO INPUT — el type cambia con binding -->
+          <input [type]="mostrarPassword ? 'text' : 'password'"
+            formControlName="password" class="inp"
+            placeholder="••••••••"
+            autocomplete="current-password"
+            autocorrect="off"
+            autocapitalize="none"
+            style="padding-right:44px;font-size:16px;" />
+
+          <!-- Botón ojo -->
+          <button type="button"
+            (click)="mostrarPassword = !mostrarPassword"
+            style="position:absolute;right:0;top:0;bottom:0;
+                   width:44px;background:none;border:none;cursor:pointer;
+                   display:flex;align-items:center;justify-content:center;">
+            <!-- Ojo abierto -->
+            <svg *ngIf="!mostrarPassword" width="20" height="20" viewBox="0 0 24 24"
+              fill="none" stroke="#4ade80" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            <!-- Ojo cerrado -->
+            <svg *ngIf="mostrarPassword" width="20" height="20" viewBox="0 0 24 24"
+              fill="none" stroke="#4ade80" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8
+                       a18.45 18.45 0 0 1 5.06-5.94"/>
+              <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8
+                       a18.5 18.5 0 0 1-2.16 3.19"/>
+              <line x1="1" y1="1" x2="23" y2="23"/>
+            </svg>
+          </button>
+        </div>
       </div>
 
-      <!-- Error -->
-      <div *ngIf="error"
-        class="rounded-md border border-red-400 bg-red-100 px-3 py-2 text-sm text-red-600">
-        {{ error }}
-      </div>
-
-      <!-- Botón -->
-      <button
-        type="submit"
-        class="btn-primary"
-      >
-        Ingresar
+      <button type="submit" class="btn-green btn-green--full"
+        style="margin-top:4px;" [disabled]="loading">
+        {{ loading ? 'Ingresando...' : 'INGRESAR' }}
       </button>
-
-      <!-- Registro -->
-      <p class="text-center text-sm text-muted-foreground">
-        ¿No tienes cuenta?
-        <a routerLink="/register" class="font-semibold text-primary hover:underline">
-          Regístrate
-        </a>
-      </p>
-
-      <p class="text-center text-xs text-muted-foreground">
-        Demo: <code>admin</code> / <code>admin</code>
-      </p>
-
     </form>
-  </main>
+
+    <p class="text-muted mt-md" style="text-align:center;">
+      ¿No tienes cuenta?
+      <a routerLink="/registro" class="text-primary"
+        style="text-decoration:none;font-weight:700;">Regístrate</a><br><br>
+      <a href="manual_usuario.pdf" download="manual_usuario.pdf"
+        class="text-primary"
+        style="text-decoration:none;font-weight:700;">
+        ¿Necesitas ayuda?
+      </a>
+    </p>
+  </div>
 </div>

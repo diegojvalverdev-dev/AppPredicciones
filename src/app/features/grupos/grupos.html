@@ -1,0 +1,151 @@
+<app-navbar></app-navbar>
+
+<div class="page">
+  <div class="flex-row mb-xl">
+    <div class="icon-box">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      </svg>
+    </div>
+    <div>
+      <h1 class="title-page mb-0">CREAR GRUPO</h1>
+      <p class="subtitle">Invita a tus amigos por número de teléfono</p>
+    </div>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="card" style="padding:var(--pad-card);">
+
+      <!-- Nombre -->
+      <div class="mb-lg">
+        <label class="label-section mb-sm" style="display:block;">Nombre del grupo</label>
+        <input formControlName="nombre" class="inp" placeholder="Los Tricolores" />
+        <p *ngIf="form.get('nombre')?.invalid && form.get('nombre')?.touched" class="text-danger">Nombre requerido</p>
+      </div>
+
+      <!-- Alias -->
+      <div class="mb-sm">
+        <label class="label-section mb-sm" style="display:block;">Tu alias dentro del grupo</label>
+        <input formControlName="alias" class="inp" placeholder="Ej. ElCapi" />
+      </div>
+      <p class="text-muted mb-lg">Así te verán los demás miembros en este grupo.</p>
+
+      <!-- Evento — cargado desde API -->
+      <div class="mb-lg">
+        <label class="label-section mb-sm" style="display:block;">Evento</label>
+        <div *ngIf="cargandoEventos" class="flex-row gap-sm">
+          <div style="width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--primary);
+                      border-radius:50%;animation:spin .7s linear infinite;"></div>
+          <span class="text-muted" style="font-size:13px;">Cargando eventos...</span>
+        </div>
+        <div *ngIf="!cargandoEventos" class="inp-group">
+          <select formControlName="idEvento" class="inp inp--select">
+            <option *ngFor="let e of eventos" [value]="getIdEvento(e)">
+              {{ getNombreEvento(e) }}
+            </option>
+          </select>
+          <span class="inp-group__icon">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </span>
+        </div>
+        <p *ngIf="!cargandoEventos && eventos.length === 0" class="text-danger mt-sm">
+          No hay eventos disponibles.
+        </p>
+      </div>
+
+      <!-- Miembros -->
+      <div class="mb-xl">
+        <label class="label-section mb-md" style="display:block;">Miembros (teléfonos Ecuador)</label>
+        <div formArrayName="telefonos" class="flex-col gap-sm">
+          <div *ngFor="let tel of telefonos.controls; let i = index" [formGroupName]="i" class="flex-row gap-sm">
+            <div class="inp-phone" style="flex:1;">
+              <div class="inp-phone__prefix"><span class="inp-phone__label">EC</span> +593</div>
+              <input type="tel" formControlName="numero" class="inp-phone__field" placeholder="991234567" 
+                    maxlength="9" (input)="quitarEspacios($event, i)" (paste)="onPasteTelefono($event, i)"/>
+            </div>
+            <button *ngIf="i === telefonos.length - 1" type="button" (click)="agregar()" class="btn-icon">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+            <button *ngIf="i < telefonos.length - 1" type="button" (click)="quitar(i)"
+              class="btn-dark btn-dark--icon" style="color:var(--danger);border-color:rgba(239,68,68,.3);">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+        </div>
+        <p class="text-muted mt-sm" style="font-size:11px;">Los números se enviarán con prefijo 593 al servidor.</p>
+      </div>
+
+      <button type="submit" class="btn-green btn-green--full"
+        [attr.disabled]="(form.invalid || loading || cargandoEventos) ? true : null">
+        {{ loading ? 'CREANDO...' : 'CREAR GRUPO' }}
+      </button>
+    </div>
+  </form>
+
+  <div *ngIf="modalOtp"
+    style="position:fixed;inset:0;background:rgba(0,0,0,.65);
+          display:flex;align-items:center;justify-content:center;
+          z-index:9999;padding:20px;"
+    (click)="modalOtp=false">
+    <div (click)="$event.stopPropagation()"
+      style="background:#112614;border:1px solid rgba(74,222,128,.4);
+            border-radius:20px;padding:32px 28px;max-width:380px;
+            width:100%;text-align:center;">
+
+      <!-- Ícono -->
+      <div style="width:64px;height:64px;border-radius:50%;
+                  background:rgba(74,222,128,.15);
+                  display:flex;align-items:center;justify-content:center;
+                  margin:0 auto 20px;">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none"
+          stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07
+                  A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.38
+                  2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72
+                  c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.54
+                  a16 16 0 0 0 6 6l.95-.95a2 2 0 0 1 2.11-.45
+                  c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.45 16z"/>
+        </svg>
+      </div>
+
+      <!-- Título -->
+      <p style="font-size:18px;font-weight:900;color:#fff;margin:0 0 16px;">
+        🎉 ¡Felicidades! <br> Grupo creado Exitosamente.
+      </p>
+
+      <!-- Mensaje instrucciones -->
+      <p style="font-size:14px;color:#6b9c78;line-height:1.7;margin:0 0 20px;">
+             
+        <br>
+            ⚽🔥El grupo {{ nombreGrupo }} ya está listo para pronosticar <br>
+            Ahora comparte este token de invitación con todos los miembros del 
+            grupo para que puedan unirse desde
+            el chatbot de WhatsApp:<br><br>
+            <ng-container *ngIf="otp">
+              🔑 Se ha generado el Código <strong style="color:#4ade80;">{{ otp }}</strong>.
+            </ng-container><br>
+            📲 Bot de WhatsApp: +593 986409740<br><br>
+            Una vez dentro, podrán aceptar la invitación y comenzar a enviar sus pronósticos.
+      </p>
+    <!-- Botón aceptar -->
+      <button (click)="llevarInicio();"
+        style="width:100%;padding:12px;border-radius:10px;border:none;
+              background:#4ade80;color:#000;font-size:14px;
+              font-weight:700;cursor:pointer;">
+        Entendido
+      </button><br><br>
+      <button (click)="copiarInvitacion()" class="btn-dark btn-dark--sm"
+          style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+          </svg>
+          Copiar Invitación
+        </button>
+    </div>
+  </div>
+</div>
+<style>@keyframes spin { to { transform: rotate(360deg); } }</style>

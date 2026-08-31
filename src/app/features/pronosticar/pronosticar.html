@@ -1,0 +1,279 @@
+<app-navbar></app-navbar>
+
+<div class="page">
+
+  <!-- Header -->
+  <div class="flex-between mb-md" style="flex-wrap:wrap;gap:10px;">
+    <div>
+      <h1 class="title-page mb-0">PRONOSTICAR</h1>
+      <p class="subtitle">{{ totalCompletos }} / {{ partidos.length }} completados</p>
+    </div>
+    <div class="flex-row gap-sm" style="flex-wrap:wrap;align-items:center;">
+      <!-- Selector de grupo del usuario -->
+      <div class="inp-group" style="width:clamp(140px,30vw,200px);">
+        <select class="inp inp--select" style="font-size:12px;"
+          [value]="grupoActivo ? grupoActivo.gru_id : ''"
+          (change)="onCambiarGrupo($any($event.target).value)">
+          <option *ngIf="cargandoGrupos" value="">Cargando...</option>
+          <option *ngFor="let g of gruposUsuario" [value]="g.gru_id">{{ g.gru_nombre }}</option>
+        </select>
+        <span class="inp-group__icon">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </span>
+      </div>
+      <button (click)="guardarTodos()" class="btn-green btn-green--sm">Guardar todos</button>
+    </div>
+  </div>
+
+  <!-- Barra de progreso -->
+  <div class="progress-track mb-lg">
+    <div class="progress-fill"
+      [style.width]="partidos.length ? (totalCompletos/partidos.length*100)+'%' : '0%'"></div>
+  </div>
+
+  <!-- Toggle vista + grupos de partido -->
+  <div class="flex-between mb-lg" style="flex-wrap:wrap;gap:10px;">
+    <div class="tab-toggle">
+      <button class="tab-toggle__btn" [class.tab-toggle__btn--active]="vista==='grupos'"
+        (click)="cambiarVista('grupos')">📋 Por grupos</button>
+      <button class="tab-toggle__btn" [class.tab-toggle__btn--active]="vista==='fechas'"
+        (click)="cambiarVista('fechas')">📅 Por fechas</button>
+    </div>
+
+    <!-- Botones de grupos de partido -->
+    <div *ngIf="vista==='grupos' && gruposPartidos.length"
+      class="flex-row gap-sm" style="flex-wrap:wrap;">
+      <button *ngFor="let g of gruposPartidos" (click)="cambiarGrupoPartido(g)"
+        class="btn-dark btn-dark--sm"
+        [style.borderColor]="grupoPartidoActivo===g ? 'var(--primary)' : ''"
+        [style.color]="grupoPartidoActivo===g ? 'var(--primary)' : ''">{{ g }}</button>
+    </div>
+  </div>
+
+  <!-- ── VISTA GRUPOS ── -->
+  <ng-container *ngIf="vista==='grupos'">
+
+    <!-- Spinner -->
+    <div *ngIf="cargandoPartidos" style="text-align:center;padding:28px 0;">
+      <div style="width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--primary);
+                  border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px;"></div>
+      <p class="subtitle" style="font-size:12px;">Cargando partidos...</p>
+    </div>
+
+    <div *ngIf="!cargandoPartidos" class="flex-col gap-md">
+      <ng-container *ngFor="let p of partidosPorGrupo">
+        <ng-container *ngTemplateOutlet="tarjetaPartido; context:{ $implicit: p }"></ng-container>
+      </ng-container>
+      <div *ngIf="gruposPartidos.length===0 && !cargandoPartidos"
+        class="card" style="padding:32px;text-align:center;">
+        <p class="subtitle mb-0">Sin partidos disponibles para este grupo.</p>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- ── VISTA FECHAS ── -->
+  <ng-container *ngIf="vista==='fechas'">
+    <div class="card mb-lg" style="padding:16px;">
+      <div class="filter-grid mb-sm">
+        <div>
+          <label class="label-section mb-sm" style="display:block;">DESDE</label>
+          <input type="date" [(ngModel)]="fechaDesde" class="inp" />
+        </div>
+        <div>
+          <label class="label-section mb-sm" style="display:block;">HASTA</label>
+          <input type="date" [(ngModel)]="fechaHasta" class="inp" />
+        </div>
+      </div>
+      <button (click)="aplicarFechas()" class="btn-green"
+        style="width:100%;padding:10px;font-size:13px;"
+        [disabled]="cargandoPartidos">
+        {{ cargandoPartidos ? 'Buscando...' : 'Buscar partidos' }}
+      </button>
+    </div>
+
+    <div *ngIf="cargandoPartidos" style="text-align:center;padding:28px 0;">
+      <div style="width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--primary);
+                  border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px;"></div>
+      <p class="subtitle" style="font-size:12px;">Cargando pronósticos...</p>
+    </div>
+
+    <p *ngIf="!cargandoPartidos && partidosPorFecha.length===0" class="text-muted mb-lg">
+      Sin partidos en este rango de fechas.
+    </p>
+
+    <div *ngFor="let gf of partidosPorFecha" class="mb-xl">
+      <p class="fecha-label">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8"  y1="2" x2="8"  y2="6"/>
+          <line x1="3"  y1="10" x2="21" y2="10"/>
+        </svg>
+        {{ gf.label }}
+      </p>
+      <div class="flex-col gap-md">
+        <ng-container *ngFor="let p of gf.items">
+          <ng-container *ngTemplateOutlet="tarjetaPartido; context:{ $implicit: p }"></ng-container>
+        </ng-container>
+      </div>
+    </div>
+  </ng-container>
+
+</div>
+
+<!-- TEMPLATE TARJETA -->
+<ng-template #tarjetaPartido let-p>
+  <div class="card partido-card" [class.partido-card--selected]="p.pronosticoGuardado">
+
+    <div class="partido-meta">
+      <div class="partido-meta__left">
+        <span class="text-muted" style="font-size:11px;">{{ p.fecha }} · {{ p.hora }}</span>
+        <span class="badge-green" style="font-size:10px;">{{ p.GrupoEquipo }}</span>
+        <span *ngIf="p.pronosticoGuardado" class="badge-muted" style="font-size:10px;color:#4ade80;">✅</span>
+      </div>
+      <span class="text-muted" style="font-size:11px;">{{ p.torneo }}</span>
+    </div>
+
+    <div class="partido-teams mb-sm">
+      <div class="partido-team partido-team--local">
+        <img [src]="imagenBandera(p.Bandera1)" [alt]="p.local" class="partido-team-logo" loading="lazy" />
+        <div class="partido-team-divider" aria-hidden="true"></div>
+        <img [src]="imagenBandera(p.Bandera2)" [alt]="p.visitante" class="partido-team-logo" loading="lazy" />
+      </div>
+    </div>
+
+    <div class="partido-teams mb-sm">
+      <div class="partido-team partido-team--local">
+        <span class="partido-teams__name partido-teams__name--right">{{ p.local }}</span>
+      </div>
+
+      <div class="partido-score">
+        <input type="number" [(ngModel)]="p.golesLocal" min="0" max="20"
+          class="partido-score__inp" placeholder="-"
+          step="1" id="local-{{p.id}}"
+          (input)="soloEntero($event, p, 'local');calcularResultado(p)" 
+          (keyup.enter)="enfocarVisitante(p.id)" />
+        <div class="partido-team-divider" aria-hidden="true"></div>
+        <input type="number" [(ngModel)]="p.golesVisitante" min="0" max="20"
+          class="partido-score__inp" placeholder="-"
+          step="1" id="visitante-{{p.id}}"
+          (input)="soloEntero($event, p, 'visitante'); calcularResultado(p)" />
+      </div>
+
+      <div class="partido-team partido-team--visitante">
+        <span class="partido-teams__name">{{ p.visitante }}</span>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+      <div class="partido-btns" style="flex:1;">
+        <!-- Local -->
+        <button class="partido-btn"
+          [class.partido-btn--active]="p.pronostico==='local'"
+          (click)="seleccionar(p,'local')"
+          [disabled]="p.golesLocal === null || p.golesVisitante === null || p.golesLocal !== null || p.golesVisitante !== null"
+          [style.opacity]="(p.golesLocal !== null && p.golesVisitante !== null) ? '0.6' : '1'"
+          [style.cursor]="(p.golesLocal !== null && p.golesVisitante !== null) ? 'default' : 'pointer'">
+          {{ p.local.substring(0,3).toUpperCase() }}
+        </button>
+
+        <!-- Empate -->
+        <button class="partido-btn"
+          [class.partido-btn--active]="p.pronostico==='empate'"
+          (click)="seleccionar(p,'empate')"
+          [disabled]="p.golesLocal === null || p.golesVisitante === null || p.golesLocal !== null || p.golesVisitante !== null"
+          [style.opacity]="(p.golesLocal !== null && p.golesVisitante !== null) ? '0.6' : '1'"
+          [style.cursor]="(p.golesLocal !== null && p.golesVisitante !== null) ? 'default' : 'pointer'">
+          X
+        </button>
+
+        <!-- Visitante -->
+        <button class="partido-btn"
+          [class.partido-btn--active]="p.pronostico==='visitante'"
+          (click)="seleccionar(p,'visitante')"
+          [disabled]="p.golesLocal === null || p.golesVisitante === null || p.golesLocal !== null || p.golesVisitante !== null"
+          [style.opacity]="(p.golesLocal !== null && p.golesVisitante !== null) ? '0.6' : '1'"
+          [style.cursor]="(p.golesLocal !== null && p.golesVisitante !== null) ? 'default' : 'pointer'">
+          {{ p.visitante.substring(0,3).toUpperCase() }}
+        </button>
+      </div>
+      <button (click)="guardarPronostico(p)" class="btn-green btn-green--sm"
+        [disabled]="p.guardando" style="flex-shrink:0;padding:8px 14px;">
+        {{ p.guardando ? '...' : p.pronosticoGuardado ? 'Modificar' : 'Guardar' }}
+      </button>
+    </div>
+    <br>
+    <!-- Selector clasificado — solo en eliminación directa -->
+    <div *ngIf="p.PartidoEliminacion"
+      style="margin-bottom:10px;background:rgba(251,191,36,.06);
+            border:1px solid rgba(251,191,36,.25);border-radius:10px;
+            padding:10px 14px;">
+
+      <p style="font-size:11px;font-weight:700;color:#fbbf24;
+                letter-spacing:.5px;margin:0 0 8px;">
+        ⚡ ELIMINACIÓN DIRECTA — ¿Quién clasifica?
+      </p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+
+        <!-- Local -->
+        <button type="button"
+          (click)="validarClasificado(p, p.local)"
+          [disabled]="p.golesLocal !== null && p.golesVisitante !== null && p.golesLocal !== p.golesVisitante"
+          style="padding:8px 10px;border-radius:8px;border:2px solid;
+                font-size:12px;font-weight:700;cursor:pointer;
+                white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+                transition:all .15s;"
+          [style.borderColor]="p.EquipoClasifica === p.local ? '#4ade80' : 'var(--border)'"
+          [style.background]="p.EquipoClasifica === p.local ? 'rgba(74,222,128,.15)' : 'var(--card2)'"
+          [style.color]="p.EquipoClasifica === p.local ? '#4ade80' : 'var(--muted)'"
+          [style.opacity]="(p.golesLocal !== null && p.golesVisitante !== null && p.golesLocal !== p.golesVisitante && p.EquipoClasifica !== p.local) ? '0.35' : '1'">
+          <svg *ngIf="p.EquipoClasifica === p.local" width="11" height="11"
+            viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+            style="margin-right:4px;vertical-align:middle;">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          {{ p.local }}
+        </button>
+
+        <!-- Visitante -->
+        <button type="button"
+          (click)="validarClasificado(p, p.visitante)"
+          [disabled]="p.golesLocal !== null && p.golesVisitante !== null && p.golesLocal !== p.golesVisitante"
+          style="padding:8px 10px;border-radius:8px;border:2px solid;
+                font-size:12px;font-weight:700;cursor:pointer;
+                white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+                transition:all .15s;"
+          [style.borderColor]="p.EquipoClasifica === p.visitante ? '#4ade80' : 'var(--border)'"
+          [style.background]="p.EquipoClasifica === p.visitante ? 'rgba(74,222,128,.15)' : 'var(--card2)'"
+          [style.color]="p.EquipoClasifica === p.visitante ? '#4ade80' : 'var(--muted)'"
+          [style.opacity]="(p.golesLocal !== null && p.golesVisitante !== null && p.golesLocal !== p.golesVisitante && p.EquipoClasifica !== p.visitante) ? '0.35' : '1'">
+          <svg *ngIf="p.EquipoClasifica === p.visitante" width="11" height="11"
+            viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+            style="margin-right:4px;vertical-align:middle;">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          {{ p.visitante }}
+        </button>
+
+      </div>
+
+      <!-- Aviso si empate sin clasificado -->
+      <p *ngIf="p.golesLocal !== null && p.golesVisitante !== null &&
+                p.golesLocal === p.golesVisitante && !p.EquipoClasifica"
+        style="font-size:11px;color:#fbbf24;margin:8px 0 0;text-align:center;">
+        Marcador empatado — selecciona quién clasifica por penales.
+      </p>
+
+    </div>
+
+  </div>
+</ng-template>
+
+
+
+<style>@keyframes spin { to { transform: rotate(360deg); } }</style>

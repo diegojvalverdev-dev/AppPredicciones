@@ -1,0 +1,283 @@
+<app-navbar></app-navbar>
+
+<div class="page">
+
+  <!-- Selector de grupo (siempre visible) -->
+  <div *ngIf="grupos.length > 0" class="flex-between mb-lg" style="flex-wrap:wrap;gap:10px;">
+    <div>
+      <h1 class="title-page mb-0">FINAL 4</h1>
+      <p class="subtitle">{{ grupoActivo?.gru_nombre ?? '' }}</p>
+    </div>
+    <div class="inp-group" style="width:clamp(160px,40vw,240px);">
+      <select class="inp inp--select"
+        [value]="grupoActivo?.gru_id"
+        (change)="onCambiarGrupo($any($event.target).value)">
+        <option *ngFor="let g of grupos" [value]="g.gru_id">{{ g.gru_nombre }}</option>
+      </select>
+      <span class="inp-group__icon">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </span>
+    </div>
+  </div>
+
+  <!-- CARGANDO -->
+  <!-- Spinner mientras carga los datos previos -->
+  <div *ngIf="cargandoDatos" style="text-align:center;padding:20px 0;">
+    <div style="width:24px;height:24px;border:3px solid var(--border);
+                border-top-color:var(--primary);border-radius:50%;
+                animation:spin .8s linear infinite;margin:0 auto 8px;"></div>
+    <p class="subtitle" style="font-size:12px;">Cargando pronóstico guardado...</p>
+  </div>
+
+  <!-- NO HABILITADO -->
+  <ng-container *ngIf="!cargando && !habilitado">
+    <div style="text-align:center;padding-top:clamp(40px,8vw,60px);">
+      <div style="width:72px;height:72px;background:var(--card2);border:1px solid var(--border);
+                  border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--muted)"
+          stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      </div>
+      <h2 style="font-size:clamp(18px,4vw,22px);font-weight:700;margin:0 0 14px;">
+        Final 4 no está habilitado
+      </h2>
+      <p class="subtitle" style="max-width:400px;margin:0 auto 28px;line-height:1.7;padding:0 16px;">
+        El grupo <strong style="color:var(--text);">{{ grupoActivo?.gru_nombre }}</strong> no tiene activada
+        la regla <strong style="color:var(--text);">"Habilitar juego Final 4"</strong>.
+        El dueño del grupo puede activarla en la sección de Reglas.
+      </p>
+      <a routerLink="/inicio" class="btn-dark" style="text-decoration:none;padding:11px 28px;">
+        Volver al inicio
+      </a>
+    </div>
+  </ng-container>
+
+  <!-- HABILITADO -->
+  <ng-container *ngIf="!cargando && habilitado">
+
+    <!-- Header del grupo -->
+    <div class="card card--hero mb-xl">
+      <p class="label-green mb-sm">{{ grupo | uppercase }} · {{ torneoLabel | uppercase }}</p>
+      <h1 class="title-hero mb-sm">FINAL 4</h1>
+      <p class="subtitle mb-0">Pronostica el podio, MVP y goleador del torneo.</p>
+    </div>
+
+    <!-- Error de validación -->
+    <div *ngIf="error" class="alert-danger mb-md">{{ error }}</div>
+
+    <!-- Grid podio 2×2 -->
+    <div class="podio-grid">
+      <div class="card podio-card">
+        <p class="podio-card__label podio-card__label--gold">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4l3 12h14l3-12-6 4-4-7-4 7-6-4z"/><line x1="12" y1="20" x2="12" y2="16"/></svg>
+          🏆 CAMPEÓN
+        </p>
+        <div class="inp-group">
+          <select [(ngModel)]="campeon" class="inp inp--select">
+            <option value="">Selecciona un equipo</option>
+            <option *ngFor="let e of opcionesDisponibles([subcampeon,tercero,cuarto])" [value]="e">{{ e }}</option>
+          </select>
+          <span class="inp-group__icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </div>
+      </div>
+
+      <div class="card podio-card">
+        <p class="podio-card__label podio-card__label--silver">🥈 SUBCAMPEÓN</p>
+        <div class="inp-group">
+          <select [(ngModel)]="subcampeon" class="inp inp--select">
+            <option value="">Selecciona un equipo</option>
+            <option *ngFor="let e of opcionesDisponibles([campeon,tercero,cuarto])" [value]="e">{{ e }}</option>
+          </select>
+          <span class="inp-group__icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </div>
+      </div>
+
+      <div class="card podio-card">
+        <p class="podio-card__label podio-card__label--silver">🥉 3ER PUESTO</p>
+        <div class="inp-group">
+          <select [(ngModel)]="tercero" class="inp inp--select">
+            <option value="">Selecciona un equipo</option>
+            <option *ngFor="let e of opcionesDisponibles([campeon,subcampeon,cuarto])" [value]="e">{{ e }}</option>
+          </select>
+          <span class="inp-group__icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </div>
+      </div>
+
+      <div class="card podio-card">
+        <p class="podio-card__label podio-card__label--silver">4TO PUESTO</p>
+        <div class="inp-group">
+          <select [(ngModel)]="cuarto" class="inp inp--select">
+            <option value="">Selecciona un equipo</option>
+            <option *ngFor="let e of opcionesDisponibles([campeon,subcampeon,tercero])" [value]="e">{{ e }}</option>
+          </select>
+          <span class="inp-group__icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- MVP -->
+<div class="card mb-sm" style="padding:18px 16px;">
+  <p class="label-green mb-md">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+    </svg>
+    MVP DEL TORNEO
+  </p>
+
+  <div style="position:relative;">
+    <!-- Input de búsqueda -->
+    <input type="text"
+      [(ngModel)]="busquedaMvp"
+      (ngModelChange)="dropdownAbierto='mvp'"
+      (focus)="abrirDropdown('mvp')"
+      (blur)="cerrarDropdown()"
+      class="inp"
+      placeholder="Buscar jugador..."
+      autocomplete="off" />
+
+    <!-- Ícono lupa -->
+    <svg style="position:absolute;right:12px;top:50%;transform:translateY(-50%);
+                pointer-events:none;"
+      width="15" height="15" viewBox="0 0 24 24" fill="none"
+      stroke="var(--muted)" stroke-width="2">
+      <circle cx="11" cy="11" r="8"/>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+
+    <!-- Dropdown resultados -->
+    <div *ngIf="dropdownAbierto==='mvp' && jugadoresFiltrados(busquedaMvp).length"
+      style="position:absolute;top:calc(100% + 4px);left:0;right:0;
+             background:var(--card);border:1px solid var(--border);
+             border-radius:10px;max-height:200px;overflow-y:auto;z-index:100;
+             box-shadow:0 8px 24px rgba(0,0,0,.4);">
+      <div *ngFor="let j of jugadoresFiltrados(busquedaMvp)"
+        (mousedown)="seleccionarJugador('mvp', nombreJugador(j))"
+        style="padding:10px 14px;cursor:pointer;font-size:13px;
+               border-bottom:1px solid var(--border);transition:background .1s;"
+        onmouseover="this.style.background='rgba(74,222,128,.08)'"
+        onmouseout="this.style.background='transparent'">
+        {{ nombreJugador(j) }}
+      </div>
+    </div>
+
+    <!-- Sin resultados -->
+    <div *ngIf="dropdownAbierto==='mvp' && busquedaMvp && !jugadoresFiltrados(busquedaMvp).length"
+      style="position:absolute;top:calc(100% + 4px);left:0;right:0;
+             background:var(--card);border:1px solid var(--border);
+             border-radius:10px;padding:12px 14px;z-index:100;">
+      <p class="text-muted mb-0" style="font-size:13px;">Sin resultados para "{{ busquedaMvp }}"</p>
+    </div>
+  </div>
+
+  <!-- Jugador seleccionado -->
+  <div *ngIf="mvp" class="mt-sm flex-row gap-sm">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+      stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="20 6 9 17 4 12"/>
+    </svg>
+    <span style="font-size:13px;color:var(--primary);font-weight:600;">{{ mvp }}</span>
+    <button (click)="mvp='';busquedaMvp=''"
+      style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;
+             line-height:1;padding:0 4px;">×</button>
+  </div>
+
+  <!-- Spinner cargando jugadores -->
+  <p *ngIf="cargandoJugadores" class="text-muted mt-sm" style="font-size:12px;">
+    Cargando jugadores...
+  </p>
+</div>
+
+<!-- GOLEADOR -->
+<div class="card mb-lg" style="padding:18px 16px;">
+  <p class="label-green mb-md">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="M12 2a14.5 14.5 0 0 0 0 20A14.5 14.5 0 0 0 12 2"/>
+      <path d="M2 12h20"/>
+    </svg>
+    GOLEADOR DEL TORNEO
+  </p>
+
+  <div class="flex-row gap-sm" style="flex-wrap:wrap;">
+    <!-- Buscador goleador -->
+    <div style="position:relative;flex:1;min-width:200px;">
+      <input type="text"
+        [(ngModel)]="busquedaGoleador"
+        (ngModelChange)="dropdownAbierto='goleador'"
+        (focus)="abrirDropdown('goleador')"
+        (blur)="cerrarDropdown()"
+        class="inp"
+        placeholder="Buscar jugador..."
+        autocomplete="off" />
+
+      <svg style="position:absolute;right:12px;top:50%;transform:translateY(-50%);
+                  pointer-events:none;"
+        width="15" height="15" viewBox="0 0 24 24" fill="none"
+        stroke="var(--muted)" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+
+      <!-- Dropdown -->
+      <div *ngIf="dropdownAbierto==='goleador' && jugadoresFiltrados(busquedaGoleador).length"
+        style="position:absolute;top:calc(100% + 4px);left:0;right:0;
+               background:var(--card);border:1px solid var(--border);
+               border-radius:10px;max-height:200px;overflow-y:auto;z-index:100;
+               box-shadow:0 8px 24px rgba(0,0,0,.4);">
+        <div *ngFor="let j of jugadoresFiltrados(busquedaGoleador)"
+          (mousedown)="seleccionarJugador('goleador', nombreJugador(j))"
+          style="padding:10px 14px;cursor:pointer;font-size:13px;
+                 border-bottom:1px solid var(--border);transition:background .1s;"
+          onmouseover="this.style.background='rgba(74,222,128,.08)'"
+          onmouseout="this.style.background='transparent'">
+          {{ nombreJugador(j) }}
+        </div>
+      </div>
+
+      <div *ngIf="dropdownAbierto==='goleador' && busquedaGoleador && !jugadoresFiltrados(busquedaGoleador).length"
+        style="position:absolute;top:calc(100% + 4px);left:0;right:0;
+               background:var(--card);border:1px solid var(--border);
+               border-radius:10px;padding:12px 14px;z-index:100;">
+        <p class="text-muted mb-0" style="font-size:13px;">Sin resultados</p>
+      </div>
+    </div>
+
+    <!-- Goles -->
+    <div class="flex-center gap-sm" style="flex-shrink:0;">
+      <input type="number" [(ngModel)]="golesGoleador" min="0"
+        class="partido-score__inp" style="width:52px;" />
+      <span class="text-muted" style="font-size:13px;font-weight:600;white-space:nowrap;">Goles</span>
+    </div>
+  </div>
+
+  <!-- Jugador seleccionado -->
+  <div *ngIf="goleador" class="mt-sm flex-row gap-sm">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+      stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="20 6 9 17 4 12"/>
+    </svg>
+    <span style="font-size:13px;color:var(--primary);font-weight:600;">{{ goleador }}</span>
+    <button (click)="goleador='';busquedaGoleador=''"
+      style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;
+             line-height:1;padding:0 4px;">×</button>
+  </div>
+  <br>
+  <button (click)="guardar()" class="btn-green btn-green--full"
+    [disabled]="guardando">
+    <svg *ngIf="!guardando" width="16" height="16" viewBox="0 0 24 24"
+      fill="none" stroke="currentColor" stroke-width="2.5"
+      stroke-linecap="round" stroke-linejoin="round">
+      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+      <polyline points="17 21 17 13 7 13 7 21"/>
+      <polyline points="7 3 7 8 15 8"/>
+    </svg>
+    {{ guardando ? 'GUARDANDO...' : yaGuardado ? 'ACTUALIZAR FINAL 4' : 'GUARDAR FINAL 4' }}
+  </button>
+</div>
+<style>@keyframes spin { to { transform: rotate(360deg); } }</style>

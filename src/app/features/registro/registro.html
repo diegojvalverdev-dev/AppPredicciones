@@ -1,0 +1,145 @@
+
+<div class="page-centered">
+  <a routerLink="/inicio" class="btn-ghost mb-lg"
+    style="display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--muted);text-decoration:none;">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+      stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    Volver a Inicio
+  </a>
+  <div class="flex-center mb-xl" style="flex-direction:column;gap:10px;">
+    <div class="icon-box" style="width:64px;height:64px;border-radius:16px;">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+        <line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/>
+      </svg>
+    </div>
+    <h1 class="title-hero" style="text-align:center;">REGÍSTRATE</h1>
+    <p class="subtitle">Crea tu cuenta para jugar</p>
+  </div>
+
+  <div class="card page-centered__card" style="padding:clamp(20px,5vw,32px);">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex-col gap-lg">
+
+      <div>
+        <label class="label-section mb-sm" style="display:block;">Login (usuario)</label>
+        <input type="text" formControlName="login" class="inp" autocomplete="username" placeholder="Ej. juanp2026" />
+        <p *ngIf="form.get('login')?.invalid && form.get('login')?.touched" class="text-danger">Mínimo 3 caracteres</p>
+      </div>
+
+      <div>
+        <label class="label-section mb-sm" style="display:block;">Contraseña</label>  
+        <div style="position:relative;">
+          <!-- UN SOLO INPUT — el type cambia con binding -->
+          <input [type]="mostrarPassword ? 'text' : 'password'"
+            formControlName="password" class="inp"
+            placeholder="••••••••"
+            autocomplete="current-password"
+            autocorrect="off"
+            autocapitalize="none"/>
+          <!-- Botón ojo -->
+          <button type="button"
+            (click)="mostrarPassword = !mostrarPassword"
+            style="position:absolute;right:0;top:0;bottom:0;
+                   width:44px;background:none;border:none;cursor:pointer;
+                   display:flex;align-items:center;justify-content:center;">
+            <!-- Ojo abierto -->
+            <svg *ngIf="!mostrarPassword" width="20" height="20" viewBox="0 0 24 24"
+              fill="none" stroke="#4ade80" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            <!-- Ojo cerrado -->
+            <svg *ngIf="mostrarPassword" width="20" height="20" viewBox="0 0 24 24"
+              fill="none" stroke="#4ade80" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8
+                       a18.45 18.45 0 0 1 5.06-5.94"/>
+              <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8
+                       a18.5 18.5 0 0 1-2.16 3.19"/>
+              <line x1="1" y1="1" x2="23" y2="23"/>
+            </svg>
+          </button>
+        </div>
+        <p *ngIf="form.get('password')?.invalid && form.get('password')?.touched" class="text-danger">Mínimo 6 caracteres</p>
+      </div>
+      
+      <div>
+        <label class="label-section mb-sm" style="display:block;">Confirmar Contraseña</label>  
+        <div style="position:relative;">
+          <!-- UN SOLO INPUT — el type cambia con binding -->
+          <input [type]="mostrarPassword2 ? 'text' : 'password'"
+            formControlName="password2" class="inp"
+            placeholder="••••••••"
+            autocomplete="current-password"
+            autocorrect="off"
+            autocapitalize="none"/>
+          <!-- Botón ojo -->
+          <button type="button"
+            (click)="mostrarPassword2 = !mostrarPassword2"
+            style="position:absolute;right:0;top:0;bottom:0;
+                   width:44px;background:none;border:none;cursor:pointer;
+                   display:flex;align-items:center;justify-content:center;">
+            <!-- Ojo abierto -->
+            <svg *ngIf="!mostrarPassword2" width="20" height="20" viewBox="0 0 24 24"
+              fill="none" stroke="#4ade80" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            <!-- Ojo cerrado -->
+            <svg *ngIf="mostrarPassword2" width="20" height="20" viewBox="0 0 24 24"
+              fill="none" stroke="#4ade80" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8
+                       a18.45 18.45 0 0 1 5.06-5.94"/>
+              <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8
+                       a18.5 18.5 0 0 1-2.16 3.19"/>
+              <line x1="1" y1="1" x2="23" y2="23"/>
+            </svg>
+          </button>
+        </div>
+        <p *ngIf="form.get('password2')?.invalid && form.get('password2')?.touched" class="text-danger">Mínimo 6 caracteres</p>
+        <p *ngIf="valpassword === true" class="text-danger">Las contraseñas no coinciden</p>
+      </div>
+
+      <div>
+        <label class="label-section mb-sm" style="display:block;">Nombre completo</label>
+        <input type="text" formControlName="nombre" class="inp" autocomplete="name" placeholder="Ej. Juan P." />
+        <p *ngIf="form.get('nombre')?.invalid && form.get('nombre')?.touched" class="text-danger">Nombre requerido</p>
+      </div>
+
+      <div>
+        <label class="label-section mb-sm" style="display:block;">Teléfono (Ecuador)</label>
+        <div class="inp-phone">
+          <div class="inp-phone__prefix"><span class="inp-phone__label">EC</span> +593</div>
+          <input type="tel" formControlName="telefono" class="inp-phone__field" placeholder="991234567" />
+        </div>
+        <p class="text-muted mt-sm">Se enviará como 593XXXXXXXXX al servidor.</p>
+        <p *ngIf="form.get('telefono')?.invalid && form.get('telefono')?.touched" class="text-danger">Ingresa 9 dígitos (ej: 991234567)</p>
+      </div>
+
+      <div>
+        <label class="label-section mb-sm" style="display:block;">Email</label>
+        <input type="email" formControlName="email" class="inp" autocomplete="email" placeholder="Ej. juanp@example.com" />
+        <p *ngIf="form.get('email')?.invalid && form.get('email')?.touched" class="text-danger">Email inválido</p>
+      </div>
+
+      <div>
+        <label class="label-section mb-sm" style="display:block;">Confirmar Email</label>
+        <input type="email" formControlName="email2" class="inp" autocomplete="email" placeholder="Ej. juanp@example.com" />
+        <p *ngIf="form.get('email2')?.invalid && form.get('email2')?.touched" class="text-danger">Email inválido</p>
+        <p *ngIf="valemail === true" class="text-danger">Emails no coinciden</p>
+      </div>
+
+      <button type="submit" class="btn-green btn-green--full" [disabled]="form.invalid || loading">
+        {{ loading ? 'CREANDO...' : 'CREAR CUENTA' }}
+      </button>
+    </form>
+
+    <p class="text-muted mt-md" style="text-align:center;">
+      ¿Ya tienes cuenta?
+      <a routerLink="/login" class="text-primary" style="text-decoration:none;font-weight:700;">Inicia sesión</a>
+    </p>
+  </div>
+</div>
