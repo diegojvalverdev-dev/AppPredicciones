@@ -8,7 +8,7 @@ const BASE = environment.production ? environment.apiBase : '/backend';
 // Prefijo /backend → proxy reenvía a https://192.168.111.23/pronosticos/*
 const EP = {
   // ── Usuarios ─────────────────────────────────────────────────
-  /*USUARIOS_CREAR:          `${BASE}/app/usuarios/`,
+  USUARIOS_CREAR:          `${BASE}/app/usuarios/`,
 
   // ── Grupos ───────────────────────────────────────────────────
   GRUPOS_USUARIO:          `${BASE}/app/grupos/usuario`,
@@ -58,8 +58,8 @@ const EP = {
 
   VALIDA_OTP_GRUPO: (codigo: string) => `${BASE}/app/grupos/usuario/valida-token?token=${codigo}`,
   GUARDAR_ALIAS: `${BASE}/app/grupos/usuario/acepta-invitacion`,
-*/
-  
+
+ /* 
   USUARIOS_CREAR:          `backend/app/usuarios/`,
 
   // ── Grupos ───────────────────────────────────────────────────
@@ -113,7 +113,7 @@ const EP = {
   VALIDA_OTP_GRUPO: (codigo: string) => `backend/app/grupos/usuario/valida-token?token=${codigo}`,
 
   GUARDAR_ALIAS: `backend/app/grupos/usuario/acepta-invitacion`,
-
+*/
 };
 
 // ── Interfaces ────────────────────────────────────────────────

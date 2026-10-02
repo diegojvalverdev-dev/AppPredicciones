@@ -13,7 +13,7 @@ export interface PronosticoPartido {
   marcadorReal1: number | null; marcadorReal2: number | null;
   marcador: number | null; resultado: number | null;
   clasificado: number | null; total: number | null;
-  pendiente: boolean; estado: string; equipoClasifica: string | null;
+  pendiente: boolean; estado: string; equipoClasifica: string | null; miClasifica: string | null ;
 }
 
 @Component({
@@ -114,6 +114,7 @@ export class HistorialComponent implements OnInit {
       pendiente:      p['Estado'] === 'PEN' || p['PuntajeProcesado'] === false,
       estado:         p['Estado']              ?? '—',
       total:          p['Puntos'] == null ? 0 : p['Puntos'],
+      miClasifica:    p['PaisClasifica'] == null ? '---' : p['PaisClasifica'],
     };
   }
 

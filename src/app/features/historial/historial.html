@@ -65,7 +65,7 @@
 
   <!-- CONTENIDO -->
   <ng-container *ngIf="!cargando && !sinDatos && grupoSeleccionado && vistaHistorial==='tarjetas'">    
-    <div class="card mb-lg" style="overflow:hidden;">
+    <div class="card mb-lg"> <!--  style="overflow:hidden;" -->
       <div class="section-header">
         <p class="label-green mb-sm">{{ grupoSeleccionado.gru_nombre | uppercase }}</p>
         <div class="flex-row mt-sm gap-lg" style="flex-wrap:wrap;">
@@ -93,12 +93,18 @@
           <div style="text-align:center;"><p style="font-size:15px;font-weight:700;margin:0;">Partido:   {{ p.local }} - {{ p.visitante }}</p></div>
           <br>
           <!-- Equipos + marcadores -->
-          <div style="grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-bottom:10px;place-items: center;">            
-            <div style="display:flex;gap:10px;align-items:center;">
+          <div style="margin-bottom:10px;">
+            <div style="display:flex;flex-wrap:wrap;gap:12px 10px;align-items:center;justify-content:center;">
               <div style="text-align:center;">
                 <p class="label-section mb-sm" style="color:var(--primary);white-space:nowrap;">MI PRONÓSTICO</p>
                 <div style="background:var(--primary);color:#000;font-weight:900;font-size:16px;border-radius:8px;padding:5px 14px;white-space:nowrap;">
                   {{ p.golesLocal }} - {{ p.golesVisitante }}
+                </div>
+              </div>
+              <div *ngIf="p.miClasifica !== null" style="text-align:center;">
+                <p class="label-section mb-sm" style="color:var(--primary);white-space:nowrap;">MI CLASIFICADO</p>
+                <div style="background:var(--primary);color:#000;font-weight:900;font-size:16px;border-radius:8px;padding:5px 14px;white-space:nowrap;">
+                  {{ p.miClasifica }}
                 </div>
               </div>
               <div style="text-align:center;">

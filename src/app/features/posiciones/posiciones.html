@@ -71,253 +71,337 @@
   </div>
 
   <!-- Tabla -->
-   <br>
-   <!-- Tabla general -->
-  <p class="label-green mb-md">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="12" r="10"/>
-      <path d="M2 12h20"/>
-    </svg>
-    TABLA DE POSICIONES GENERAL
-  </p>
+  <br>
+  <div id="divTabgeneral" [style.display]="mostrarGeneral ? 'block' : 'none'">
+    <!-- Tabla general -->
+    <p class="label-green mb-md">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M2 12h20"/>
+      </svg>
+      TABLA DE POSICIONES GENERAL
+    </p>
 
-  <div class="card mb-lg" style="overflow:hidden;">
-    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
-      <table style="width:100%;border-collapse:collapse;min-width:400px;">
-        <thead>
-          <tr style="border-bottom:1px solid var(--border);">
-            <th class="label-section" style="padding:12px 14px;text-align:center;white-space:nowrap;">#</th>
-            <th class="label-section" style="padding:12px 14px;text-align:left;white-space:nowrap;">JUGADOR</th>
-            <th class="label-section" style="padding:12px 14px;text-align:center;white-space:nowrap;">PUNTOS</th>
-            <th class="label-section" style="padding:12px 14px;text-align:center;white-space:nowrap;">RESULTADO</th>
-            <th class="label-section" style="padding:12px 14px;text-align:center;white-space:nowrap;">MARCADOR</th>
-            <th class="label-section" style="padding:12px 14px;text-align:center;white-space:nowrap;">CLASIFICACION</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngIf="cargando">
-            <td colspan="4" style="padding:40px;text-align:center;">
-              <div style="width:28px;height:28px;border:3px solid var(--border);
-                          border-top-color:var(--primary);border-radius:50%;
-                          animation:spin .8s linear infinite;margin:0 auto 10px;"></div>
-              <p class="subtitle" style="font-size:12px;margin:0;">Cargando...</p>
-            </td>
-          </tr>
-          <tr *ngIf="!cargando && tabla.length===0">
-            <td colspan="4" style="padding:40px;text-align:center;">
-              <p class="subtitle mb-0">Sin posiciones para esta fase.</p>
-            </td>
-          </tr>
-          <tr *ngFor="let p of tabla; let i=index"
-            [style.background]="i===0?'rgba(251,191,36,.05)':i===1?'rgba(148,163,184,.04)':'transparent'"
-            [style.borderTop]="i>0?'1px solid var(--border)':'none'">
+    <div class="card mb-lg" style="overflow:hidden;" >
+      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+        <table style="width:100%;border-collapse:collapse;min-width:400px;">
+          <thead>
+            <tr style="border-bottom:1px solid var(--border);">
+              <th class="label-section" style="padding:12px 14px;text-align:center;white-space:nowrap;">#</th>
+              <th class="label-section" style="padding:12px 14px;text-align:left;white-space:nowrap;">JUGADOR</th>
+              <th class="label-section" style="padding:12px 14px;text-align:center;white-space:nowrap;">PUNTOS</th>
+              <th class="label-section" style="padding:12px 14px;text-align:center;white-space:nowrap;">RESULTADO</th>
+              <th class="label-section" style="padding:12px 14px;text-align:center;white-space:nowrap;">MARCADOR</th>
+              <th class="label-section" style="padding:12px 14px;text-align:center;white-space:nowrap;">CLASIFICACION</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="cargando">
+              <td colspan="4" style="padding:40px;text-align:center;">
+                <div style="width:28px;height:28px;border:3px solid var(--border);
+                            border-top-color:var(--primary);border-radius:50%;
+                            animation:spin .8s linear infinite;margin:0 auto 10px;"></div>
+                <p class="subtitle" style="font-size:12px;margin:0;">Cargando...</p>
+              </td>
+            </tr>
+            <tr *ngIf="!cargando && tabla.length===0">
+              <td colspan="4" style="padding:40px;text-align:center;">
+                <p class="subtitle mb-0">Sin posiciones para esta fase.</p>
+              </td>
+            </tr>
+            <tr *ngFor="let p of tabla; let i=index"
+              [style.background]="i===0?'rgba(251,191,36,.05)':i===1?'rgba(148,163,184,.04)':'transparent'"
+              [style.borderTop]="i>0?'1px solid var(--border)':'none'">
 
-            <!-- Posición -->
-            <td style="padding:12px 14px;text-align:center;white-space:nowrap;">
-              <span *ngIf="p.pos<=3" style="font-size:18px;">
-                {{ p.pos===1 ? '🥇' : p.pos===2 ? '🥈' : '🥉' }}
-              </span>
-              <span *ngIf="p.pos>3" style="font-size:13px;font-weight:700;"
-                [style.color]="medallaColor(p.pos)">{{ p.pos }}</span>
-            </td>
+              <!-- Posición -->
+              <td style="padding:12px 14px;text-align:center;white-space:nowrap;">
+                <span *ngIf="p.pos<=3" style="font-size:18px;">
+                  {{ p.pos===1 ? '🥇' : p.pos===2 ? '🥈' : '🥉' }}
+                </span>
+                <span *ngIf="p.pos>3" style="font-size:13px;font-weight:700;"
+                  [style.color]="medallaColor(p.pos)">{{ p.pos }}</span>
+              </td>
 
-            <!-- Jugador -->
-            <td style="padding:12px 14px;">
-              <p style="font-size:14px;font-weight:700;margin:0 0 2px;
-                        overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
-                {{ p.alias }}
-              </p>
-              <p *ngIf="p.usuario" class="text-muted" style="font-size:11px;margin:0;">
-                @{{ p.usuario }}
-              </p>
-            </td>
+              <!-- Jugador -->
+              <td style="padding:12px 14px;">
+                <p style="font-size:14px;font-weight:700;margin:0 0 2px;
+                          overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                  {{ p.alias }}
+                </p>
+                <p *ngIf="p.usuario" class="text-muted" style="font-size:11px;margin:0;">
+                  @{{ p.usuario }}
+                </p>
+              </td>
 
-            <!-- Puntos -->
-            <td style="padding:12px 14px;text-align:center;">
-              <span style="font-size:16px;font-weight:900;"
-                [style.color]="p.pos===1?'#fbbf24':'var(--primary)'">
-                {{ p.puntos }}
-              </span>
-              <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
-            </td>
+              <!-- Puntos -->
+              <td style="padding:12px 14px;text-align:center;">
+                <span style="font-size:16px;font-weight:900;"
+                  [style.color]="p.pos===1?'#fbbf24':'var(--primary)'">
+                  {{ p.puntos }}
+                </span>
+                <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
+              </td>
 
-            <!-- resultado -->
-            <td style="padding:12px 14px;text-align:center;">
-              <span style="font-size:14px;font-weight:600;color:var(--muted);">
-                {{ p.resultado }}
-              </span>
-            </td>
+              <!-- resultado -->
+              <td style="padding:12px 14px;text-align:center;">
+                <span style="font-size:14px;font-weight:600;color:var(--muted);">
+                  {{ p.resultado }}
+                </span>
+              </td>
 
-            <!-- marcador -->
-            <td style="padding:12px 14px;text-align:center;">
-              <span style="font-size:14px;font-weight:600;color:var(--muted);">
-                {{ p.marcador }}
-              </span>
-            </td>
+              <!-- marcador -->
+              <td style="padding:12px 14px;text-align:center;">
+                <span style="font-size:14px;font-weight:600;color:var(--muted);">
+                  {{ p.marcador }}
+                </span>
+              </td>
 
-            <!-- clasificacion -->
-            <td style="padding:12px 14px;text-align:center;">
-              <span style="font-size:14px;font-weight:600;color:var(--muted);">
-                {{ p.clasificacion }}
-              </span>
-            </td>
+              <!-- clasificacion -->
+              <td style="padding:12px 14px;text-align:center;">
+                <span style="font-size:14px;font-weight:600;color:var(--muted);">
+                  {{ p.clasificacion }}
+                </span>
+              </td>
 
-          </tr>
-        </tbody>
-      </table>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 
-  <!-- Tabla Final 4 -->
-  <p class="label-green mb-md">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
-      <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
-      <path d="M4 22h16"/>
-      <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
-      <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
-      <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
-    </svg>
-    TABLA DE POSICIONES FINAL 4
-  </p>
+  <div id="divFinal4"  [style.display]="mostrarFinal4 ? 'block' : 'none'">
+    <!-- Tabla Final 4 -->
+    <p class="label-green mb-md">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+        <path d="M4 22h16"/>
+        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+      </svg>
+      TABLA DE POSICIONES FINAL 4
+    </p>
 
-  <div class="card" style="overflow:hidden;">
-    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
-      <table style="width:100%;border-collapse:collapse;min-width:700px;">
-        <thead>
-          <tr style="border-bottom:1px solid var(--border);">
-            <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;">#</th>
-            <th class="label-section" style="padding:12px 10px;text-align:left;white-space:nowrap;">JUGADOR</th>
-            <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;
-                        color:var(--primary);">TOTAL</th>            
-            <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;">CAMPEÓN</th>
-            <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;">2do.</th>
-            <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;">3er.</th>
-            <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;">4to.</th>
-            <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;">TOP 4</th>
-            <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;">GOLEADOR</th>
-            <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;">GOLES</th>
-            <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;">MVP</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngIf="cargando">
-            <td colspan="11" style="padding:40px;text-align:center;">
-              <div style="width:28px;height:28px;border:3px solid var(--border);
-                          border-top-color:var(--primary);border-radius:50%;
-                          animation:spin .8s linear infinite;margin:0 auto 10px;"></div>
-              <p class="subtitle" style="font-size:12px;margin:0;">Cargando...</p>
-            </td>
-          </tr>
-          <tr *ngIf="!cargando && tablaFinal4.length===0">
-            <td colspan="11" style="padding:40px;text-align:center;">
-              <p class="subtitle mb-0">Sin posiciones para esta fase.</p>
-            </td>
-          </tr>
-          <tr *ngFor="let p of tablaFinal4; let i=index"
-            [style.background]="i===0?'rgba(251,191,36,.05)':i===1?'rgba(148,163,184,.04)':'transparent'"
-            [style.borderTop]="i>0?'1px solid var(--border)':'none'">
+    <div class="card" style="overflow:hidden;">
+      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+        <table style="width:100%;border-collapse:collapse;min-width:700px;">
+          <thead>
+            <tr style="border-bottom:1px solid var(--border);">
+              <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;">#</th>
+              <th class="label-section" style="padding:12px 10px;text-align:left;white-space:nowrap;">JUGADOR</th>
+              <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;
+                          color:var(--primary);">TOTAL</th>            
+              <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;">CAMPEÓN</th>
+              <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;">2do.</th>
+              <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;">3er.</th>
+              <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;">4to.</th>
+              <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;">TOP 4</th>
+              <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;">GOLEADOR</th>
+              <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;">GOLES</th>
+              <th class="label-section" style="padding:12px 10px;text-align:center;white-space:nowrap;">MVP</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="cargando">
+              <td colspan="11" style="padding:40px;text-align:center;">
+                <div style="width:28px;height:28px;border:3px solid var(--border);
+                            border-top-color:var(--primary);border-radius:50%;
+                            animation:spin .8s linear infinite;margin:0 auto 10px;"></div>
+                <p class="subtitle" style="font-size:12px;margin:0;">Cargando...</p>
+              </td>
+            </tr>
+            <tr *ngIf="!cargando && tablaFinal4.length===0">
+              <td colspan="11" style="padding:40px;text-align:center;">
+                <p class="subtitle mb-0">Sin posiciones para esta fase.</p>
+              </td>
+            </tr>
+            <tr *ngFor="let p of tablaFinal4; let i=index"
+              [style.background]="i===0?'rgba(251,191,36,.05)':i===1?'rgba(148,163,184,.04)':'transparent'"
+              [style.borderTop]="i>0?'1px solid var(--border)':'none'">
 
-            <!-- Posición -->
-            <td style="padding:11px 10px;text-align:center;white-space:nowrap;">
-              <span *ngIf="p.pos<=3" style="font-size:16px;">
-                {{ p.pos===1 ? '🥇' : p.pos===2 ? '🥈' : '🥉' }}
-              </span>
-              <span *ngIf="p.pos>3" style="font-size:13px;font-weight:700;"
-                [style.color]="medallaColor(p.pos)">{{ p.pos }}</span>
-            </td>
+              <!-- Posición -->
+              <td style="padding:11px 10px;text-align:center;white-space:nowrap;">
+                <span *ngIf="p.pos<=3" style="font-size:16px;">
+                  {{ p.pos===1 ? '🥇' : p.pos===2 ? '🥈' : '🥉' }}
+                </span>
+                <span *ngIf="p.pos>3" style="font-size:13px;font-weight:700;"
+                  [style.color]="medallaColor(p.pos)">{{ p.pos }}</span>
+              </td>
 
-            <!-- Jugador -->
-            <td style="padding:11px 10px;min-width:120px;">
-              <p style="font-size:13px;font-weight:700;margin:0 0 2px;
-                        overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
-                {{ p.alias }}
-              </p>
-              <p *ngIf="p.usuario" class="text-muted" style="font-size:11px;margin:0;">
-                @{{ p.usuario }}
-              </p>
-            </td>
+              <!-- Jugador -->
+              <td style="padding:11px 10px;min-width:120px;">
+                <p style="font-size:13px;font-weight:700;margin:0 0 2px;
+                          overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                  {{ p.alias }}
+                </p>
+                <p *ngIf="p.usuario" class="text-muted" style="font-size:11px;margin:0;">
+                  @{{ p.usuario }}
+                </p>
+              </td>
 
-            <!-- Total -->
-            <td style="padding:11px 10px;text-align:center;">
-              <span style="font-size:16px;font-weight:900;"
-                [style.color]="p.pos===1?'#fbbf24':'var(--primary)'">
-                {{ p.total }}
-              </span>
-              <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
-            </td>
+              <!-- Total -->
+              <td style="padding:11px 10px;text-align:center;">
+                <span style="font-size:16px;font-weight:900;"
+                  [style.color]="p.pos===1?'#fbbf24':'var(--primary)'">
+                  {{ p.total }}
+                </span>
+                <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
+              </td>
 
-            <!-- Campeón -->
-            <td style="padding:11px 10px;text-align:center;">
-              <span style="font-size:13px;font-weight:700;color:var(--primary);">
-                {{ p.campeon }}
-              </span>
-              <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
-            </td>
+              <!-- Campeón -->
+              <td style="padding:11px 10px;text-align:center;">
+                <span style="font-size:13px;font-weight:700;color:var(--primary);">
+                  {{ p.campeon }}
+                </span>
+                <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
+              </td>
 
-            <!-- Subcampeón -->
-            <td style="padding:11px 10px;text-align:center;">
-              <span style="font-size:13px;font-weight:700;color:var(--primary);">
-                {{ p.subcampeon }}
-              </span>
-              <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
-            </td>
+              <!-- Subcampeón -->
+              <td style="padding:11px 10px;text-align:center;">
+                <span style="font-size:13px;font-weight:700;color:var(--primary);">
+                  {{ p.subcampeon }}
+                </span>
+                <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
+              </td>
 
-            <!-- Tercer lugar -->
-            <td style="padding:11px 10px;text-align:center;">
-              <span style="font-size:13px;font-weight:700;color:var(--primary);">
-                {{ p.tercer }}
-              </span>
-              <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
-            </td>
+              <!-- Tercer lugar -->
+              <td style="padding:11px 10px;text-align:center;">
+                <span style="font-size:13px;font-weight:700;color:var(--primary);">
+                  {{ p.tercer }}
+                </span>
+                <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
+              </td>
 
-            <!-- Cuarto lugar -->
-            <td style="padding:11px 10px;text-align:center;">
-              <span style="font-size:13px;font-weight:700;color:var(--primary);">
-                {{ p.cuarto }}
-              </span>
-              <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
-            </td>
+              <!-- Cuarto lugar -->
+              <td style="padding:11px 10px;text-align:center;">
+                <span style="font-size:13px;font-weight:700;color:var(--primary);">
+                  {{ p.cuarto }}
+                </span>
+                <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
+              </td>
 
-            <!-- Top 4 -->
-            <td style="padding:11px 10px;text-align:center;">
-              <span style="font-size:13px;font-weight:700;color:var(--primary);">
-                {{ p.top4 }}
-              </span>
-              <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
-            </td>
+              <!-- Top 4 -->
+              <td style="padding:11px 10px;text-align:center;">
+                <span style="font-size:13px;font-weight:700;color:var(--primary);">
+                  {{ p.top4 }}
+                </span>
+                <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
+              </td>
 
-            <!-- Goleador -->
-            <td style="padding:11px 10px;text-align:center;">
-              <span style="font-size:13px;font-weight:700;color:var(--primary);">
-                {{ p.goleador }}
-              </span>
-              <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
-            </td>
+              <!-- Goleador -->
+              <td style="padding:11px 10px;text-align:center;">
+                <span style="font-size:13px;font-weight:700;color:var(--primary);">
+                  {{ p.goleador }}
+                </span>
+                <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
+              </td>
 
-            <!-- Goles -->
-            <td style="padding:11px 10px;text-align:center;">
-              <span style="font-size:13px;font-weight:700;color:var(--primary);">
-                {{ p.goles }}
-              </span>
-              <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
-            </td>
+              <!-- Goles -->
+              <td style="padding:11px 10px;text-align:center;">
+                <span style="font-size:13px;font-weight:700;color:var(--primary);">
+                  {{ p.goles }}
+                </span>
+                <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
+              </td>
 
-            <!-- MVP -->
-            <td style="padding:11px 10px;text-align:center;">
-              <span style="font-size:13px;font-weight:700;color:var(--primary);">
-                {{ p.mvp }}
-              </span>
-              <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
-            </td>
+              <!-- MVP -->
+              <td style="padding:11px 10px;text-align:center;">
+                <span style="font-size:13px;font-weight:700;color:var(--primary);">
+                  {{ p.mvp }}
+                </span>
+                <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
+              </td>
 
-          </tr>
-        </tbody>
-      </table>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
+  <div id="divCombinada" [style.display]="mostrarCombinada ? 'block' : 'none'">
+    <!-- Tabla combinada -->
+    <p class="label-green mb-md" style="margin-top:24px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>
+      </svg>
+      TABLA DE POSICIONES TOTAL (GENERAL + FINAL 4)
+    </p>
+
+    <div class="card mb-lg" style="overflow:hidden;">
+      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+        <table style="width:100%;border-collapse:collapse;min-width:500px;">
+          <thead>
+            <tr style="border-bottom:1px solid var(--border);">
+              <th class="label-section" style="padding:12px 14px;text-align:center;white-space:nowrap;">#</th>
+              <th class="label-section" style="padding:12px 14px;text-align:left;white-space:nowrap;">JUGADOR</th>
+              <th class="label-section" style="padding:12px 14px;text-align:center;white-space:nowrap;color:var(--primary);">TOTAL</th>
+              <th class="label-section" style="padding:12px 14px;text-align:center;white-space:nowrap;">PTS. GENERALES</th>
+              <th class="label-section" style="padding:12px 14px;text-align:center;white-space:nowrap;">PTS. FINAL 4</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="cargando">
+              <td colspan="5" style="padding:40px;text-align:center;">
+                <div style="width:28px;height:28px;border:3px solid var(--border);
+                            border-top-color:var(--primary);border-radius:50%;
+                            animation:spin .8s linear infinite;margin:0 auto 10px;"></div>
+                <p class="subtitle" style="font-size:12px;margin:0;">Cargando...</p>
+              </td>
+            </tr>
+            <tr *ngIf="!cargando && tablaCombinada.length===0">
+              <td colspan="5" style="padding:40px;text-align:center;">
+                <p class="subtitle mb-0">Sin posiciones para esta fase.</p>
+              </td>
+            </tr>
+            <tr *ngFor="let p of tablaCombinada; let i=index"
+              [style.background]="i===0?'rgba(251,191,36,.05)':i===1?'rgba(148,163,184,.04)':'transparent'"
+              [style.borderTop]="i>0?'1px solid var(--border)':'none'">
+
+              <td style="padding:12px 14px;text-align:center;white-space:nowrap;">
+                <span *ngIf="p.pos<=3" style="font-size:18px;">
+                  {{ p.pos===1 ? '🥇' : p.pos===2 ? '🥈' : '🥉' }}
+                </span>
+                <span *ngIf="p.pos>3" style="font-size:13px;font-weight:700;"
+                  [style.color]="medallaColor(p.pos)">{{ p.pos }}</span>
+              </td>
+
+              <td style="padding:12px 14px;">
+                <p style="font-size:14px;font-weight:700;margin:0 0 2px;
+                          overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                  {{ p.alias }}
+                </p>
+                <p *ngIf="p.usuario" class="text-muted" style="font-size:11px;margin:0;">
+                  @{{ p.usuario }}
+                </p>
+              </td>
+
+              <td style="padding:12px 14px;text-align:center;">
+                <span style="font-size:16px;font-weight:900;"
+                  [style.color]="p.pos===1?'#fbbf24':'var(--primary)'">
+                  {{ p.puntosTotales }}
+                </span>
+                <p style="font-size:10px;color:var(--muted);margin:0;">pts</p>
+              </td>
+
+              <td style="padding:12px 14px;text-align:center;">
+                <span style="font-size:14px;font-weight:600;color:var(--muted);">{{ p.puntosGenerales }}</span>
+              </td>
+
+              <td style="padding:12px 14px;text-align:center;">
+                <span style="font-size:14px;font-weight:600;color:var(--muted);">{{ p.puntosFinal4 }}</span>
+              </td>
+
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    </div>
 
 </div>
 <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
